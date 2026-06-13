@@ -1,7 +1,7 @@
 {
   "name": "2026 월드컵 일정표",
   "short_name": "월드컵 일정표",
-  "description": "한눈에 보는 2026 북중미 월드컵 조별리그 일정표",
+  "description": "조별리그부터 토너먼트까지 한눈에 보는 2026 월드컵 일정표",
   "start_url": "/world-cup-schedule-ui/",
   "scope": "/world-cup-schedule-ui/",
   "display": "standalone",
