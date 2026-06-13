@@ -109,9 +109,12 @@ export function SchedulePage() {
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
-          <h1 className="px-2 py-3 text-center text-[26px] font-black leading-tight tracking-normal sm:text-[38px]">
-            제23회 2026 북중미 월드컵 일정표
+          <h1 className="whitespace-nowrap px-2 pt-3 text-center text-[24px] font-black leading-tight tracking-normal sm:text-[38px]">
+            2026 월드컵 일정표
           </h1>
+          <div className="pb-3 pt-1 text-center text-[11px] font-bold leading-none text-neutral-700 sm:text-[13px]">
+            by T.J. PARK
+          </div>
           <div className="h-[5px] bg-[#2f5365]" />
         </header>
 
