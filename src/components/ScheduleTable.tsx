@@ -9,6 +9,7 @@ type ScheduleTableProps = {
   scrollContainerRef?: RefObject<HTMLDivElement | null>;
   zoom: number;
   selectedCountry?: string;
+  todayKey?: string;
   className?: string;
 };
 
@@ -32,6 +33,7 @@ export function ScheduleTable({
   scrollContainerRef,
   zoom,
   selectedCountry,
+  todayKey,
   className = '',
 }: ScheduleTableProps) {
   const hasRows = sections.some((section) => section.days.length > 0);
@@ -79,6 +81,7 @@ export function ScheduleTable({
                   currentTime={currentTime}
                   nextMatchId={nextMatchId}
                   selectedCountry={selectedCountry}
+                  todayKey={todayKey}
                 />
               ))}
             </tbody>

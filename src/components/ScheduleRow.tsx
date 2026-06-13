@@ -6,6 +6,7 @@ type ScheduleRowProps = {
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry?: string;
+  todayKey?: string;
 };
 
 const CELL_COUNT = 4;
@@ -25,12 +26,20 @@ export function ScheduleRow({
   currentTime,
   nextMatchId,
   selectedCountry,
+  todayKey,
 }: ScheduleRowProps) {
+  const isToday = day.date === todayKey;
+
   return (
-    <tr data-day-date={day.date}>
+    <tr data-day-date={day.date} className={isToday ? 'schedule-today-row' : undefined}>
       <th
         scope="row"
-        className="schedule-date-cell border border-neutral-800 bg-[#e8eef7] text-center align-middle"
+        className={[
+          'schedule-date-cell border border-neutral-800 text-center align-middle',
+          isToday ? 'schedule-today-date-cell' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         <div className="schedule-date-label font-black leading-tight text-neutral-950">{day.dateLabel}</div>
         <div className="schedule-weekday mt-[2px] font-black leading-tight text-neutral-950">({day.weekday})</div>

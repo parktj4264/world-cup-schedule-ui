@@ -60,6 +60,11 @@ button {
   box-shadow: 3px 0 0 #111111;
 }
 
+.schedule-date-cell.schedule-today-date-cell {
+  background: #d8f3dc;
+  box-shadow: 3px 0 0 #111111, inset 0 0 0 2px #3f7f52;
+}
+
 .schedule-match-cell {
   width: var(--schedule-match-width);
   min-width: var(--schedule-match-width);
@@ -135,5 +140,9 @@ button {
   .schedule-date-cell {
     position: static;
     box-shadow: inset -2px 0 0 #111111;
+  }
+
+  .schedule-date-cell.schedule-today-date-cell {
+    box-shadow: inset -2px 0 0 #111111, inset 0 0 0 2px #3f7f52;
   }
 }

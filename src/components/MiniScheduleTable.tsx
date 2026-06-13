@@ -7,6 +7,7 @@ type MiniScheduleTableProps = {
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry?: string;
+  todayKey?: string;
 };
 
 const getOverviewScale = (containerWidth: number) =>
@@ -17,6 +18,7 @@ export function MiniScheduleTable({
   currentTime,
   nextMatchId,
   selectedCountry,
+  todayKey,
 }: MiniScheduleTableProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -56,6 +58,7 @@ export function MiniScheduleTable({
             nextMatchId={nextMatchId}
             zoom={100}
             selectedCountry={selectedCountry}
+            todayKey={todayKey}
             className="mini-overview-table-wrap overflow-visible pb-0"
           />
         </div>
