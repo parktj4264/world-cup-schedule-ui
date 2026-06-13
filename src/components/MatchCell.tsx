@@ -75,7 +75,7 @@ export function MatchCell({
   const hasLiveMatch = cell.matches.some((match) => isLiveMatch(match, currentTime));
 
   const cellClassName = [
-    'schedule-match-cell relative border border-neutral-700 align-middle',
+    'schedule-match-cell relative border border-neutral-700 text-center align-middle',
     hasSelectedCountry
       ? 'schedule-selected-country-cell bg-[#e8f7cf]'
       : hasKorea
@@ -93,7 +93,7 @@ export function MatchCell({
 
   return (
     <td className={cellClassName}>
-      <div className="flex flex-col gap-[3px]">
+      <div className="flex flex-col items-center gap-[3px]">
         {groupMatches(cell.matches).map((matchGroup, groupIndex) => {
           const isGroupPast = matchGroup.matches.every((match) => isPastMatch(match, currentTime));
           const isGroupLive = matchGroup.matches.some((match) => isLiveMatch(match, currentTime));
@@ -109,7 +109,7 @@ export function MatchCell({
                 .filter(Boolean)
                 .join(' ')}
             >
-              <div className="schedule-match-meta whitespace-nowrap text-neutral-900">
+              <div className="schedule-match-meta whitespace-nowrap text-center text-neutral-900">
                 <span className="schedule-match-time font-black">{matchGroup.timeLabel}</span>
                 <span className="font-semibold">, {matchGroup.group} {matchGroup.round}</span>
                 {isGroupLive ? (
@@ -118,12 +118,12 @@ export function MatchCell({
                   </span>
                 ) : null}
               </div>
-              <div className="mt-[1px] flex flex-col gap-[1px]">
+              <div className="mt-[1px] flex flex-col items-center gap-[1px]">
                 {matchGroup.matches.map((match) => (
                   <div
                     key={match.id}
                     data-match-id={match.id}
-                    className="schedule-teams whitespace-nowrap font-extrabold leading-[1.25] text-neutral-950"
+                    className="schedule-teams whitespace-nowrap text-center font-extrabold leading-[1.25] text-neutral-950"
                   >
                     <span className="mr-1">{match.homeFlag}</span>
                     {match.home}

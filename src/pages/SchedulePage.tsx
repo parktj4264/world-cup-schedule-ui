@@ -52,17 +52,9 @@ export function SchedulePage() {
     });
   }, []);
 
-  const handleGoToToday = useCallback(() => {
-    scrollAfterRender(`[data-day-date="${todayKey}"]`);
-  }, [scrollAfterRender, todayKey]);
-
-  const handleGoToNextMatch = useCallback(() => {
-    scrollAfterRender('.schedule-match-cell-next');
-  }, [scrollAfterRender]);
-
   const handleShowKorea = useCallback(() => {
     setSelectedCountry('대한민국');
-    scrollAfterRender('.schedule-match-cell-next, .schedule-korea-cell');
+    scrollAfterRender('.schedule-korea-cell');
   }, [scrollAfterRender]);
 
   return (
@@ -83,8 +75,6 @@ export function SchedulePage() {
         />
         <ScheduleControls
           isMiniView={isMiniView}
-          onGoToToday={handleGoToToday}
-          onGoToNextMatch={handleGoToNextMatch}
           onShowKorea={handleShowKorea}
           onToggleMiniView={() => setIsMiniView((currentMode) => !currentMode)}
         />

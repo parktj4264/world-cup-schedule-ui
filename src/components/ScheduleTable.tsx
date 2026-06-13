@@ -63,7 +63,7 @@ export function ScheduleTable({
         sections.map((section) => (
           <table
             key={section.id}
-            className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-left"
+            className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-center"
             aria-label={section.title}
           >
             <colgroup>
