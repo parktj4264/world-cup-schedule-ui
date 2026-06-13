@@ -61,31 +61,35 @@ export function ScheduleTable({
     >
       {hasRows ? (
         sections.map((section) => (
-          <table
-            key={section.id}
-            className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-center"
-            aria-label={section.title}
-          >
-            <colgroup>
-              <col className="schedule-date-col" />
-              <col className="schedule-match-col" />
-              <col className="schedule-match-col" />
-              <col className="schedule-match-col" />
-              <col className="schedule-match-col" />
-            </colgroup>
-            <tbody>
-              {section.days.map((day) => (
-                <ScheduleRow
-                  key={day.date}
-                  day={day}
-                  currentTime={currentTime}
-                  nextMatchId={nextMatchId}
-                  selectedCountry={selectedCountry}
-                  todayKey={todayKey}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div key={section.id} className="schedule-section mx-auto mb-4">
+            <h2 className="schedule-section-title border-x-2 border-t-2 border-neutral-900 bg-white py-1 text-center text-sm font-black text-neutral-950">
+              {section.title}
+            </h2>
+            <table
+              className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-center"
+              aria-label={section.title}
+            >
+              <colgroup>
+                <col className="schedule-date-col" />
+                <col className="schedule-match-col" />
+                <col className="schedule-match-col" />
+                <col className="schedule-match-col" />
+                <col className="schedule-match-col" />
+              </colgroup>
+              <tbody>
+                {section.days.map((day) => (
+                  <ScheduleRow
+                    key={day.date}
+                    day={day}
+                    currentTime={currentTime}
+                    nextMatchId={nextMatchId}
+                    selectedCountry={selectedCountry}
+                    todayKey={todayKey}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         ))
       ) : (
         <div className="mx-auto w-[974px] border-2 border-neutral-900 bg-white p-6 text-center text-sm font-bold text-neutral-700">

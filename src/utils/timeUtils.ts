@@ -5,6 +5,10 @@ export const MATCH_DURATION_MS = 2 * 60 * 60 * 1000;
 export const getMatchStartTime = (match: Match) => new Date(match.kickoff).getTime();
 
 export const isLiveMatch = (match: Match, now: Date) => {
+  if (match.status) {
+    return match.status === 'live';
+  }
+
   const start = getMatchStartTime(match);
   const current = now.getTime();
 
@@ -12,6 +16,10 @@ export const isLiveMatch = (match: Match, now: Date) => {
 };
 
 export const isPastMatch = (match: Match, now: Date) => {
+  if (match.status) {
+    return match.status === 'finished';
+  }
+
   const end = getMatchStartTime(match) + MATCH_DURATION_MS;
 
   return now.getTime() >= end;
@@ -26,7 +34,7 @@ export const flattenMatches = (sections: ScheduleSection[]) =>
 
 export const getNextMatch = (sections: ScheduleSection[], now: Date) =>
   flattenMatches(sections)
-    .filter((match) => getMatchStartTime(match) > now.getTime())
+    .filter((match) => (!match.status || match.status === 'scheduled') && getMatchStartTime(match) > now.getTime())
     .sort((a, b) => getMatchStartTime(a) - getMatchStartTime(b))[0];
 
 export const getLiveMatches = (sections: ScheduleSection[], now: Date) =>

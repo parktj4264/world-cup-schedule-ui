@@ -39,6 +39,10 @@ button {
   min-width: var(--schedule-table-width);
 }
 
+.schedule-section {
+  width: var(--schedule-table-width);
+}
+
 .schedule-date-col {
   width: var(--schedule-date-width);
 }
@@ -135,6 +139,10 @@ button {
     width: 100% !important;
     min-width: 0 !important;
     page-break-inside: avoid;
+  }
+
+  .schedule-section {
+    width: 100% !important;
   }
 
   .schedule-date-cell {

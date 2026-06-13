@@ -9,7 +9,10 @@ export type Match = {
   homeFlag: string;
   awayFlag: string;
   isKorea?: boolean;
+  apiFootballFixtureId?: number;
   status?: MatchStatus;
+  statusLabel?: string;
+  elapsed?: number;
   homeScore?: number;
   awayScore?: number;
   winner?: 'home' | 'away' | 'draw';
@@ -28,7 +31,13 @@ export type ScheduleDay = {
   cells: ScheduleCell[];
 };
 
-export type MatchStatus = 'scheduled' | 'live' | 'finished';
+export type MatchStatus =
+  | 'scheduled'
+  | 'live'
+  | 'finished'
+  | 'postponed'
+  | 'cancelled'
+  | 'suspended';
 
 export type MatchStage =
   | 'group'
@@ -72,6 +81,27 @@ const game = (
 });
 
 const cell = (...matches: Match[]): ScheduleCell => ({ matches });
+
+const knockoutGame = (
+  date: string,
+  timeLabel: string,
+  stage: MatchStage,
+  round: string,
+  matchNumber: number,
+  home: string,
+  away: string,
+): Match => ({
+  id: `match-${matchNumber}`,
+  kickoff: `${date}T${timeLabel}:00+09:00`,
+  timeLabel,
+  group: round,
+  round: `${matchNumber}번 경기`,
+  home,
+  away,
+  homeFlag: '',
+  awayFlag: '',
+  stage,
+});
 
 export const scheduleSections: ScheduleSection[] = [
   {
@@ -292,6 +322,164 @@ export const scheduleSections: ScheduleSection[] = [
             game('2026-06-28', '11:00', 'J조', '3차전', '요르단', '아르헨', '🇯🇴', '🇦🇷'),
             game('2026-06-28', '11:00', 'J조', '3차전', '알제리', '오스트리아', '🇩🇿', '🇦🇹'),
           ),
+        ],
+      },
+    ],
+  },
+  {
+    id: 'knockout-stage',
+    title: '토너먼트',
+    stage: 'tournament',
+    days: [
+      {
+        date: '2026-06-29',
+        dateLabel: '6. 29.',
+        weekday: '월',
+        cells: [
+          cell(knockoutGame('2026-06-29', '04:00', 'round-of-32', '32강', 73, 'A조 2위', 'B조 2위')),
+        ],
+      },
+      {
+        date: '2026-06-30',
+        dateLabel: '6. 30.',
+        weekday: '화',
+        cells: [
+          cell(knockoutGame('2026-06-30', '02:00', 'round-of-32', '32강', 76, 'C조 1위', 'F조 2위')),
+          cell(knockoutGame('2026-06-30', '05:30', 'round-of-32', '32강', 74, 'E조 1위', 'A/B/C/D/F조 3위')),
+          cell(knockoutGame('2026-06-30', '10:00', 'round-of-32', '32강', 75, 'F조 1위', 'C조 2위')),
+        ],
+      },
+      {
+        date: '2026-07-01',
+        dateLabel: '7. 1.',
+        weekday: '수',
+        cells: [
+          cell(knockoutGame('2026-07-01', '02:00', 'round-of-32', '32강', 78, 'E조 2위', 'I조 2위')),
+          cell(knockoutGame('2026-07-01', '06:00', 'round-of-32', '32강', 77, 'I조 1위', 'C/D/F/G/H조 3위')),
+          cell(knockoutGame('2026-07-01', '10:00', 'round-of-32', '32강', 79, 'A조 1위', 'C/E/F/H/I조 3위')),
+        ],
+      },
+      {
+        date: '2026-07-02',
+        dateLabel: '7. 2.',
+        weekday: '목',
+        cells: [
+          cell(knockoutGame('2026-07-02', '01:00', 'round-of-32', '32강', 80, 'L조 1위', 'E/H/I/J/K조 3위')),
+          cell(knockoutGame('2026-07-02', '05:00', 'round-of-32', '32강', 82, 'G조 1위', 'A/E/H/I/J조 3위')),
+          cell(knockoutGame('2026-07-02', '09:00', 'round-of-32', '32강', 81, 'D조 1위', 'B/E/F/I/J조 3위')),
+        ],
+      },
+      {
+        date: '2026-07-03',
+        dateLabel: '7. 3.',
+        weekday: '금',
+        cells: [
+          cell(knockoutGame('2026-07-03', '04:00', 'round-of-32', '32강', 84, 'H조 1위', 'J조 2위')),
+          cell(knockoutGame('2026-07-03', '08:00', 'round-of-32', '32강', 83, 'K조 2위', 'L조 2위')),
+          cell(knockoutGame('2026-07-03', '12:00', 'round-of-32', '32강', 85, 'B조 1위', 'E/F/G/I/J조 3위')),
+        ],
+      },
+      {
+        date: '2026-07-04',
+        dateLabel: '7. 4.',
+        weekday: '토',
+        cells: [
+          cell(knockoutGame('2026-07-04', '03:00', 'round-of-32', '32강', 88, 'D조 2위', 'G조 2위')),
+          cell(knockoutGame('2026-07-04', '07:00', 'round-of-32', '32강', 86, 'J조 1위', 'H조 2위')),
+          cell(knockoutGame('2026-07-04', '10:30', 'round-of-32', '32강', 87, 'K조 1위', 'D/E/I/J/L조 3위')),
+        ],
+      },
+      {
+        date: '2026-07-05',
+        dateLabel: '7. 5.',
+        weekday: '일',
+        cells: [
+          cell(knockoutGame('2026-07-05', '02:00', 'round-of-16', '16강', 90, '73번 승자', '75번 승자')),
+          cell(knockoutGame('2026-07-05', '06:00', 'round-of-16', '16강', 89, '74번 승자', '77번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-06',
+        dateLabel: '7. 6.',
+        weekday: '월',
+        cells: [
+          cell(knockoutGame('2026-07-06', '05:00', 'round-of-16', '16강', 91, '76번 승자', '78번 승자')),
+          cell(knockoutGame('2026-07-06', '09:00', 'round-of-16', '16강', 92, '79번 승자', '80번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-07',
+        dateLabel: '7. 7.',
+        weekday: '화',
+        cells: [
+          cell(knockoutGame('2026-07-07', '04:00', 'round-of-16', '16강', 93, '83번 승자', '84번 승자')),
+          cell(knockoutGame('2026-07-07', '09:00', 'round-of-16', '16강', 94, '81번 승자', '82번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-08',
+        dateLabel: '7. 8.',
+        weekday: '수',
+        cells: [
+          cell(knockoutGame('2026-07-08', '01:00', 'round-of-16', '16강', 95, '86번 승자', '88번 승자')),
+          cell(knockoutGame('2026-07-08', '05:00', 'round-of-16', '16강', 96, '85번 승자', '87번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-10',
+        dateLabel: '7. 10.',
+        weekday: '금',
+        cells: [
+          cell(knockoutGame('2026-07-10', '05:00', 'quarter-final', '8강', 97, '89번 승자', '90번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-11',
+        dateLabel: '7. 11.',
+        weekday: '토',
+        cells: [
+          cell(knockoutGame('2026-07-11', '04:00', 'quarter-final', '8강', 98, '93번 승자', '94번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-12',
+        dateLabel: '7. 12.',
+        weekday: '일',
+        cells: [
+          cell(knockoutGame('2026-07-12', '06:00', 'quarter-final', '8강', 99, '91번 승자', '92번 승자')),
+          cell(knockoutGame('2026-07-12', '10:00', 'quarter-final', '8강', 100, '95번 승자', '96번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-15',
+        dateLabel: '7. 15.',
+        weekday: '수',
+        cells: [
+          cell(knockoutGame('2026-07-15', '04:00', 'semi-final', '4강', 101, '97번 승자', '98번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-16',
+        dateLabel: '7. 16.',
+        weekday: '목',
+        cells: [
+          cell(knockoutGame('2026-07-16', '04:00', 'semi-final', '4강', 102, '99번 승자', '100번 승자')),
+        ],
+      },
+      {
+        date: '2026-07-19',
+        dateLabel: '7. 19.',
+        weekday: '일',
+        cells: [
+          cell(knockoutGame('2026-07-19', '06:00', 'third-place', '3·4위전', 103, '101번 패자', '102번 패자')),
+        ],
+      },
+      {
+        date: '2026-07-20',
+        dateLabel: '7. 20.',
+        weekday: '월',
+        cells: [
+          cell(knockoutGame('2026-07-20', '04:00', 'final', '결승', 104, '101번 승자', '102번 승자')),
         ],
       },
     ],

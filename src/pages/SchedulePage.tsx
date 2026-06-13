@@ -5,9 +5,11 @@ import { ScheduleControls } from '../components/ScheduleControls';
 import { ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
+import { mergeLiveSchedule, parseLiveSchedule, type LiveSchedule } from '../utils/liveSchedule';
 import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils';
 
 const DETAIL_VIEW_ZOOM = 70;
+const LIVE_SCHEDULE_URL = `${import.meta.env.BASE_URL}data/live-schedule.json`;
 
 const getCountryOptions = (sections: ScheduleSection[]) =>
   Array.from(
@@ -26,6 +28,8 @@ export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [selectedCountry, setSelectedCountry] = useState('');
   const [isMiniView, setIsMiniView] = useState(true);
+  const [liveSchedule, setLiveSchedule] = useState<LiveSchedule>();
+  const [liveScheduleError, setLiveScheduleError] = useState(false);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -35,10 +39,53 @@ export function SchedulePage() {
     return () => window.clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadLiveSchedule = async () => {
+      try {
+        const response = await fetch(`${LIVE_SCHEDULE_URL}?ts=${Date.now()}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setLiveScheduleError(response.status !== 404);
+          return;
+        }
+
+        const parsed = parseLiveSchedule(await response.json());
+
+        if (parsed) {
+          setLiveSchedule(parsed);
+          setLiveScheduleError(false);
+        } else {
+          setLiveScheduleError(true);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLiveScheduleError(true);
+        }
+      }
+    };
+
+    loadLiveSchedule();
+    const intervalId = window.setInterval(loadLiveSchedule, 5 * 60 * 1000);
+
+    return () => {
+      controller.abort();
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
   const todayKey = getKstDateKey(currentTime);
-  const nextMatch = useMemo(() => getNextMatch(scheduleSections, currentTime), [currentTime]);
-  const liveMatches = useMemo(() => getLiveMatches(scheduleSections, currentTime), [currentTime]);
-  const countryOptions = useMemo(() => getCountryOptions(scheduleSections), []);
+  const visibleSections = useMemo(
+    () => mergeLiveSchedule(scheduleSections, liveSchedule),
+    [liveSchedule],
+  );
+  const nextMatch = useMemo(() => getNextMatch(visibleSections, currentTime), [currentTime, visibleSections]);
+  const liveMatches = useMemo(() => getLiveMatches(visibleSections, currentTime), [currentTime, visibleSections]);
+  const countryOptions = useMemo(() => getCountryOptions(visibleSections), [visibleSections]);
 
   const scrollAfterRender = useCallback((selector: string) => {
     window.requestAnimationFrame(() => {
@@ -63,7 +110,7 @@ export function SchedulePage() {
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
           <h1 className="px-2 py-3 text-center text-[26px] font-black leading-tight tracking-normal sm:text-[38px]">
-            제23회 2026 북중미 월드컵 조별리그 일정
+            제23회 2026 북중미 월드컵 일정표
           </h1>
           <div className="h-[5px] bg-[#2f5365]" />
         </header>
@@ -72,6 +119,8 @@ export function SchedulePage() {
           currentTime={currentTime}
           nextMatch={nextMatch}
           liveMatches={liveMatches}
+          liveScheduleUpdatedAt={liveSchedule?.sourceUpdatedAt}
+          liveScheduleError={liveScheduleError}
         />
         <ScheduleControls
           isMiniView={isMiniView}
@@ -86,7 +135,7 @@ export function SchedulePage() {
         />
         {isMiniView ? (
           <MiniScheduleTable
-            sections={scheduleSections}
+            sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
             selectedCountry={selectedCountry}
@@ -94,7 +143,7 @@ export function SchedulePage() {
           />
         ) : (
           <ScheduleTable
-            sections={scheduleSections}
+            sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
             zoom={DETAIL_VIEW_ZOOM}

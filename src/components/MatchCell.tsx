@@ -52,6 +52,22 @@ const getScoreClassName = (match: Match, side: 'home' | 'away') => {
   ].join(' ');
 };
 
+const getStatusLabel = (match: Match) => {
+  if (match.status === 'postponed') {
+    return '연기';
+  }
+
+  if (match.status === 'cancelled') {
+    return '취소';
+  }
+
+  if (match.status === 'suspended') {
+    return '중단';
+  }
+
+  return undefined;
+};
+
 const includesSelectedCountry = (match: Match, selectedCountry: string) => {
   const countryQuery = selectedCountry.trim();
 
@@ -97,6 +113,8 @@ export function MatchCell({
         {groupMatches(cell.matches).map((matchGroup, groupIndex) => {
           const isGroupPast = matchGroup.matches.every((match) => isPastMatch(match, currentTime));
           const isGroupLive = matchGroup.matches.some((match) => isLiveMatch(match, currentTime));
+          const liveMatch = matchGroup.matches.find((match) => isLiveMatch(match, currentTime));
+          const statusLabel = matchGroup.matches.map(getStatusLabel).find(Boolean);
 
           return (
             <div
@@ -114,7 +132,12 @@ export function MatchCell({
                 <span className="font-semibold">, {matchGroup.group} {matchGroup.round}</span>
                 {isGroupLive ? (
                   <span className="ml-1 inline-block border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
-                    LIVE
+                    LIVE{typeof liveMatch?.elapsed === 'number' ? ` ${liveMatch.elapsed}'` : ''}
+                  </span>
+                ) : null}
+                {!isGroupLive && statusLabel ? (
+                  <span className="ml-1 inline-block border border-neutral-700 bg-neutral-100 px-1 text-[10px] font-black leading-4 text-neutral-800">
+                    {statusLabel}
                   </span>
                 ) : null}
               </div>
@@ -125,7 +148,7 @@ export function MatchCell({
                     data-match-id={match.id}
                     className="schedule-teams whitespace-nowrap text-center font-extrabold leading-[1.25] text-neutral-950"
                   >
-                    <span className="mr-1">{match.homeFlag}</span>
+                    {match.homeFlag ? <span className="mr-1">{match.homeFlag}</span> : null}
                     {match.home}
                     {hasScore(match) ? (
                       <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
@@ -135,7 +158,7 @@ export function MatchCell({
                       <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
                     ) : null}
                     {match.away}
-                    <span className="ml-1">{match.awayFlag}</span>
+                    {match.awayFlag ? <span className="ml-1">{match.awayFlag}</span> : null}
                   </div>
                 ))}
               </div>

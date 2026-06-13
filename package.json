@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "fetch:live": "node scripts/fetch-live-schedule.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
