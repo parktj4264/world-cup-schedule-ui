@@ -1,38 +1,1034 @@
 {
-  "source": "manual-seed",
-  "sourceUpdatedAt": "2026-06-13T12:25:00.000Z",
+  "source": "worldcup26.ir",
+  "sourceUpdatedAt": "2026-06-13T16:01:52.167Z",
   "matches": [
     {
       "id": "2026-06-12-04:00-멕시코-남아공",
+      "apiFootballFixtureId": 1,
       "kickoff": "2026-06-12T04:00:00+09:00",
+      "home": "멕시코",
+      "away": "남아공",
+      "homeFlag": "🇲🇽",
+      "awayFlag": "🇿🇦",
       "status": "finished",
+      "statusLabel": "finished",
       "homeScore": 2,
       "awayScore": 0,
       "winner": "home"
     },
     {
       "id": "2026-06-12-11:00-대한민국-체코",
+      "apiFootballFixtureId": 2,
       "kickoff": "2026-06-12T11:00:00+09:00",
+      "home": "대한민국",
+      "away": "체코",
+      "homeFlag": "🇰🇷",
+      "awayFlag": "🇨🇿",
       "status": "finished",
+      "statusLabel": "finished",
       "homeScore": 2,
       "awayScore": 1,
       "winner": "home"
     },
     {
       "id": "2026-06-13-04:00-캐나다-보스니아",
+      "apiFootballFixtureId": 3,
       "kickoff": "2026-06-13T04:00:00+09:00",
+      "home": "캐나다",
+      "away": "보스니아",
+      "homeFlag": "🇨🇦",
+      "awayFlag": "🇧🇦",
       "status": "finished",
+      "statusLabel": "finished",
       "homeScore": 1,
       "awayScore": 1,
       "winner": "draw"
     },
     {
       "id": "2026-06-13-10:00-미국-파라과이",
+      "apiFootballFixtureId": 4,
       "kickoff": "2026-06-13T10:00:00+09:00",
+      "home": "미국",
+      "away": "파라과이",
+      "homeFlag": "🇺🇸",
+      "awayFlag": "🇵🇾",
       "status": "finished",
+      "statusLabel": "finished",
       "homeScore": 4,
       "awayScore": 1,
       "winner": "home"
+    },
+    {
+      "id": "2026-06-14-10:00-아이티-스코틀랜드",
+      "apiFootballFixtureId": 5,
+      "kickoff": "2026-06-14T10:00:00+09:00",
+      "home": "아이티",
+      "away": "스코틀랜드",
+      "homeFlag": "🇭🇹",
+      "awayFlag": "🏴",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-14-13:00-호주-튀르키예",
+      "apiFootballFixtureId": 6,
+      "kickoff": "2026-06-14T13:00:00+09:00",
+      "home": "호주",
+      "away": "튀르키예",
+      "homeFlag": "🇦🇺",
+      "awayFlag": "🇹🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-14-07:00-브라질-모로코",
+      "apiFootballFixtureId": 7,
+      "kickoff": "2026-06-14T07:00:00+09:00",
+      "home": "브라질",
+      "away": "모로코",
+      "homeFlag": "🇧🇷",
+      "awayFlag": "🇲🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-14-04:00-카타르-스위스",
+      "apiFootballFixtureId": 8,
+      "kickoff": "2026-06-14T04:00:00+09:00",
+      "home": "카타르",
+      "away": "스위스",
+      "homeFlag": "🇶🇦",
+      "awayFlag": "🇨🇭",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-15-08:00-코트디-에콰도르",
+      "apiFootballFixtureId": 9,
+      "kickoff": "2026-06-15T08:00:00+09:00",
+      "home": "코트디",
+      "away": "에콰도르",
+      "homeFlag": "🇨🇮",
+      "awayFlag": "🇪🇨",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-15-02:00-독일-퀴라소",
+      "apiFootballFixtureId": 10,
+      "kickoff": "2026-06-15T02:00:00+09:00",
+      "home": "독일",
+      "away": "퀴라소",
+      "homeFlag": "🇩🇪",
+      "awayFlag": "🇨🇼",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-15-05:00-네덜란드-일본",
+      "apiFootballFixtureId": 11,
+      "kickoff": "2026-06-15T05:00:00+09:00",
+      "home": "네덜란드",
+      "away": "일본",
+      "homeFlag": "🇳🇱",
+      "awayFlag": "🇯🇵",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-15-11:00-스웨덴-튀니지",
+      "apiFootballFixtureId": 12,
+      "kickoff": "2026-06-15T11:00:00+09:00",
+      "home": "스웨덴",
+      "away": "튀니지",
+      "homeFlag": "🇸🇪",
+      "awayFlag": "🇹🇳",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-16-10:00-이란-뉴질랜드",
+      "apiFootballFixtureId": 13,
+      "kickoff": "2026-06-16T10:00:00+09:00",
+      "home": "이란",
+      "away": "뉴질랜드",
+      "homeFlag": "🇮🇷",
+      "awayFlag": "🇳🇿",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-16-01:00-스페인-카보베르",
+      "apiFootballFixtureId": 14,
+      "kickoff": "2026-06-16T01:00:00+09:00",
+      "home": "스페인",
+      "away": "카보베르",
+      "homeFlag": "🇪🇸",
+      "awayFlag": "🇨🇻",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-16-04:00-벨기에-이집트",
+      "apiFootballFixtureId": 15,
+      "kickoff": "2026-06-16T04:00:00+09:00",
+      "home": "벨기에",
+      "away": "이집트",
+      "homeFlag": "🇧🇪",
+      "awayFlag": "🇪🇬",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-16-07:00-사우디-우루과이",
+      "apiFootballFixtureId": 16,
+      "kickoff": "2026-06-16T07:00:00+09:00",
+      "home": "사우디",
+      "away": "우루과이",
+      "homeFlag": "🇸🇦",
+      "awayFlag": "🇺🇾",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-17-04:00-프랑스-세네갈",
+      "apiFootballFixtureId": 17,
+      "kickoff": "2026-06-17T04:00:00+09:00",
+      "home": "프랑스",
+      "away": "세네갈",
+      "homeFlag": "🇫🇷",
+      "awayFlag": "🇸🇳",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-17-07:00-이라크-노르웨이",
+      "apiFootballFixtureId": 18,
+      "kickoff": "2026-06-17T07:00:00+09:00",
+      "home": "이라크",
+      "away": "노르웨이",
+      "homeFlag": "🇮🇶",
+      "awayFlag": "🇳🇴",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-17-10:00-아르헨-알제리",
+      "apiFootballFixtureId": 19,
+      "kickoff": "2026-06-17T10:00:00+09:00",
+      "home": "아르헨",
+      "away": "알제리",
+      "homeFlag": "🇦🇷",
+      "awayFlag": "🇩🇿",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-17-13:00-오스트리아-요르단",
+      "apiFootballFixtureId": 20,
+      "kickoff": "2026-06-17T13:00:00+09:00",
+      "home": "오스트리아",
+      "away": "요르단",
+      "homeFlag": "🇦🇹",
+      "awayFlag": "🇯🇴",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-18-02:00-포르투갈-콩고",
+      "apiFootballFixtureId": 21,
+      "kickoff": "2026-06-18T02:00:00+09:00",
+      "home": "포르투갈",
+      "away": "콩고",
+      "homeFlag": "🇵🇹",
+      "awayFlag": "🇨🇩",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-18-05:00-잉글랜드-크로아티아",
+      "apiFootballFixtureId": 22,
+      "kickoff": "2026-06-18T05:00:00+09:00",
+      "home": "잉글랜드",
+      "away": "크로아티아",
+      "homeFlag": "🏴",
+      "awayFlag": "🇭🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-18-11:00-우즈벡-콜롬비아",
+      "apiFootballFixtureId": 23,
+      "kickoff": "2026-06-18T11:00:00+09:00",
+      "home": "우즈벡",
+      "away": "콜롬비아",
+      "homeFlag": "🇺🇿",
+      "awayFlag": "🇨🇴",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-18-08:00-가나-파나마",
+      "apiFootballFixtureId": 24,
+      "kickoff": "2026-06-18T08:00:00+09:00",
+      "home": "가나",
+      "away": "파나마",
+      "homeFlag": "🇬🇭",
+      "awayFlag": "🇵🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-19-10:00-멕시코-대한민국",
+      "apiFootballFixtureId": 25,
+      "kickoff": "2026-06-19T10:00:00+09:00",
+      "home": "멕시코",
+      "away": "대한민국",
+      "homeFlag": "🇲🇽",
+      "awayFlag": "🇰🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-19-04:00-스위스-보스니아",
+      "apiFootballFixtureId": 26,
+      "kickoff": "2026-06-19T04:00:00+09:00",
+      "home": "스위스",
+      "away": "보스니아",
+      "homeFlag": "🇨🇭",
+      "awayFlag": "🇧🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-19-07:00-캐나다-카타르",
+      "apiFootballFixtureId": 27,
+      "kickoff": "2026-06-19T07:00:00+09:00",
+      "home": "캐나다",
+      "away": "카타르",
+      "homeFlag": "🇨🇦",
+      "awayFlag": "🇶🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-19-01:00-체코-남아공",
+      "apiFootballFixtureId": 28,
+      "kickoff": "2026-06-19T01:00:00+09:00",
+      "home": "체코",
+      "away": "남아공",
+      "homeFlag": "🇨🇿",
+      "awayFlag": "🇿🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-20-10:00-브라질-아이티",
+      "apiFootballFixtureId": 29,
+      "kickoff": "2026-06-20T10:00:00+09:00",
+      "home": "브라질",
+      "away": "아이티",
+      "homeFlag": "🇧🇷",
+      "awayFlag": "🇭🇹",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-20-07:00-스코틀랜드-모로코",
+      "apiFootballFixtureId": 30,
+      "kickoff": "2026-06-20T07:00:00+09:00",
+      "home": "스코틀랜드",
+      "away": "모로코",
+      "homeFlag": "🏴",
+      "awayFlag": "🇲🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-20-04:00-미국-호주",
+      "apiFootballFixtureId": 31,
+      "kickoff": "2026-06-20T04:00:00+09:00",
+      "home": "미국",
+      "away": "호주",
+      "homeFlag": "🇺🇸",
+      "awayFlag": "🇦🇺",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-20-12:00-튀르키예-파라과이",
+      "apiFootballFixtureId": 32,
+      "kickoff": "2026-06-20T12:00:00+09:00",
+      "home": "튀르키예",
+      "away": "파라과이",
+      "homeFlag": "🇹🇷",
+      "awayFlag": "🇵🇾",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-21-05:00-독일-코트디",
+      "apiFootballFixtureId": 33,
+      "kickoff": "2026-06-21T05:00:00+09:00",
+      "home": "독일",
+      "away": "코트디",
+      "homeFlag": "🇩🇪",
+      "awayFlag": "🇨🇮",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-21-09:00-에콰도르-퀴라소",
+      "apiFootballFixtureId": 34,
+      "kickoff": "2026-06-21T09:00:00+09:00",
+      "home": "에콰도르",
+      "away": "퀴라소",
+      "homeFlag": "🇪🇨",
+      "awayFlag": "🇨🇼",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-21-02:00-네덜란드-스웨덴",
+      "apiFootballFixtureId": 35,
+      "kickoff": "2026-06-21T02:00:00+09:00",
+      "home": "네덜란드",
+      "away": "스웨덴",
+      "homeFlag": "🇳🇱",
+      "awayFlag": "🇸🇪",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-21-13:00-튀니지-일본",
+      "apiFootballFixtureId": 36,
+      "kickoff": "2026-06-21T13:00:00+09:00",
+      "home": "튀니지",
+      "away": "일본",
+      "homeFlag": "🇹🇳",
+      "awayFlag": "🇯🇵",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-22-04:00-벨기에-이란",
+      "apiFootballFixtureId": 37,
+      "kickoff": "2026-06-22T04:00:00+09:00",
+      "home": "벨기에",
+      "away": "이란",
+      "homeFlag": "🇧🇪",
+      "awayFlag": "🇮🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-22-10:00-뉴질랜드-이집트",
+      "apiFootballFixtureId": 38,
+      "kickoff": "2026-06-22T10:00:00+09:00",
+      "home": "뉴질랜드",
+      "away": "이집트",
+      "homeFlag": "🇳🇿",
+      "awayFlag": "🇪🇬",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-22-01:00-스페인-사우디",
+      "apiFootballFixtureId": 39,
+      "kickoff": "2026-06-22T01:00:00+09:00",
+      "home": "스페인",
+      "away": "사우디",
+      "homeFlag": "🇪🇸",
+      "awayFlag": "🇸🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-22-07:00-우루과이-카보베르",
+      "apiFootballFixtureId": 40,
+      "kickoff": "2026-06-22T07:00:00+09:00",
+      "home": "우루과이",
+      "away": "카보베르",
+      "homeFlag": "🇺🇾",
+      "awayFlag": "🇨🇻",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-23-06:00-프랑스-이라크",
+      "apiFootballFixtureId": 41,
+      "kickoff": "2026-06-23T06:00:00+09:00",
+      "home": "프랑스",
+      "away": "이라크",
+      "homeFlag": "🇫🇷",
+      "awayFlag": "🇮🇶",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-23-09:00-노르웨이-세네갈",
+      "apiFootballFixtureId": 42,
+      "kickoff": "2026-06-23T09:00:00+09:00",
+      "home": "노르웨이",
+      "away": "세네갈",
+      "homeFlag": "🇳🇴",
+      "awayFlag": "🇸🇳",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-23-02:00-아르헨-오스트리아",
+      "apiFootballFixtureId": 43,
+      "kickoff": "2026-06-23T02:00:00+09:00",
+      "home": "아르헨",
+      "away": "오스트리아",
+      "homeFlag": "🇦🇷",
+      "awayFlag": "🇦🇹",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-23-12:00-요르단-알제리",
+      "apiFootballFixtureId": 44,
+      "kickoff": "2026-06-23T12:00:00+09:00",
+      "home": "요르단",
+      "away": "알제리",
+      "homeFlag": "🇯🇴",
+      "awayFlag": "🇩🇿",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-24-02:00-포르투갈-우즈벡",
+      "apiFootballFixtureId": 45,
+      "kickoff": "2026-06-24T02:00:00+09:00",
+      "home": "포르투갈",
+      "away": "우즈벡",
+      "homeFlag": "🇵🇹",
+      "awayFlag": "🇺🇿",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-24-08:00-파나마-크로아티아",
+      "apiFootballFixtureId": 46,
+      "kickoff": "2026-06-24T08:00:00+09:00",
+      "home": "파나마",
+      "away": "크로아티아",
+      "homeFlag": "🇵🇦",
+      "awayFlag": "🇭🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-24-11:00-콜롬비아-콩고",
+      "apiFootballFixtureId": 47,
+      "kickoff": "2026-06-24T11:00:00+09:00",
+      "home": "콜롬비아",
+      "away": "콩고",
+      "homeFlag": "🇨🇴",
+      "awayFlag": "🇨🇩",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-24-05:00-잉글랜드-가나",
+      "apiFootballFixtureId": 48,
+      "kickoff": "2026-06-24T05:00:00+09:00",
+      "home": "잉글랜드",
+      "away": "가나",
+      "homeFlag": "🏴",
+      "awayFlag": "🇬🇭",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-07:00-스코틀랜드-브라질",
+      "apiFootballFixtureId": 49,
+      "kickoff": "2026-06-25T07:00:00+09:00",
+      "home": "스코틀랜드",
+      "away": "브라질",
+      "homeFlag": "🏴",
+      "awayFlag": "🇧🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-07:00-모로코-아이티",
+      "apiFootballFixtureId": 50,
+      "kickoff": "2026-06-25T07:00:00+09:00",
+      "home": "모로코",
+      "away": "아이티",
+      "homeFlag": "🇲🇦",
+      "awayFlag": "🇭🇹",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-10:00-남아공-대한민국",
+      "apiFootballFixtureId": 51,
+      "kickoff": "2026-06-25T10:00:00+09:00",
+      "home": "남아공",
+      "away": "대한민국",
+      "homeFlag": "🇿🇦",
+      "awayFlag": "🇰🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-10:00-체코-멕시코",
+      "apiFootballFixtureId": 52,
+      "kickoff": "2026-06-25T10:00:00+09:00",
+      "home": "체코",
+      "away": "멕시코",
+      "homeFlag": "🇨🇿",
+      "awayFlag": "🇲🇽",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-04:00-보스니아-카타르",
+      "apiFootballFixtureId": 53,
+      "kickoff": "2026-06-25T04:00:00+09:00",
+      "home": "보스니아",
+      "away": "카타르",
+      "homeFlag": "🇧🇦",
+      "awayFlag": "🇶🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-25-04:00-스위스-캐나다",
+      "apiFootballFixtureId": 54,
+      "kickoff": "2026-06-25T04:00:00+09:00",
+      "home": "스위스",
+      "away": "캐나다",
+      "homeFlag": "🇨🇭",
+      "awayFlag": "🇨🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-05:00-퀴라소-코트디",
+      "apiFootballFixtureId": 55,
+      "kickoff": "2026-06-26T05:00:00+09:00",
+      "home": "퀴라소",
+      "away": "코트디",
+      "homeFlag": "🇨🇼",
+      "awayFlag": "🇨🇮",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-05:00-에콰도르-독일",
+      "apiFootballFixtureId": 56,
+      "kickoff": "2026-06-26T05:00:00+09:00",
+      "home": "에콰도르",
+      "away": "독일",
+      "homeFlag": "🇪🇨",
+      "awayFlag": "🇩🇪",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-11:00-파라과이-호주",
+      "apiFootballFixtureId": 57,
+      "kickoff": "2026-06-26T11:00:00+09:00",
+      "home": "파라과이",
+      "away": "호주",
+      "homeFlag": "🇵🇾",
+      "awayFlag": "🇦🇺",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-11:00-튀르키예-미국",
+      "apiFootballFixtureId": 58,
+      "kickoff": "2026-06-26T11:00:00+09:00",
+      "home": "튀르키예",
+      "away": "미국",
+      "homeFlag": "🇹🇷",
+      "awayFlag": "🇺🇸",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-08:00-일본-스웨덴",
+      "apiFootballFixtureId": 59,
+      "kickoff": "2026-06-26T08:00:00+09:00",
+      "home": "일본",
+      "away": "스웨덴",
+      "homeFlag": "🇯🇵",
+      "awayFlag": "🇸🇪",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-26-08:00-튀니지-네덜란드",
+      "apiFootballFixtureId": 60,
+      "kickoff": "2026-06-26T08:00:00+09:00",
+      "home": "튀니지",
+      "away": "네덜란드",
+      "homeFlag": "🇹🇳",
+      "awayFlag": "🇳🇱",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-04:00-세네갈-이라크",
+      "apiFootballFixtureId": 61,
+      "kickoff": "2026-06-27T04:00:00+09:00",
+      "home": "세네갈",
+      "away": "이라크",
+      "homeFlag": "🇸🇳",
+      "awayFlag": "🇮🇶",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-04:00-노르웨이-프랑스",
+      "apiFootballFixtureId": 62,
+      "kickoff": "2026-06-27T04:00:00+09:00",
+      "home": "노르웨이",
+      "away": "프랑스",
+      "homeFlag": "🇳🇴",
+      "awayFlag": "🇫🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-12:00-이집트-이란",
+      "apiFootballFixtureId": 63,
+      "kickoff": "2026-06-27T12:00:00+09:00",
+      "home": "이집트",
+      "away": "이란",
+      "homeFlag": "🇪🇬",
+      "awayFlag": "🇮🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-12:00-뉴질랜드-벨기에",
+      "apiFootballFixtureId": 64,
+      "kickoff": "2026-06-27T12:00:00+09:00",
+      "home": "뉴질랜드",
+      "away": "벨기에",
+      "homeFlag": "🇳🇿",
+      "awayFlag": "🇧🇪",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-09:00-카보베르-사우디",
+      "apiFootballFixtureId": 65,
+      "kickoff": "2026-06-27T09:00:00+09:00",
+      "home": "카보베르",
+      "away": "사우디",
+      "homeFlag": "🇨🇻",
+      "awayFlag": "🇸🇦",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-27-09:00-우루과이-스페인",
+      "apiFootballFixtureId": 66,
+      "kickoff": "2026-06-27T09:00:00+09:00",
+      "home": "우루과이",
+      "away": "스페인",
+      "homeFlag": "🇺🇾",
+      "awayFlag": "🇪🇸",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-06:00-파나마-잉글랜드",
+      "apiFootballFixtureId": 67,
+      "kickoff": "2026-06-28T06:00:00+09:00",
+      "home": "파나마",
+      "away": "잉글랜드",
+      "homeFlag": "🇵🇦",
+      "awayFlag": "🏴",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-06:00-크로아티아-가나",
+      "apiFootballFixtureId": 68,
+      "kickoff": "2026-06-28T06:00:00+09:00",
+      "home": "크로아티아",
+      "away": "가나",
+      "homeFlag": "🇭🇷",
+      "awayFlag": "🇬🇭",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-11:00-알제리-오스트리아",
+      "apiFootballFixtureId": 69,
+      "kickoff": "2026-06-28T11:00:00+09:00",
+      "home": "알제리",
+      "away": "오스트리아",
+      "homeFlag": "🇩🇿",
+      "awayFlag": "🇦🇹",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-11:00-요르단-아르헨",
+      "apiFootballFixtureId": 70,
+      "kickoff": "2026-06-28T11:00:00+09:00",
+      "home": "요르단",
+      "away": "아르헨",
+      "homeFlag": "🇯🇴",
+      "awayFlag": "🇦🇷",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-08:30-콜롬비아-포르투갈",
+      "apiFootballFixtureId": 71,
+      "kickoff": "2026-06-28T08:30:00+09:00",
+      "home": "콜롬비아",
+      "away": "포르투갈",
+      "homeFlag": "🇨🇴",
+      "awayFlag": "🇵🇹",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "2026-06-28-08:30-콩고-우즈벡",
+      "apiFootballFixtureId": 72,
+      "kickoff": "2026-06-28T08:30:00+09:00",
+      "home": "콩고",
+      "away": "우즈벡",
+      "homeFlag": "🇨🇩",
+      "awayFlag": "🇺🇿",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-73",
+      "apiFootballFixtureId": 73,
+      "kickoff": "2026-06-29T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-74",
+      "apiFootballFixtureId": 74,
+      "kickoff": "2026-06-30T05:30:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-75",
+      "apiFootballFixtureId": 75,
+      "kickoff": "2026-06-30T10:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-76",
+      "apiFootballFixtureId": 76,
+      "kickoff": "2026-06-30T02:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-77",
+      "apiFootballFixtureId": 77,
+      "kickoff": "2026-07-01T06:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-78",
+      "apiFootballFixtureId": 78,
+      "kickoff": "2026-07-01T02:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-79",
+      "apiFootballFixtureId": 79,
+      "kickoff": "2026-07-01T10:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-80",
+      "apiFootballFixtureId": 80,
+      "kickoff": "2026-07-02T01:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-81",
+      "apiFootballFixtureId": 81,
+      "kickoff": "2026-07-02T09:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-82",
+      "apiFootballFixtureId": 82,
+      "kickoff": "2026-07-02T05:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-83",
+      "apiFootballFixtureId": 83,
+      "kickoff": "2026-07-03T08:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-84",
+      "apiFootballFixtureId": 84,
+      "kickoff": "2026-07-03T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-85",
+      "apiFootballFixtureId": 85,
+      "kickoff": "2026-07-03T12:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-86",
+      "apiFootballFixtureId": 86,
+      "kickoff": "2026-07-04T07:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-87",
+      "apiFootballFixtureId": 87,
+      "kickoff": "2026-07-04T10:30:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-88",
+      "apiFootballFixtureId": 88,
+      "kickoff": "2026-07-04T03:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-89",
+      "apiFootballFixtureId": 89,
+      "kickoff": "2026-07-05T06:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-90",
+      "apiFootballFixtureId": 90,
+      "kickoff": "2026-07-05T02:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-91",
+      "apiFootballFixtureId": 91,
+      "kickoff": "2026-07-06T05:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-92",
+      "apiFootballFixtureId": 92,
+      "kickoff": "2026-07-06T09:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-93",
+      "apiFootballFixtureId": 93,
+      "kickoff": "2026-07-07T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-94",
+      "apiFootballFixtureId": 94,
+      "kickoff": "2026-07-07T09:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-95",
+      "apiFootballFixtureId": 95,
+      "kickoff": "2026-07-08T01:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-96",
+      "apiFootballFixtureId": 96,
+      "kickoff": "2026-07-08T05:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-97",
+      "apiFootballFixtureId": 97,
+      "kickoff": "2026-07-10T05:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-98",
+      "apiFootballFixtureId": 98,
+      "kickoff": "2026-07-11T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-99",
+      "apiFootballFixtureId": 99,
+      "kickoff": "2026-07-12T06:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-100",
+      "apiFootballFixtureId": 100,
+      "kickoff": "2026-07-12T10:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-101",
+      "apiFootballFixtureId": 101,
+      "kickoff": "2026-07-15T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-102",
+      "apiFootballFixtureId": 102,
+      "kickoff": "2026-07-16T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-103",
+      "apiFootballFixtureId": 103,
+      "kickoff": "2026-07-19T06:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
+    },
+    {
+      "id": "match-104",
+      "apiFootballFixtureId": 104,
+      "kickoff": "2026-07-20T04:00:00+09:00",
+      "status": "scheduled",
+      "statusLabel": "notstarted"
     }
   ]
 }

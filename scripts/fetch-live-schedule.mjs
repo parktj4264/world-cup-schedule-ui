@@ -2,13 +2,39 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const API_KEY = process.env.API_FOOTBALL_KEY;
+const ENV = globalThis.process?.env ?? {};
+const API_KEY = ENV.API_FOOTBALL_KEY;
 const LEAGUE = 1;
 const SEASON = 2026;
-const ENDPOINT = `https://v3.football.api-sports.io/fixtures?league=${LEAGUE}&season=${SEASON}&timezone=Asia/Seoul`;
+const API_FOOTBALL_ENDPOINT = `https://v3.football.api-sports.io/fixtures?league=${LEAGUE}&season=${SEASON}&timezone=Asia/Seoul`;
+const WORLD_CUP_26_GAMES_ENDPOINT = 'https://worldcup26.ir/get/games';
+const OPENFOOTBALL_ENDPOINT =
+  'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json';
+const ENABLE_API_FOOTBALL = ENV.LIVE_SCHEDULE_PROVIDER === 'api-football';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outputPath = path.resolve(__dirname, '../public/data/live-schedule.json');
+
+const STADIUM_TIME_ZONES = new Map(
+  Object.entries({
+    1: 'America/Mexico_City',
+    2: 'America/Mexico_City',
+    3: 'America/Monterrey',
+    4: 'America/Chicago',
+    5: 'America/Chicago',
+    6: 'America/Chicago',
+    7: 'America/New_York',
+    8: 'America/New_York',
+    9: 'America/New_York',
+    10: 'America/New_York',
+    11: 'America/New_York',
+    12: 'America/Toronto',
+    13: 'America/Vancouver',
+    14: 'America/Los_Angeles',
+    15: 'America/Los_Angeles',
+    16: 'America/Los_Angeles',
+  }),
+);
 
 const summarizeApiErrors = (errors) => {
   if (!errors) {
@@ -56,6 +82,8 @@ const TEAM_ALIASES = new Map(
     Haiti: '아이티',
     Iran: '이란',
     Iraq: '이라크',
+    'Democratic Republic of the Congo': '콩고',
+    'DR Congo': '콩고',
     'Ivory Coast': '코트디',
     "Côte d'Ivoire": '코트디',
     Japan: '일본',
@@ -174,6 +202,124 @@ const toKoreanTeamName = (teamName) => {
   return TEAM_ALIASES.get(teamName) ?? teamName;
 };
 
+const parseNumber = (value) => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined;
+  }
+
+  if (typeof value !== 'string' || value.trim() === '') {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const toKstIsoFromDate = (date) => {
+  if (!Number.isFinite(date.getTime())) {
+    return undefined;
+  }
+
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  })
+    .formatToParts(date)
+    .reduce((result, part) => {
+      result[part.type] = part.value;
+      return result;
+    }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:00+09:00`;
+};
+
+const getTimeZoneParts = (date, timeZone) =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  })
+    .formatToParts(date)
+    .reduce((result, part) => {
+      result[part.type] = Number(part.value);
+      return result;
+    }, {});
+
+const zonedLocalTimeToUtcDate = ({ year, month, day, hour, minute }, timeZone) => {
+  const targetAsUtc = Date.UTC(year, month - 1, day, hour, minute);
+  let utc = targetAsUtc;
+
+  for (let index = 0; index < 3; index += 1) {
+    const parts = getTimeZoneParts(new Date(utc), timeZone);
+    const zonedAsUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+    utc -= zonedAsUtc - targetAsUtc;
+  }
+
+  return new Date(utc);
+};
+
+const parseWorldCup26Kickoff = (localDate, stadiumId) => {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/.exec(localDate ?? '');
+
+  if (!match) {
+    return undefined;
+  }
+
+  const [, month, day, year, hour, minute] = match;
+  const timeZone = STADIUM_TIME_ZONES.get(String(stadiumId));
+
+  if (!timeZone) {
+    return undefined;
+  }
+
+  return toKstIsoFromDate(
+    zonedLocalTimeToUtcDate(
+      {
+        year: Number(year),
+        month: Number(month),
+        day: Number(day),
+        hour: Number(hour),
+        minute: Number(minute),
+      },
+      timeZone,
+    ),
+  );
+};
+
+const parseOpenFootballKickoff = (date, time) => {
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date ?? '');
+  const timeMatch = /^(\d{1,2}):(\d{2})\s+UTC([+-]\d{1,2})$/.exec(time ?? '');
+
+  if (!dateMatch || !timeMatch) {
+    return undefined;
+  }
+
+  const [, year, month, day] = dateMatch;
+  const [, hour, minute, offset] = timeMatch;
+  const utcDate = new Date(
+    Date.UTC(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour) - Number(offset),
+      Number(minute),
+    ),
+  );
+
+  return toKstIsoFromDate(utcDate);
+};
+
 const toKstIso = (dateString) => {
   const date = new Date(dateString);
 
@@ -198,6 +344,22 @@ const toKstIso = (dateString) => {
     }, {});
 
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:00+09:00`;
+};
+
+const getWinnerFromScores = (status, homeScore, awayScore) => {
+  if (status !== 'finished' || typeof homeScore !== 'number' || typeof awayScore !== 'number') {
+    return undefined;
+  }
+
+  if (homeScore > awayScore) {
+    return 'home';
+  }
+
+  if (awayScore > homeScore) {
+    return 'away';
+  }
+
+  return 'draw';
 };
 
 const getWinner = (fixture, status, homeScore, awayScore) => {
@@ -263,52 +425,194 @@ const normalizeFixture = (fixture) => {
   };
 };
 
-if (!API_KEY) {
-  throw new Error('Missing API_FOOTBALL_KEY environment variable.');
+const getLocalMatchId = (matchNumber, kickoff, home, away) => {
+  if (typeof matchNumber === 'number' && matchNumber >= 73) {
+    return `match-${matchNumber}`;
+  }
+
+  return buildLocalId(kickoff, home, away);
+};
+
+const getWorldCup26Status = (game) => {
+  const finished = String(game?.finished ?? '').toUpperCase() === 'TRUE';
+  const elapsed = String(game?.time_elapsed ?? '').toLowerCase();
+
+  if (finished || elapsed === 'finished') {
+    return 'finished';
+  }
+
+  if (elapsed === 'notstarted' || elapsed === 'null' || elapsed === '') {
+    return 'scheduled';
+  }
+
+  return 'live';
+};
+
+const normalizeWorldCup26Game = (game) => {
+  const matchNumber = parseNumber(game?.id);
+  const kickoff = parseWorldCup26Kickoff(game?.local_date, game?.stadium_id);
+  const home = toKoreanTeamName(game?.home_team_name_en);
+  const away = toKoreanTeamName(game?.away_team_name_en);
+  const status = getWorldCup26Status(game);
+  const elapsed = parseNumber(game?.time_elapsed);
+  const homeScore = status !== 'scheduled' ? parseNumber(game?.home_score) : undefined;
+  const awayScore = status !== 'scheduled' ? parseNumber(game?.away_score) : undefined;
+
+  if (!matchNumber || !kickoff) {
+    return undefined;
+  }
+
+  return {
+    id: getLocalMatchId(matchNumber, kickoff, home, away),
+    apiFootballFixtureId: matchNumber,
+    kickoff,
+    home,
+    away,
+    homeFlag: home ? TEAM_FLAGS.get(home) : undefined,
+    awayFlag: away ? TEAM_FLAGS.get(away) : undefined,
+    status,
+    statusLabel: game?.time_elapsed,
+    elapsed,
+    homeScore,
+    awayScore,
+    winner: getWinnerFromScores(status, homeScore, awayScore),
+  };
+};
+
+const normalizeOpenFootballMatch = (match) => {
+  const matchNumber = parseNumber(match?.num);
+  const kickoff = parseOpenFootballKickoff(match?.date, match?.time);
+  const home = toKoreanTeamName(match?.team1);
+  const away = toKoreanTeamName(match?.team2);
+  const score = Array.isArray(match?.score?.ft) ? match.score.ft : undefined;
+  const homeScore = parseNumber(score?.[0]);
+  const awayScore = parseNumber(score?.[1]);
+  const status =
+    typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'scheduled';
+
+  if (!kickoff) {
+    return undefined;
+  }
+
+  return {
+    id: getLocalMatchId(matchNumber, kickoff, home, away),
+    apiFootballFixtureId: matchNumber,
+    kickoff,
+    home,
+    away,
+    homeFlag: home ? TEAM_FLAGS.get(home) : undefined,
+    awayFlag: away ? TEAM_FLAGS.get(away) : undefined,
+    status,
+    statusLabel: match?.round,
+    homeScore: status === 'finished' ? homeScore : undefined,
+    awayScore: status === 'finished' ? awayScore : undefined,
+    winner: getWinnerFromScores(status, homeScore, awayScore),
+  };
+};
+
+const fetchJson = async (url, options) => {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`${url} failed: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+const normalizeProviderMatches = (source, rawMatches, normalizeMatch) => {
+  const normalizedMatches = rawMatches.map(normalizeMatch);
+  const matches = normalizedMatches.filter(Boolean);
+
+  console.log(`${source} response fixtures: ${rawMatches.length}`);
+  console.log(`${source} normalized usable fixtures: ${matches.length}`);
+  console.log(`${source} skipped unusable fixtures: ${normalizedMatches.length - matches.length}`);
+
+  return matches;
+};
+
+const fetchApiFootballMatches = async () => {
+  if (!API_KEY) {
+    console.warn('API_FOOTBALL_KEY is not set. Skipping API-FOOTBALL.');
+    return [];
+  }
+
+  const data = await fetchJson(API_FOOTBALL_ENDPOINT, {
+    headers: {
+      'x-apisports-key': API_KEY,
+    },
+  });
+
+  if (!Array.isArray(data?.response)) {
+    throw new Error('API-FOOTBALL response did not include a response array.');
+  }
+
+  console.log(`API-FOOTBALL request: league=${LEAGUE}, season=${SEASON}, timezone=Asia/Seoul`);
+  console.log(`API-FOOTBALL response: results=${data.results ?? 'unknown'}, fixtures=${data.response.length}`);
+  console.log(`API-FOOTBALL errors: ${summarizeApiErrors(data.errors)}`);
+
+  return normalizeProviderMatches('api-football', data.response, normalizeFixture);
+};
+
+const fetchWorldCup26Matches = async () => {
+  const data = await fetchJson(WORLD_CUP_26_GAMES_ENDPOINT, {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!Array.isArray(data?.games)) {
+    throw new Error('worldcup26.ir response did not include a games array.');
+  }
+
+  return normalizeProviderMatches('worldcup26.ir', data.games, normalizeWorldCup26Game);
+};
+
+const fetchOpenFootballMatches = async () => {
+  const data = await fetchJson(OPENFOOTBALL_ENDPOINT);
+
+  if (!Array.isArray(data?.matches)) {
+    throw new Error('openfootball response did not include a matches array.');
+  }
+
+  return normalizeProviderMatches('openfootball', data.matches, normalizeOpenFootballMatch);
+};
+
+const providers = [
+  ['worldcup26.ir', fetchWorldCup26Matches],
+  ['openfootball/worldcup.json', fetchOpenFootballMatches],
+  ...(ENABLE_API_FOOTBALL ? [['api-football', fetchApiFootballMatches]] : []),
+];
+
+let output;
+
+for (const [source, fetchMatches] of providers) {
+  try {
+    const matches = await fetchMatches();
+
+    if (matches.length === 0) {
+      console.warn(`${source} returned no usable fixtures. Trying next provider.`);
+      continue;
+    }
+
+    output = {
+      source,
+      sourceUpdatedAt: new Date().toISOString(),
+      matches,
+    };
+    break;
+  } catch (error) {
+    console.warn(`${source} failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
-const response = await fetch(ENDPOINT, {
-  headers: {
-    'x-apisports-key': API_KEY,
-  },
-});
-
-if (!response.ok) {
-  throw new Error(`API-FOOTBALL request failed: ${response.status} ${response.statusText}`);
-}
-
-const data = await response.json();
-
-if (!Array.isArray(data?.response)) {
-  throw new Error('API-FOOTBALL response did not include a response array.');
-}
-
-console.log(`API-FOOTBALL request: league=${LEAGUE}, season=${SEASON}, timezone=Asia/Seoul`);
-console.log(`API-FOOTBALL response: results=${data.results ?? 'unknown'}, fixtures=${data.response.length}`);
-console.log(`API-FOOTBALL errors: ${summarizeApiErrors(data.errors)}`);
-
-const normalizedMatches = data.response.map(normalizeFixture);
-const matches = normalizedMatches.filter(Boolean);
-const skippedMatches = normalizedMatches.length - matches.length;
-
-console.log(`Normalized usable fixtures: ${matches.length}`);
-console.log(`Skipped unusable fixtures: ${skippedMatches}`);
-
-if (matches.length === 0) {
-  console.warn('API-FOOTBALL returned no usable World Cup fixtures. Keeping existing live-schedule.json.');
+if (!output) {
+  console.warn('No live schedule provider returned usable fixtures. Keeping existing live-schedule.json.');
   process.exit(0);
 }
-
-const output = {
-  source: 'api-football',
-  sourceUpdatedAt: new Date().toISOString(),
-  league: LEAGUE,
-  season: SEASON,
-  matches,
-};
 
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 
-console.log(`Fetched API-FOOTBALL fixtures at ${output.sourceUpdatedAt}`);
-console.log(`Wrote ${matches.length} live schedule updates to ${outputPath}`);
+console.log(`Fetched ${output.source} fixtures at ${output.sourceUpdatedAt}`);
+console.log(`Wrote ${output.matches.length} live schedule updates to ${outputPath}`);

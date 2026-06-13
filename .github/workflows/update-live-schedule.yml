@@ -31,12 +31,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Check live schedule secret
-        if: ${{ env.API_FOOTBALL_KEY == '' }}
-        run: echo "API_FOOTBALL_KEY is not set. Building with the static empty live schedule."
-
       - name: Fetch live schedule
-        if: ${{ env.API_FOOTBALL_KEY != '' }}
         run: npm run fetch:live
 
       - name: Build
