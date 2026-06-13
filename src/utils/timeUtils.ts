@@ -51,6 +51,39 @@ export const formatKstDateTime = (date: Date) =>
     hour12: false,
   }).format(date);
 
+export const formatKstTime = (date: Date) =>
+  new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  }).format(date);
+
+export const getNextAutoRefreshTime = (date: Date) => {
+  const kstOffsetMs = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(date.getTime() + kstOffsetMs);
+  const year = kstDate.getUTCFullYear();
+  const month = kstDate.getUTCMonth();
+  const day = kstDate.getUTCDate();
+  let hour = kstDate.getUTCHours();
+  const minute = kstDate.getUTCMinutes();
+  let nextMinute = 17;
+
+  if (minute < 17) {
+    nextMinute = 17;
+  } else if (minute < 47) {
+    nextMinute = 47;
+  } else {
+    hour += 1;
+    nextMinute = 17;
+  }
+
+  const nextKstTimestamp = Date.UTC(year, month, day, hour, nextMinute);
+
+  return new Date(nextKstTimestamp - kstOffsetMs);
+};
+
 export const getKstDateKey = (date: Date) => {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul',
