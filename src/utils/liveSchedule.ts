@@ -64,9 +64,22 @@ const getKickoffKey = (kickoff: string | undefined) => {
   return typeof kickoffTime === 'number' ? String(kickoffTime) : undefined;
 };
 
-const isResolvedTeamName = (teamName: string | undefined) =>
-  Boolean(teamName) &&
-  !/[A-L]조|승자|패자|위|TBD|To be decided|Winner|Loser|3[A-Z]/i.test(teamName ?? '');
+export const isPlaceholderTeamName = (teamName: string | undefined) => {
+  const value = (teamName ?? '').trim();
+
+  if (!value) {
+    return true;
+  }
+
+  return (
+    /승자|패자|TBD|To be decided|Winner|Loser/i.test(value) ||
+    /[A-L](?:\/[A-L])*\s*조\s*[1-3]위/i.test(value) ||
+    /^[1-3][A-L]$/i.test(value)
+  );
+};
+
+export const isResolvedTeamName = (teamName: string | undefined) =>
+  Boolean(teamName?.trim()) && !isPlaceholderTeamName(teamName);
 
 const shouldReplaceTeams = (match: Match, update: LiveMatchUpdate) =>
   match.stage !== 'group' &&

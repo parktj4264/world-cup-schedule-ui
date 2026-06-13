@@ -5,7 +5,12 @@ import { ScheduleControls } from '../components/ScheduleControls';
 import { ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
-import { mergeLiveSchedule, parseLiveSchedule, type LiveSchedule } from '../utils/liveSchedule';
+import {
+  isResolvedTeamName,
+  mergeLiveSchedule,
+  parseLiveSchedule,
+  type LiveSchedule,
+} from '../utils/liveSchedule';
 import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils';
 
 const DETAIL_VIEW_ZOOM = 70;
@@ -48,7 +53,9 @@ const getCountryOptions = (sections: ScheduleSection[]) =>
       sections.flatMap((section) =>
         section.days.flatMap((day) =>
           day.cells.flatMap((scheduleCell) =>
-            scheduleCell.matches.flatMap((match: Match) => [match.home, match.away]),
+            scheduleCell.matches
+              .flatMap((match: Match) => [match.home, match.away])
+              .filter(isResolvedTeamName),
           ),
         ),
       ),
