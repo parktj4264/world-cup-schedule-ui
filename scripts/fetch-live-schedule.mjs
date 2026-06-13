@@ -283,4 +283,5 @@ const output = {
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 
+console.log(`Fetched API-FOOTBALL fixtures at ${output.sourceUpdatedAt}`);
 console.log(`Wrote ${matches.length} live schedule updates to ${outputPath}`);

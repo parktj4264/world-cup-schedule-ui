@@ -21,7 +21,7 @@ export function ScheduleControls({
         한국 경기
       </button>
       <button type="button" className={viewButtonClassName} onClick={onToggleMiniView}>
-        {isMiniView ? '줌인' : '줌아웃'}
+        {isMiniView ? '🔍 Zoom In' : '🔎 Zoom Out'}
       </button>
     </div>
   );
