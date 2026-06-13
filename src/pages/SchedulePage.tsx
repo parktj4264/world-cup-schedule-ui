@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FilterBar, type FilterMode } from '../components/FilterBar';
+import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { ScheduleControls } from '../components/ScheduleControls';
 import { BASE_TABLE_WIDTH, ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
 import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils';
 
-const MIN_ZOOM = 50;
+const MIN_ZOOM = 70;
 const MAX_ZOOM = 130;
 const ZOOM_STEP = 10;
 const ZOOM_STORAGE_KEY = 'world-cup-schedule-table-zoom';
@@ -30,13 +31,15 @@ const filterSections = (
   selectedCountry: string,
 ): ScheduleSection[] =>
   sections.map((section) => {
+    const countryQuery = selectedCountry.trim();
     const days = section.days
       .map((day) => {
         const cells =
-          selectedCountry !== ''
+          countryQuery !== ''
             ? day.cells.map((scheduleCell) => ({
                 matches: scheduleCell.matches.filter(
-                  (match) => match.home === selectedCountry || match.away === selectedCountry,
+                  (match) =>
+                    match.home.includes(countryQuery) || match.away.includes(countryQuery),
                 ),
               }))
             : day.cells;
@@ -48,7 +51,7 @@ const filterSections = (
           return day.date === todayKey;
         }
 
-        if (selectedCountry !== '') {
+        if (countryQuery !== '') {
           return day.cells.some((scheduleCell) => scheduleCell.matches.length > 0);
         }
 
@@ -77,6 +80,7 @@ export function SchedulePage() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [zoom, setZoom] = useState(getInitialZoom);
   const [isCaptureMode, setIsCaptureMode] = useState(false);
+  const [isMiniView, setIsMiniView] = useState(false);
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -178,9 +182,11 @@ export function SchedulePage() {
         <ScheduleControls
           zoom={zoom}
           isCaptureMode={isCaptureMode}
+          isMiniView={isMiniView}
           onGoToToday={handleGoToToday}
           onGoToNextMatch={handleGoToNextMatch}
           onShowKorea={handleShowKorea}
+          onToggleMiniView={() => setIsMiniView((currentMode) => !currentMode)}
           onZoomIn={() => setZoomValue(zoom + ZOOM_STEP)}
           onZoomOut={() => setZoomValue(zoom - ZOOM_STEP)}
           onResetZoom={() => setZoomValue(100)}
@@ -194,13 +200,21 @@ export function SchedulePage() {
           onFilterChange={setActiveFilter}
           onCountryChange={setSelectedCountry}
         />
-        <ScheduleTable
-          sections={visibleSections}
-          currentTime={currentTime}
-          nextMatchId={nextMatch?.id}
-          scrollContainerRef={tableScrollRef}
-          zoom={zoom}
-        />
+        {isMiniView ? (
+          <MiniScheduleTable
+            sections={visibleSections}
+            currentTime={currentTime}
+            nextMatchId={nextMatch?.id}
+          />
+        ) : (
+          <ScheduleTable
+            sections={visibleSections}
+            currentTime={currentTime}
+            nextMatchId={nextMatch?.id}
+            scrollContainerRef={tableScrollRef}
+            zoom={zoom}
+          />
+        )}
       </div>
     </main>
   );

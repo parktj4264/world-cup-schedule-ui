@@ -46,25 +46,27 @@ export function FilterBar({
         );
       })}
       <label className="ml-1 flex items-center gap-1 text-sm font-bold text-neutral-800">
-        나라
-        <select
+        나라 검색
+        <input
+          list="country-options"
           value={selectedCountry}
           onChange={(event) => {
             onCountryChange(event.target.value);
             onFilterChange('all');
           }}
           className={[
-            'h-[30px] min-w-32 border border-neutral-700 bg-white px-2 text-sm font-bold text-neutral-900',
+            'h-[30px] w-36 border border-neutral-700 bg-white px-2 text-sm font-bold text-neutral-900',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600',
           ].join(' ')}
-        >
-          <option value="">전체</option>
+          placeholder="예: 대한민국"
+        />
+        <datalist id="country-options">
           {countryOptions.map((country) => (
             <option key={country} value={country}>
               {country}
             </option>
           ))}
-        </select>
+        </datalist>
       </label>
     </div>
   );

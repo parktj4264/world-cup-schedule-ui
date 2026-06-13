@@ -3,9 +3,11 @@ import { ZoomControls } from './ZoomControls';
 type ScheduleControlsProps = {
   zoom: number;
   isCaptureMode: boolean;
+  isMiniView: boolean;
   onGoToToday: () => void;
   onGoToNextMatch: () => void;
   onShowKorea: () => void;
+  onToggleMiniView: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
@@ -19,9 +21,11 @@ const buttonClassName =
 export function ScheduleControls({
   zoom,
   isCaptureMode,
+  isMiniView,
   onGoToToday,
   onGoToNextMatch,
   onShowKorea,
+  onToggleMiniView,
   onZoomIn,
   onZoomOut,
   onResetZoom,
@@ -40,18 +44,23 @@ export function ScheduleControls({
         <button type="button" className={buttonClassName} onClick={onShowKorea}>
           한국 경기
         </button>
+        <button type="button" className={buttonClassName} onClick={onToggleMiniView}>
+          {isMiniView ? '자세히 보기' : '미니 보기'}
+        </button>
         <button type="button" className={buttonClassName} onClick={onToggleCaptureMode}>
           {isCaptureMode ? '캡처 모드 OFF' : '캡처 모드'}
         </button>
       </div>
 
-      <ZoomControls
-        zoom={zoom}
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
-        onResetZoom={onResetZoom}
-        onFitToWidth={onFitToWidth}
-      />
+      {isMiniView ? null : (
+        <ZoomControls
+          zoom={zoom}
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          onResetZoom={onResetZoom}
+          onFitToWidth={onFitToWidth}
+        />
+      )}
     </div>
   );
 }
