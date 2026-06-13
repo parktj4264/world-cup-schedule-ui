@@ -3,10 +3,10 @@ import { FilterBar, type FilterMode } from '../components/FilterBar';
 import { ScheduleControls } from '../components/ScheduleControls';
 import { BASE_TABLE_WIDTH, ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
-import { scheduleSections, type ScheduleSection } from '../data/schedule';
+import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
 import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils';
 
-const MIN_ZOOM = 70;
+const MIN_ZOOM = 50;
 const MAX_ZOOM = 130;
 const ZOOM_STEP = 10;
 const ZOOM_STORAGE_KEY = 'world-cup-schedule-table-zoom';
@@ -27,14 +27,17 @@ const filterSections = (
   sections: ScheduleSection[],
   filter: FilterMode,
   todayKey: string,
+  selectedCountry: string,
 ): ScheduleSection[] =>
   sections.map((section) => {
     const days = section.days
       .map((day) => {
         const cells =
-          filter === 'korea'
+          selectedCountry !== ''
             ? day.cells.map((scheduleCell) => ({
-                matches: scheduleCell.matches.filter((match) => match.isKorea),
+                matches: scheduleCell.matches.filter(
+                  (match) => match.home === selectedCountry || match.away === selectedCountry,
+                ),
               }))
             : day.cells;
 
@@ -45,7 +48,7 @@ const filterSections = (
           return day.date === todayKey;
         }
 
-        if (filter === 'korea') {
+        if (selectedCountry !== '') {
           return day.cells.some((scheduleCell) => scheduleCell.matches.length > 0);
         }
 
@@ -55,9 +58,23 @@ const filterSections = (
     return { ...section, days };
   });
 
+const getCountryOptions = (sections: ScheduleSection[]) =>
+  Array.from(
+    new Set(
+      sections.flatMap((section) =>
+        section.days.flatMap((day) =>
+          day.cells.flatMap((scheduleCell) =>
+            scheduleCell.matches.flatMap((match: Match) => [match.home, match.away]),
+          ),
+        ),
+      ),
+    ),
+  ).sort((firstCountry, secondCountry) => firstCountry.localeCompare(secondCountry, 'ko-KR'));
+
 export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [activeFilter, setActiveFilter] = useState<FilterMode>('all');
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [zoom, setZoom] = useState(getInitialZoom);
   const [isCaptureMode, setIsCaptureMode] = useState(false);
   const tableScrollRef = useRef<HTMLDivElement>(null);
@@ -77,10 +94,11 @@ export function SchedulePage() {
   const todayKey = getKstDateKey(currentTime);
   const nextMatch = useMemo(() => getNextMatch(scheduleSections, currentTime), [currentTime]);
   const liveMatches = useMemo(() => getLiveMatches(scheduleSections, currentTime), [currentTime]);
+  const countryOptions = useMemo(() => getCountryOptions(scheduleSections), []);
 
   const visibleSections = useMemo(
-    () => filterSections(scheduleSections, activeFilter, todayKey),
-    [activeFilter, todayKey],
+    () => filterSections(scheduleSections, activeFilter, todayKey, selectedCountry),
+    [activeFilter, todayKey, selectedCountry],
   );
 
   const setZoomValue = useCallback((nextZoom: number) => {
@@ -101,16 +119,19 @@ export function SchedulePage() {
 
   const handleGoToToday = useCallback(() => {
     setActiveFilter('all');
+    setSelectedCountry('');
     scrollAfterRender(`[data-day-date="${todayKey}"]`);
   }, [scrollAfterRender, todayKey]);
 
   const handleGoToNextMatch = useCallback(() => {
     setActiveFilter('all');
+    setSelectedCountry('');
     scrollAfterRender('.schedule-match-cell-next');
   }, [scrollAfterRender]);
 
   const handleShowKorea = useCallback(() => {
-    setActiveFilter('korea');
+    setActiveFilter('all');
+    setSelectedCountry('대한민국');
     scrollAfterRender('.schedule-match-cell-next, .schedule-korea-cell');
   }, [scrollAfterRender]);
 
@@ -166,7 +187,13 @@ export function SchedulePage() {
           onFitToWidth={handleFitToWidth}
           onToggleCaptureMode={() => setIsCaptureMode((currentMode) => !currentMode)}
         />
-        <FilterBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+        <FilterBar
+          activeFilter={activeFilter}
+          selectedCountry={selectedCountry}
+          countryOptions={countryOptions}
+          onFilterChange={setActiveFilter}
+          onCountryChange={setSelectedCountry}
+        />
         <ScheduleTable
           sections={visibleSections}
           currentTime={currentTime}

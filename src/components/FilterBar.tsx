@@ -1,27 +1,38 @@
-export type FilterMode = 'all' | 'korea' | 'today';
+export type FilterMode = 'all' | 'today';
 
 type FilterBarProps = {
   activeFilter: FilterMode;
+  selectedCountry: string;
+  countryOptions: string[];
   onFilterChange: (filter: FilterMode) => void;
+  onCountryChange: (country: string) => void;
 };
 
 const filters: Array<{ label: string; value: FilterMode }> = [
   { label: '전체', value: 'all' },
-  { label: '한국', value: 'korea' },
   { label: '오늘', value: 'today' },
 ];
 
-export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
+export function FilterBar({
+  activeFilter,
+  selectedCountry,
+  countryOptions,
+  onFilterChange,
+  onCountryChange,
+}: FilterBarProps) {
   return (
-    <div className="filter-bar mx-auto flex w-full max-w-[980px] items-center gap-1 py-2">
+    <div className="filter-bar mx-auto flex w-full max-w-[980px] flex-wrap items-center gap-1 py-2">
       {filters.map((filter) => {
-        const isActive = activeFilter === filter.value;
+        const isActive = activeFilter === filter.value && selectedCountry === '';
 
         return (
           <button
             key={filter.value}
             type="button"
-            onClick={() => onFilterChange(filter.value)}
+            onClick={() => {
+              onCountryChange('');
+              onFilterChange(filter.value);
+            }}
             className={[
               'min-w-14 border px-3 py-1 text-sm font-bold leading-none text-neutral-900',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600',
@@ -34,6 +45,27 @@ export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
           </button>
         );
       })}
+      <label className="ml-1 flex items-center gap-1 text-sm font-bold text-neutral-800">
+        나라
+        <select
+          value={selectedCountry}
+          onChange={(event) => {
+            onCountryChange(event.target.value);
+            onFilterChange('all');
+          }}
+          className={[
+            'h-[30px] min-w-32 border border-neutral-700 bg-white px-2 text-sm font-bold text-neutral-900',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600',
+          ].join(' ')}
+        >
+          <option value="">전체</option>
+          {countryOptions.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }
