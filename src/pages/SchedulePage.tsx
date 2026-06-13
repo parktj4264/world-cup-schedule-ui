@@ -1,9 +1,27 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FilterBar, type FilterMode } from '../components/FilterBar';
-import { ScheduleTable } from '../components/ScheduleTable';
+import { ScheduleControls } from '../components/ScheduleControls';
+import { BASE_TABLE_WIDTH, ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
 import { scheduleSections, type ScheduleSection } from '../data/schedule';
-import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/matchStatus';
+import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils';
+
+const MIN_ZOOM = 70;
+const MAX_ZOOM = 130;
+const ZOOM_STEP = 10;
+const ZOOM_STORAGE_KEY = 'world-cup-schedule-table-zoom';
+
+const clampZoom = (zoom: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
+
+const getInitialZoom = () => {
+  if (typeof window === 'undefined') {
+    return 100;
+  }
+
+  const storedZoom = Number(window.localStorage.getItem(ZOOM_STORAGE_KEY));
+
+  return Number.isFinite(storedZoom) ? clampZoom(storedZoom) : 100;
+};
 
 const filterSections = (
   sections: ScheduleSection[],
@@ -40,6 +58,9 @@ const filterSections = (
 export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [activeFilter, setActiveFilter] = useState<FilterMode>('all');
+  const [zoom, setZoom] = useState(getInitialZoom);
+  const [isCaptureMode, setIsCaptureMode] = useState(false);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -48,6 +69,10 @@ export function SchedulePage() {
 
     return () => window.clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(ZOOM_STORAGE_KEY, String(zoom));
+  }, [zoom]);
 
   const todayKey = getKstDateKey(currentTime);
   const nextMatch = useMemo(() => getNextMatch(scheduleSections, currentTime), [currentTime]);
@@ -58,8 +83,63 @@ export function SchedulePage() {
     [activeFilter, todayKey],
   );
 
+  const setZoomValue = useCallback((nextZoom: number) => {
+    setZoom(clampZoom(Math.round(nextZoom)));
+  }, []);
+
+  const scrollAfterRender = useCallback((selector: string) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>(selector)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center',
+        });
+      });
+    });
+  }, []);
+
+  const handleGoToToday = useCallback(() => {
+    setActiveFilter('all');
+    scrollAfterRender(`[data-day-date="${todayKey}"]`);
+  }, [scrollAfterRender, todayKey]);
+
+  const handleGoToNextMatch = useCallback(() => {
+    setActiveFilter('all');
+    scrollAfterRender('.schedule-match-cell-next');
+  }, [scrollAfterRender]);
+
+  const handleShowKorea = useCallback(() => {
+    setActiveFilter('korea');
+    scrollAfterRender('.schedule-match-cell-next, .schedule-korea-cell');
+  }, [scrollAfterRender]);
+
+  const handleFitToWidth = useCallback(() => {
+    const visibleWidth = tableScrollRef.current?.clientWidth ?? BASE_TABLE_WIDTH;
+    const nextZoom = Math.min(100, Math.floor((visibleWidth / BASE_TABLE_WIDTH) * 100));
+
+    setZoomValue(nextZoom);
+    tableScrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
+  }, [setZoomValue]);
+
   return (
-    <main className="min-h-screen bg-white px-3 py-6 font-poster text-neutral-950">
+    <main
+      className={[
+        'min-h-screen bg-white px-3 py-6 font-poster text-neutral-950',
+        isCaptureMode ? 'capture-mode' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {isCaptureMode ? (
+        <button
+          type="button"
+          className="capture-exit fixed right-3 top-3 z-50 border border-neutral-800 bg-white px-3 py-2 text-xs font-black text-neutral-900"
+          onClick={() => setIsCaptureMode(false)}
+        >
+          캡처 모드 OFF
+        </button>
+      ) : null}
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
@@ -74,11 +154,25 @@ export function SchedulePage() {
           nextMatch={nextMatch}
           liveMatches={liveMatches}
         />
+        <ScheduleControls
+          zoom={zoom}
+          isCaptureMode={isCaptureMode}
+          onGoToToday={handleGoToToday}
+          onGoToNextMatch={handleGoToNextMatch}
+          onShowKorea={handleShowKorea}
+          onZoomIn={() => setZoomValue(zoom + ZOOM_STEP)}
+          onZoomOut={() => setZoomValue(zoom - ZOOM_STEP)}
+          onResetZoom={() => setZoomValue(100)}
+          onFitToWidth={handleFitToWidth}
+          onToggleCaptureMode={() => setIsCaptureMode((currentMode) => !currentMode)}
+        />
         <FilterBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
         <ScheduleTable
           sections={visibleSections}
           currentTime={currentTime}
           nextMatchId={nextMatch?.id}
+          scrollContainerRef={tableScrollRef}
+          zoom={zoom}
         />
       </div>
     </main>

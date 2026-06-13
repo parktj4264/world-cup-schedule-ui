@@ -26,3 +26,109 @@ body {
 button {
   font: inherit;
 }
+
+.schedule-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-padding-left: var(--schedule-date-width);
+}
+
+.schedule-table {
+  width: var(--schedule-table-width);
+  min-width: var(--schedule-table-width);
+}
+
+.schedule-date-col {
+  width: var(--schedule-date-width);
+}
+
+.schedule-match-col {
+  width: var(--schedule-match-width);
+}
+
+.schedule-date-cell {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  width: var(--schedule-date-width);
+  min-width: var(--schedule-date-width);
+  height: var(--schedule-row-height);
+  padding: var(--schedule-cell-padding);
+  background: #e8eef7;
+  background-clip: padding-box;
+  box-shadow: 3px 0 0 #111111;
+}
+
+.schedule-match-cell {
+  width: var(--schedule-match-width);
+  min-width: var(--schedule-match-width);
+  height: var(--schedule-row-height);
+  padding: var(--schedule-cell-padding);
+}
+
+.schedule-match-meta {
+  font-size: var(--schedule-meta-font);
+}
+
+.schedule-match-time {
+  font-size: var(--schedule-time-font);
+}
+
+.schedule-teams {
+  font-size: var(--schedule-team-font);
+}
+
+.schedule-date-label {
+  font-size: var(--schedule-date-font);
+}
+
+.schedule-weekday {
+  font-size: var(--schedule-weekday-font);
+}
+
+.capture-mode .status-bar,
+.capture-mode .filter-bar,
+.capture-mode .schedule-controls {
+  display: none;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  main {
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .status-bar,
+  .filter-bar,
+  .schedule-controls,
+  .capture-exit {
+    display: none !important;
+  }
+
+  .schedule-scroll {
+    max-width: none !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+  }
+
+  .schedule-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    page-break-inside: avoid;
+  }
+
+  .schedule-date-cell {
+    position: static;
+    box-shadow: inset -2px 0 0 #111111;
+  }
+}

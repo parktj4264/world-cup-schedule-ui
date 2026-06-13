@@ -1,5 +1,5 @@
 import type { Match, ScheduleCell } from '../data/schedule';
-import { isLiveMatch, isPastMatch } from '../utils/matchStatus';
+import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
 type MatchCellProps = {
   cell: ScheduleCell;
@@ -37,15 +37,29 @@ const groupMatches = (matches: Match[]) =>
     ];
   }, []);
 
+const hasScore = (match: Match) =>
+  typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
+
+const getScoreClassName = (match: Match, side: 'home' | 'away') => {
+  const isWinner =
+    (side === 'home' && match.winner === 'home') ||
+    (side === 'away' && match.winner === 'away');
+
+  return [
+    'mx-1 inline-block min-w-4 border border-neutral-400 bg-white px-1 text-center text-[12px] font-black leading-4',
+    isWinner ? 'border-neutral-900 text-neutral-950' : 'text-neutral-700',
+  ].join(' ');
+};
+
 export function MatchCell({ cell, currentTime, nextMatchId }: MatchCellProps) {
   const hasKorea = cell.matches.some((match) => match.isKorea);
   const hasNextMatch = cell.matches.some((match) => match.id === nextMatchId);
   const hasLiveMatch = cell.matches.some((match) => isLiveMatch(match, currentTime));
 
   const cellClassName = [
-    'relative h-[62px] min-w-[222px] border border-neutral-700 px-2 py-1 align-middle',
-    hasKorea ? 'bg-[#fff8a8]' : 'bg-white',
-    hasNextMatch ? 'ring-2 ring-inset ring-sky-600' : '',
+    'schedule-match-cell relative border border-neutral-700 align-middle',
+    hasKorea ? 'schedule-korea-cell bg-[#fff8a8]' : 'bg-white',
+    hasNextMatch ? 'schedule-match-cell-next ring-2 ring-inset ring-sky-600' : '',
     hasLiveMatch ? 'ring-2 ring-inset ring-red-600' : '',
   ]
     .filter(Boolean)
@@ -73,8 +87,8 @@ export function MatchCell({ cell, currentTime, nextMatchId }: MatchCellProps) {
                 .filter(Boolean)
                 .join(' ')}
             >
-              <div className="whitespace-nowrap text-[13px] text-neutral-900">
-                <span className="text-[15px] font-black">{matchGroup.timeLabel}</span>
+              <div className="schedule-match-meta whitespace-nowrap text-neutral-900">
+                <span className="schedule-match-time font-black">{matchGroup.timeLabel}</span>
                 <span className="font-semibold">, {matchGroup.group} {matchGroup.round}</span>
                 {isGroupLive ? (
                   <span className="ml-1 inline-block border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
@@ -86,11 +100,18 @@ export function MatchCell({ cell, currentTime, nextMatchId }: MatchCellProps) {
                 {matchGroup.matches.map((match) => (
                   <div
                     key={match.id}
-                    className="whitespace-nowrap text-[13px] font-extrabold leading-[1.25] text-neutral-950"
+                    data-match-id={match.id}
+                    className="schedule-teams whitespace-nowrap font-extrabold leading-[1.25] text-neutral-950"
                   >
                     <span className="mr-1">{match.homeFlag}</span>
                     {match.home}
+                    {hasScore(match) ? (
+                      <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
+                    ) : null}
                     <span className="px-1 font-black">:</span>
+                    {hasScore(match) ? (
+                      <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
+                    ) : null}
                     {match.away}
                     <span className="ml-1">{match.awayFlag}</span>
                   </div>

@@ -13,7 +13,7 @@ const filters: Array<{ label: string; value: FilterMode }> = [
 
 export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
   return (
-    <div className="mx-auto flex w-full max-w-[980px] items-center gap-1 py-2">
+    <div className="filter-bar mx-auto flex w-full max-w-[980px] items-center gap-1 py-2">
       {filters.map((filter) => {
         const isActive = activeFilter === filter.value;
 

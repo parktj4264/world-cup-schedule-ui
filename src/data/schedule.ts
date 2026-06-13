@@ -9,6 +9,12 @@ export type Match = {
   homeFlag: string;
   awayFlag: string;
   isKorea?: boolean;
+  status?: MatchStatus;
+  homeScore?: number;
+  awayScore?: number;
+  winner?: 'home' | 'away' | 'draw';
+  sourceUpdatedAt?: string;
+  stage?: MatchStage;
 };
 
 export type ScheduleCell = {
@@ -22,7 +28,18 @@ export type ScheduleDay = {
   cells: ScheduleCell[];
 };
 
-export type ScheduleStage = 'group' | 'tournament';
+export type MatchStatus = 'scheduled' | 'live' | 'finished';
+
+export type MatchStage =
+  | 'group'
+  | 'round-of-32'
+  | 'round-of-16'
+  | 'quarter-final'
+  | 'semi-final'
+  | 'third-place'
+  | 'final';
+
+export type ScheduleStage = MatchStage | 'tournament';
 
 export type ScheduleSection = {
   id: string;
@@ -51,6 +68,7 @@ const game = (
   homeFlag,
   awayFlag,
   isKorea: home === '대한민국' || away === '대한민국',
+  stage: 'group',
 });
 
 const cell = (...matches: Match[]): ScheduleCell => ({ matches });

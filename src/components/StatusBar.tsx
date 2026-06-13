@@ -1,5 +1,5 @@
 import type { Match } from '../data/schedule';
-import { formatKstDateTime } from '../utils/matchStatus';
+import { formatKstDateTime, formatTimeUntilMatch } from '../utils/timeUtils';
 
 type StatusBarProps = {
   currentTime: Date;
@@ -10,14 +10,17 @@ type StatusBarProps = {
 const formatMatch = (match: Match) => `${match.timeLabel} ${match.home} : ${match.away}`;
 
 export function StatusBar({ currentTime, nextMatch, liveMatches }: StatusBarProps) {
+  const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
+
   return (
-    <div className="mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
+    <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
         <span>현재 시각: {formatKstDateTime(currentTime)} KST</span>
         <span>
           다음 경기:{' '}
           {nextMatch ? formatMatch(nextMatch) : '예정된 경기가 없습니다'}
         </span>
+        {timeUntilNextMatch ? <span>다음 경기까지 {timeUntilNextMatch}</span> : null}
         {liveMatches.length > 0 ? (
           <span>
             진행 중:{' '}

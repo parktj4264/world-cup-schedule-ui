@@ -21,13 +21,13 @@ const normalizeCells = (cells: ScheduleCell[]) => {
 
 export function ScheduleRow({ day, currentTime, nextMatchId }: ScheduleRowProps) {
   return (
-    <tr>
+    <tr data-day-date={day.date}>
       <th
         scope="row"
-        className="h-[62px] min-w-[86px] border border-neutral-800 bg-[#e8eef7] px-2 py-1 text-center align-middle"
+        className="schedule-date-cell border border-neutral-800 bg-[#e8eef7] text-center align-middle"
       >
-        <div className="text-[18px] font-black leading-tight text-neutral-950">{day.dateLabel}</div>
-        <div className="mt-[2px] text-[17px] font-black leading-tight text-neutral-950">({day.weekday})</div>
+        <div className="schedule-date-label font-black leading-tight text-neutral-950">{day.dateLabel}</div>
+        <div className="schedule-weekday mt-[2px] font-black leading-tight text-neutral-950">({day.weekday})</div>
       </th>
       {normalizeCells(day.cells).map((scheduleCell, index) => (
         <MatchCell
