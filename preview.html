@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>제23회 2026 북중미 월드컵 조별리그 일정</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #fff;
+        color: #111;
+        font-family: Arial, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      }
+      .page {
+        min-height: 100vh;
+        padding: 24px 12px;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+      }
+      .title-block {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      .rule {
+        height: 5px;
+        background: #2f5365;
+      }
+      h1 {
+        margin: 0;
+        padding: 12px 8px;
+        text-align: center;
+        font-size: 38px;
+        line-height: 1.15;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+      .status {
+        max-width: 980px;
+        margin: 12px auto 0;
+        padding: 8px 0;
+        border-top: 1px solid #222;
+        border-bottom: 1px solid #222;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 20px;
+        align-items: center;
+      }
+      .filters {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 8px 0;
+        display: flex;
+        gap: 4px;
+      }
+      button {
+        min-width: 56px;
+        border: 1px solid #333;
+        background: #fff;
+        color: #111;
+        padding: 5px 12px;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button.active {
+        background: #111;
+        color: #fff;
+      }
+      .table-scroller {
+        max-width: 1040px;
+        margin: 0 auto;
+        overflow-x: auto;
+        padding-bottom: 16px;
+      }
+      table {
+        width: 974px;
+        margin: 0 auto;
+        border-collapse: collapse;
+        table-layout: fixed;
+        border: 2px solid #111;
+        background: #fff;
+      }
+      col.date-col { width: 86px; }
+      col.match-col { width: 222px; }
+      th, td {
+        border: 1px solid #404040;
+        height: 62px;
+        vertical-align: middle;
+      }
+      th {
+        background: #e8eef7;
+        text-align: center;
+        padding: 4px 8px;
+      }
+      .date-label {
+        font-size: 18px;
+        line-height: 1.08;
+        font-weight: 900;
+      }
+      .weekday {
+        margin-top: 2px;
+        font-size: 17px;
+        line-height: 1.08;
+        font-weight: 900;
+      }
+      td {
+        position: relative;
+        padding: 4px 8px;
+        background: #fff;
+      }
+      td.korea { background: #fff8a8; }
+      td.next { box-shadow: inset 0 0 0 2px #0284c7; }
+      td.live-border { box-shadow: inset 0 0 0 2px #dc2626; }
+      .match-group {
+        line-height: 1.18;
+      }
+      .match-group + .match-group {
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid #d4d4d4;
+      }
+      .past { opacity: 0.45; }
+      .match-meta {
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .time {
+        font-size: 15px;
+        font-weight: 900;
+      }
+      .teams {
+        margin-top: 1px;
+        white-space: nowrap;
+        font-size: 13px;
+        line-height: 1.25;
+        font-weight: 900;
+      }
+      .live {
+        display: inline-block;
+        margin-left: 4px;
+        padding: 0 4px;
+        border: 1px solid #b91c1c;
+        background: #dc2626;
+        color: #fff;
+        font-size: 10px;
+        line-height: 16px;
+        font-weight: 900;
+      }
+      .empty {
+        background: #fff;
+      }
+      .no-rows {
+        width: 974px;
+        margin: 0 auto;
+        border: 2px solid #111;
+        padding: 24px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      @media (max-width: 640px) {
+        .page { padding: 18px 10px; }
+        h1 { font-size: 26px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="wrap">
+        <header class="title-block">
+          <div class="rule"></div>
+          <h1>제23회 2026 북중미 월드컵 조별리그 일정</h1>
+          <div class="rule"></div>
+        </header>
+
+        <section class="status" aria-live="polite">
+          <div class="status-row">
+            <span id="current-time"></span>
+            <span id="next-match"></span>
+            <span id="live-match"></span>
+          </div>
+        </section>
+
+        <nav class="filters" aria-label="일정 필터">
+          <button type="button" class="active" data-filter="all">전체</button>
+          <button type="button" data-filter="korea">한국</button>
+          <button type="button" data-filter="today">오늘</button>
+        </nav>
+
+        <div class="table-scroller" id="schedule"></div>
+      </div>
+    </main>
+
+    <script>
+      const m = (date, timeLabel, group, round, home, away, homeFlag, awayFlag) => ({
+        id: `${date}-${timeLabel}-${home}-${away}`,
+        kickoff: `${date}T${timeLabel}:00+09:00`,
+        timeLabel,
+        group,
+        round,
+        home,
+        away,
+        homeFlag,
+        awayFlag,
+        isKorea: home === "대한민국" || away === "대한민국",
+      });
+      const c = (...matches) => ({ matches });
+
+      const days = [
+        { date: "2026-06-12", dateLabel: "6. 12.", weekday: "금", cells: [
+          c(m("2026-06-12", "04:00", "A조", "1차전", "멕시코", "남아공", "🇲🇽", "🇿🇦")),
+          c(m("2026-06-12", "11:00", "A조", "1차전", "대한민국", "체코", "🇰🇷", "🇨🇿")),
+        ] },
+        { date: "2026-06-13", dateLabel: "6. 13.", weekday: "토", cells: [
+          c(m("2026-06-13", "04:00", "B조", "1차전", "캐나다", "보스니아", "🇨🇦", "🇧🇦")),
+          c(m("2026-06-13", "10:00", "D조", "1차전", "미국", "파라과이", "🇺🇸", "🇵🇾")),
+        ] },
+        { date: "2026-06-14", dateLabel: "6. 14.", weekday: "일", cells: [
+          c(m("2026-06-14", "04:00", "B조", "1차전", "카타르", "스위스", "🇶🇦", "🇨🇭")),
+          c(m("2026-06-14", "07:00", "C조", "1차전", "브라질", "모로코", "🇧🇷", "🇲🇦")),
+          c(m("2026-06-14", "10:00", "C조", "1차전", "아이티", "스코틀랜드", "🇭🇹", "🏴")),
+          c(m("2026-06-14", "13:00", "D조", "1차전", "호주", "튀르키예", "🇦🇺", "🇹🇷")),
+        ] },
+        { date: "2026-06-15", dateLabel: "6. 15.", weekday: "월", cells: [
+          c(m("2026-06-15", "02:00", "F조", "1차전", "독일", "퀴라소", "🇩🇪", "🇨🇼")),
+          c(m("2026-06-15", "05:00", "E조", "1차전", "네덜란드", "일본", "🇳🇱", "🇯🇵")),
+          c(m("2026-06-15", "08:00", "F조", "1차전", "코트디", "에콰도르", "🇨🇮", "🇪🇨")),
+          c(m("2026-06-15", "11:00", "E조", "1차전", "스웨덴", "튀니지", "🇸🇪", "🇹🇳")),
+        ] },
+        { date: "2026-06-16", dateLabel: "6. 16.", weekday: "화", cells: [
+          c(m("2026-06-16", "01:00", "H조", "1차전", "스페인", "카보베르", "🇪🇸", "🇨🇻")),
+          c(m("2026-06-16", "04:00", "G조", "1차전", "벨기에", "이집트", "🇧🇪", "🇪🇬")),
+          c(m("2026-06-16", "07:00", "H조", "1차전", "사우디", "우루과이", "🇸🇦", "🇺🇾")),
+          c(m("2026-06-16", "10:00", "G조", "1차전", "이란", "뉴질랜드", "🇮🇷", "🇳🇿")),
+        ] },
+        { date: "2026-06-17", dateLabel: "6. 17.", weekday: "수", cells: [
+          c(m("2026-06-17", "04:00", "I조", "1차전", "프랑스", "세네갈", "🇫🇷", "🇸🇳")),
+          c(m("2026-06-17", "07:00", "I조", "1차전", "이라크", "노르웨이", "🇮🇶", "🇳🇴")),
+          c(m("2026-06-17", "10:00", "J조", "1차전", "아르헨", "알제리", "🇦🇷", "🇩🇿")),
+          c(m("2026-06-17", "13:00", "J조", "1차전", "오스트리아", "요르단", "🇦🇹", "🇯🇴")),
+        ] },
+        { date: "2026-06-18", dateLabel: "6. 18.", weekday: "목", cells: [
+          c(m("2026-06-18", "02:00", "K조", "1차전", "포르투갈", "콩고", "🇵🇹", "🇨🇩")),
+          c(m("2026-06-18", "05:00", "L조", "1차전", "잉글랜드", "크로아티아", "🏴", "🇭🇷")),
+          c(m("2026-06-18", "08:00", "K조", "1차전", "가나", "파나마", "🇬🇭", "🇵🇦")),
+          c(m("2026-06-18", "11:00", "L조", "1차전", "우즈벡", "콜롬비아", "🇺🇿", "🇨🇴")),
+        ] },
+        { date: "2026-06-19", dateLabel: "6. 19.", weekday: "금", cells: [
+          c(m("2026-06-19", "01:00", "A조", "2차전", "체코", "남아공", "🇨🇿", "🇿🇦")),
+          c(m("2026-06-19", "04:00", "B조", "2차전", "스위스", "보스니아", "🇨🇭", "🇧🇦")),
+          c(m("2026-06-19", "07:00", "B조", "2차전", "캐나다", "카타르", "🇨🇦", "🇶🇦")),
+          c(m("2026-06-19", "10:00", "A조", "2차전", "멕시코", "대한민국", "🇲🇽", "🇰🇷")),
+        ] },
+        { date: "2026-06-20", dateLabel: "6. 20.", weekday: "토", cells: [
+          c(m("2026-06-20", "04:00", "D조", "2차전", "미국", "호주", "🇺🇸", "🇦🇺")),
+          c(m("2026-06-20", "07:00", "C조", "2차전", "스코틀랜드", "모로코", "🏴", "🇲🇦")),
+          c(m("2026-06-20", "09:30", "C조", "2차전", "브라질", "아이티", "🇧🇷", "🇭🇹")),
+          c(m("2026-06-20", "12:00", "D조", "2차전", "튀르키예", "파라과이", "🇹🇷", "🇵🇾")),
+        ] },
+        { date: "2026-06-21", dateLabel: "6. 21.", weekday: "일", cells: [
+          c(m("2026-06-21", "02:00", "F조", "2차전", "네덜란드", "스웨덴", "🇳🇱", "🇸🇪")),
+          c(m("2026-06-21", "05:00", "E조", "2차전", "독일", "코트디", "🇩🇪", "🇨🇮")),
+          c(m("2026-06-21", "09:00", "E조", "2차전", "에콰도르", "퀴라소", "🇪🇨", "🇨🇼")),
+          c(m("2026-06-21", "13:00", "F조", "2차전", "튀니지", "일본", "🇹🇳", "🇯🇵")),
+        ] },
+        { date: "2026-06-22", dateLabel: "6. 22.", weekday: "월", cells: [
+          c(m("2026-06-22", "01:00", "H조", "2차전", "스페인", "사우디", "🇪🇸", "🇸🇦")),
+          c(m("2026-06-22", "04:00", "G조", "2차전", "벨기에", "이란", "🇧🇪", "🇮🇷")),
+          c(m("2026-06-22", "07:00", "H조", "2차전", "우루과이", "카보베르", "🇺🇾", "🇨🇻")),
+          c(m("2026-06-22", "10:00", "G조", "2차전", "뉴질랜드", "이집트", "🇳🇿", "🇪🇬")),
+        ] },
+        { date: "2026-06-23", dateLabel: "6. 23.", weekday: "화", cells: [
+          c(m("2026-06-23", "02:00", "J조", "2차전", "아르헨", "오스트리아", "🇦🇷", "🇦🇹")),
+          c(m("2026-06-23", "06:00", "I조", "2차전", "프랑스", "이라크", "🇫🇷", "🇮🇶")),
+          c(m("2026-06-23", "09:00", "I조", "2차전", "노르웨이", "세네갈", "🇳🇴", "🇸🇳")),
+          c(m("2026-06-23", "12:00", "J조", "2차전", "요르단", "알제리", "🇯🇴", "🇩🇿")),
+        ] },
+        { date: "2026-06-24", dateLabel: "6. 24.", weekday: "수", cells: [
+          c(m("2026-06-24", "02:00", "K조", "2차전", "포르투갈", "우즈벡", "🇵🇹", "🇺🇿")),
+          c(m("2026-06-24", "05:00", "L조", "2차전", "잉글랜드", "가나", "🏴", "🇬🇭")),
+          c(m("2026-06-24", "08:00", "K조", "2차전", "파나마", "크로아티아", "🇵🇦", "🇭🇷")),
+          c(m("2026-06-24", "11:00", "L조", "2차전", "콜롬비아", "콩고", "🇨🇴", "🇨🇩")),
+        ] },
+        { date: "2026-06-25", dateLabel: "6. 25.", weekday: "목", cells: [
+          c(m("2026-06-25", "04:00", "B조", "3차전", "스위스", "캐나다", "🇨🇭", "🇨🇦"), m("2026-06-25", "04:00", "B조", "3차전", "보스니아", "카타르", "🇧🇦", "🇶🇦")),
+          c(m("2026-06-25", "07:00", "C조", "3차전", "스코틀랜드", "브라질", "🏴", "🇧🇷"), m("2026-06-25", "07:00", "C조", "3차전", "모로코", "아이티", "🇲🇦", "🇭🇹")),
+          c(m("2026-06-25", "10:00", "A조", "3차전", "남아공", "대한민국", "🇿🇦", "🇰🇷"), m("2026-06-25", "10:00", "A조", "3차전", "체코", "멕시코", "🇨🇿", "🇲🇽")),
+        ] },
+        { date: "2026-06-26", dateLabel: "6. 26.", weekday: "금", cells: [
+          c(m("2026-06-26", "05:00", "E조", "3차전", "퀴라소", "코트디", "🇨🇼", "🇨🇮"), m("2026-06-26", "05:00", "E조", "3차전", "에콰도르", "독일", "🇪🇨", "🇩🇪")),
+          c(m("2026-06-26", "08:00", "F조", "3차전", "튀니지", "네덜란드", "🇹🇳", "🇳🇱"), m("2026-06-26", "08:00", "F조", "3차전", "일본", "스웨덴", "🇯🇵", "🇸🇪")),
+          c(m("2026-06-26", "11:00", "D조", "3차전", "파라과이", "호주", "🇵🇾", "🇦🇺"), m("2026-06-26", "11:00", "D조", "3차전", "튀르키예", "미국", "🇹🇷", "🇺🇸")),
+        ] },
+        { date: "2026-06-27", dateLabel: "6. 27.", weekday: "토", cells: [
+          c(m("2026-06-27", "04:00", "I조", "3차전", "세네갈", "이라크", "🇸🇳", "🇮🇶"), m("2026-06-27", "04:00", "I조", "3차전", "노르웨이", "프랑스", "🇳🇴", "🇫🇷")),
+          c(m("2026-06-27", "09:00", "H조", "3차전", "우루과이", "스페인", "🇺🇾", "🇪🇸"), m("2026-06-27", "09:00", "H조", "3차전", "카보베르", "사우디", "🇨🇻", "🇸🇦")),
+          c(m("2026-06-27", "12:00", "G조", "3차전", "뉴질랜드", "벨기에", "🇳🇿", "🇧🇪"), m("2026-06-27", "12:00", "G조", "3차전", "이집트", "이란", "🇪🇬", "🇮🇷")),
+        ] },
+        { date: "2026-06-28", dateLabel: "6. 28.", weekday: "일", cells: [
+          c(m("2026-06-28", "06:00", "L조", "3차전", "파나마", "잉글랜드", "🇵🇦", "🏴"), m("2026-06-28", "06:00", "L조", "3차전", "크로아티아", "가나", "🇭🇷", "🇬🇭")),
+          c(m("2026-06-28", "08:30", "K조", "3차전", "콜롬비아", "포르투갈", "🇨🇴", "🇵🇹"), m("2026-06-28", "08:30", "K조", "3차전", "콩고", "우즈벡", "🇨🇩", "🇺🇿")),
+          c(m("2026-06-28", "11:00", "J조", "3차전", "요르단", "아르헨", "🇯🇴", "🇦🇷"), m("2026-06-28", "11:00", "J조", "3차전", "알제리", "오스트리아", "🇩🇿", "🇦🇹")),
+        ] },
+      ];
+
+      const MATCH_DURATION = 2 * 60 * 60 * 1000;
+      let activeFilter = "all";
+
+      const getStart = (match) => new Date(match.kickoff).getTime();
+      const isLive = (match, now) => now.getTime() >= getStart(match) && now.getTime() < getStart(match) + MATCH_DURATION;
+      const isPast = (match, now) => now.getTime() >= getStart(match) + MATCH_DURATION;
+      const allMatches = () => days.flatMap((day) => day.cells.flatMap((cell) => cell.matches));
+      const getNext = (now) => allMatches().filter((match) => getStart(match) > now.getTime()).sort((a, b) => getStart(a) - getStart(b))[0];
+      const getTodayKey = (now) => {
+        const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
+        return `${parts.find((p) => p.type === "year").value}-${parts.find((p) => p.type === "month").value}-${parts.find((p) => p.type === "day").value}`;
+      };
+      const formatKst = (now) => new Intl.DateTimeFormat("ko-KR", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(now);
+
+      const groupMatches = (matches) => matches.reduce((groups, match) => {
+        const key = `${match.timeLabel}-${match.group}-${match.round}`;
+        const found = groups.find((group) => group.key === key);
+        if (found) found.matches.push(match);
+        else groups.push({ key, timeLabel: match.timeLabel, group: match.group, round: match.round, matches: [match] });
+        return groups;
+      }, []);
+
+      const renderCell = (cell, now, nextMatch) => {
+        const hasKorea = cell.matches.some((match) => match.isKorea);
+        const hasNext = cell.matches.some((match) => nextMatch && match.id === nextMatch.id);
+        const hasLive = cell.matches.some((match) => isLive(match, now));
+        const className = ["empty", hasKorea ? "korea" : "", hasNext ? "next" : "", hasLive ? "live-border" : ""].filter(Boolean).join(" ");
+
+        if (cell.matches.length === 0) return `<td class="${className}" aria-label="빈 경기 칸"></td>`;
+
+        return `<td class="${className}">${groupMatches(cell.matches).map((group) => {
+          const groupPast = group.matches.every((match) => isPast(match, now));
+          const groupLive = group.matches.some((match) => isLive(match, now));
+          return `<div class="match-group ${groupPast ? "past" : ""}">
+            <div class="match-meta"><span class="time">${group.timeLabel}</span>, ${group.group} ${group.round}${groupLive ? '<span class="live">LIVE</span>' : ""}</div>
+            ${group.matches.map((match) => `<div class="teams"><span>${match.homeFlag}</span> ${match.home} <strong>:</strong> ${match.away} <span>${match.awayFlag}</span></div>`).join("")}
+          </div>`;
+        }).join("")}</td>`;
+      };
+
+      const render = () => {
+        const now = new Date();
+        const todayKey = getTodayKey(now);
+        const nextMatch = getNext(now);
+        const liveMatches = allMatches().filter((match) => isLive(match, now));
+
+        document.getElementById("current-time").textContent = `현재 시각: ${formatKst(now)} KST`;
+        document.getElementById("next-match").textContent = nextMatch ? `다음 경기: ${nextMatch.timeLabel} ${nextMatch.home} : ${nextMatch.away}` : "다음 경기: 예정된 경기가 없습니다";
+        document.getElementById("live-match").innerHTML = liveMatches.length ? `진행 중: <span class="live">LIVE</span> ${liveMatches.map((match) => `${match.timeLabel} ${match.home} : ${match.away}`).join(" / ")}` : "";
+
+        const rows = days.map((day) => {
+          const cells = activeFilter === "korea"
+            ? day.cells.map((cell) => ({ matches: cell.matches.filter((match) => match.isKorea) }))
+            : day.cells;
+          return { ...day, cells };
+        }).filter((day) => {
+          if (activeFilter === "today") return day.date === todayKey;
+          if (activeFilter === "korea") return day.cells.some((cell) => cell.matches.length);
+          return true;
+        });
+
+        const target = document.getElementById("schedule");
+        if (!rows.length) {
+          target.innerHTML = '<div class="no-rows">표시할 일정이 없습니다.</div>';
+          return;
+        }
+
+        target.innerHTML = `<table aria-label="조별리그 일정">
+          <colgroup>
+            <col class="date-col" />
+            <col class="match-col" />
+            <col class="match-col" />
+            <col class="match-col" />
+            <col class="match-col" />
+          </colgroup>
+          <tbody>
+            ${rows.map((day) => {
+              const normalizedCells = day.cells.slice(0, 4);
+              while (normalizedCells.length < 4) normalizedCells.push({ matches: [] });
+              return `<tr>
+                <th scope="row"><div class="date-label">${day.dateLabel}</div><div class="weekday">(${day.weekday})</div></th>
+                ${normalizedCells.map((cell) => renderCell(cell, now, nextMatch)).join("")}
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>`;
+      };
+
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeFilter = button.dataset.filter;
+          document.querySelectorAll("[data-filter]").forEach((target) => target.classList.toggle("active", target === button));
+          render();
+        });
+      });
+
+      render();
+      setInterval(render, 30000);
+    </script>
+  </body>
+</html>
