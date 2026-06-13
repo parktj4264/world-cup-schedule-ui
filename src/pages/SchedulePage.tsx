@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FilterBar } from '../components/FilterBar';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { ScheduleControls } from '../components/ScheduleControls';
@@ -10,6 +10,37 @@ import { getKstDateKey, getLiveMatches, getNextMatch } from '../utils/timeUtils'
 
 const DETAIL_VIEW_ZOOM = 70;
 const LIVE_SCHEDULE_URL = `${import.meta.env.BASE_URL}data/live-schedule.json`;
+const SHARE_TOAST_DURATION_MS = 2200;
+
+const getShareUrl = () => new URL(import.meta.env.BASE_URL, window.location.origin).href;
+
+const copyTextToClipboard = async (text: string) => {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.setAttribute('readonly', '');
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-9999px';
+  textArea.style.top = '0';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  textArea.setSelectionRange(0, text.length);
+
+  try {
+    const copied = document.execCommand('copy');
+
+    if (!copied) {
+      throw new Error('Copy command failed');
+    }
+  } finally {
+    document.body.removeChild(textArea);
+  }
+};
 
 const getCountryOptions = (sections: ScheduleSection[]) =>
   Array.from(
@@ -30,6 +61,8 @@ export function SchedulePage() {
   const [isMiniView, setIsMiniView] = useState(true);
   const [liveSchedule, setLiveSchedule] = useState<LiveSchedule>();
   const [liveScheduleError, setLiveScheduleError] = useState(false);
+  const [shareMessage, setShareMessage] = useState('');
+  const shareToastTimeoutRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -37,6 +70,12 @@ export function SchedulePage() {
     }, 30_000);
 
     return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => () => {
+    if (shareToastTimeoutRef.current) {
+      window.clearTimeout(shareToastTimeoutRef.current);
+    }
   }, []);
 
   useEffect(() => {
@@ -112,8 +151,38 @@ export function SchedulePage() {
     scrollAfterRender('.schedule-korea-cell');
   }, [scrollAfterRender]);
 
+  const showShareMessage = useCallback((message: string) => {
+    setShareMessage(message);
+
+    if (shareToastTimeoutRef.current) {
+      window.clearTimeout(shareToastTimeoutRef.current);
+    }
+
+    shareToastTimeoutRef.current = window.setTimeout(() => {
+      setShareMessage('');
+    }, SHARE_TOAST_DURATION_MS);
+  }, []);
+
+  const handleCopyShareLink = useCallback(async () => {
+    try {
+      await copyTextToClipboard(getShareUrl());
+      showShareMessage('공유 링크 복사 완료');
+    } catch {
+      showShareMessage('복사 실패: 주소창 링크를 복사해 주세요');
+    }
+  }, [showShareMessage]);
+
   return (
     <main className="min-h-screen bg-white px-3 py-6 font-poster text-neutral-950">
+      {shareMessage ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none fixed left-1/2 top-4 z-50 -translate-x-1/2 border-2 border-neutral-900 bg-white px-4 py-2 text-sm font-black text-neutral-950"
+        >
+          {shareMessage}
+        </div>
+      ) : null}
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
@@ -135,6 +204,7 @@ export function SchedulePage() {
         />
         <ScheduleControls
           isMiniView={isMiniView}
+          onCopyShareLink={handleCopyShareLink}
           onShowKorea={handleShowKorea}
           onToggleMiniView={() => setIsMiniView((currentMode) => !currentMode)}
         />

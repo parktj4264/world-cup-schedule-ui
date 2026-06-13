@@ -1,5 +1,6 @@
 type ScheduleControlsProps = {
   isMiniView: boolean;
+  onCopyShareLink: () => void;
   onShowKorea: () => void;
   onToggleMiniView: () => void;
 };
@@ -12,14 +13,20 @@ const viewButtonClassName =
 
 export function ScheduleControls({
   isMiniView,
+  onCopyShareLink,
   onShowKorea,
   onToggleMiniView,
 }: ScheduleControlsProps) {
   return (
     <div className="schedule-controls mx-auto flex w-full max-w-[980px] flex-wrap items-center justify-between gap-1 py-1">
-      <button type="button" className={buttonClassName} onClick={onShowKorea}>
-        한국 경기
-      </button>
+      <div className="flex flex-wrap items-center gap-1">
+        <button type="button" className={buttonClassName} onClick={onShowKorea}>
+          한국 경기
+        </button>
+        <button type="button" className={buttonClassName} onClick={onCopyShareLink}>
+          공유 링크 복사
+        </button>
+      </div>
       <button type="button" className={viewButtonClassName} onClick={onToggleMiniView}>
         {isMiniView ? '🔍 Zoom In' : '🔎 Zoom Out'}
       </button>
