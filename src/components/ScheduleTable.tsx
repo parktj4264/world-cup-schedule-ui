@@ -6,8 +6,10 @@ type ScheduleTableProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
-  scrollContainerRef: RefObject<HTMLDivElement | null>;
+  scrollContainerRef?: RefObject<HTMLDivElement | null>;
   zoom: number;
+  selectedCountry?: string;
+  className?: string;
 };
 
 const BASE_DATE_WIDTH = 86;
@@ -29,6 +31,8 @@ export function ScheduleTable({
   nextMatchId,
   scrollContainerRef,
   zoom,
+  selectedCountry,
+  className = '',
 }: ScheduleTableProps) {
   const hasRows = sections.some((section) => section.days.length > 0);
   const zoomRatio = zoom / 100;
@@ -48,7 +52,9 @@ export function ScheduleTable({
   return (
     <div
       ref={scrollContainerRef}
-      className="schedule-scroll mx-auto w-full max-w-[1040px] overflow-x-auto pb-4"
+      className={['schedule-scroll mx-auto w-full max-w-[1040px] overflow-x-auto pb-4', className]
+        .filter(Boolean)
+        .join(' ')}
       style={tableStyle}
     >
       {hasRows ? (
@@ -72,6 +78,7 @@ export function ScheduleTable({
                   day={day}
                   currentTime={currentTime}
                   nextMatchId={nextMatchId}
+                  selectedCountry={selectedCountry}
                 />
               ))}
             </tbody>

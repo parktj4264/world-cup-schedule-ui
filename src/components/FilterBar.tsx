@@ -6,6 +6,7 @@ type FilterBarProps = {
   countryOptions: string[];
   onFilterChange: (filter: FilterMode) => void;
   onCountryChange: (country: string) => void;
+  onClearCountry: () => void;
 };
 
 const filters: Array<{ label: string; value: FilterMode }> = [
@@ -19,7 +20,10 @@ export function FilterBar({
   countryOptions,
   onFilterChange,
   onCountryChange,
+  onClearCountry,
 }: FilterBarProps) {
+  const hasSelectedCountry = selectedCountry.trim() !== '';
+
   return (
     <div className="filter-bar mx-auto flex w-full max-w-[980px] flex-wrap items-center gap-1 py-2">
       {filters.map((filter) => {
@@ -68,6 +72,18 @@ export function FilterBar({
           ))}
         </datalist>
       </label>
+      {hasSelectedCountry ? (
+        <button
+          type="button"
+          onClick={onClearCountry}
+          className={[
+            'border border-neutral-700 bg-white px-2 py-1 text-sm font-bold leading-none text-neutral-900',
+            'hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600',
+          ].join(' ')}
+        >
+          선택 해제
+        </button>
+      ) : null}
     </div>
   );
 }

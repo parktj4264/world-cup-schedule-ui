@@ -28,31 +28,11 @@ const filterSections = (
   sections: ScheduleSection[],
   filter: FilterMode,
   todayKey: string,
-  selectedCountry: string,
 ): ScheduleSection[] =>
   sections.map((section) => {
-    const countryQuery = selectedCountry.trim();
-    const days = section.days
-      .map((day) => {
-        const cells =
-          countryQuery !== ''
-            ? day.cells.map((scheduleCell) => ({
-                matches: scheduleCell.matches.filter(
-                  (match) =>
-                    match.home.includes(countryQuery) || match.away.includes(countryQuery),
-                ),
-              }))
-            : day.cells;
-
-        return { ...day, cells };
-      })
-      .filter((day) => {
+    const days = section.days.filter((day) => {
         if (filter === 'today') {
           return day.date === todayKey;
-        }
-
-        if (countryQuery !== '') {
-          return day.cells.some((scheduleCell) => scheduleCell.matches.length > 0);
         }
 
         return true;
@@ -79,7 +59,6 @@ export function SchedulePage() {
   const [activeFilter, setActiveFilter] = useState<FilterMode>('all');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [zoom, setZoom] = useState(getInitialZoom);
-  const [isCaptureMode, setIsCaptureMode] = useState(false);
   const [isMiniView, setIsMiniView] = useState(false);
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
@@ -101,8 +80,8 @@ export function SchedulePage() {
   const countryOptions = useMemo(() => getCountryOptions(scheduleSections), []);
 
   const visibleSections = useMemo(
-    () => filterSections(scheduleSections, activeFilter, todayKey, selectedCountry),
-    [activeFilter, todayKey, selectedCountry],
+    () => filterSections(scheduleSections, activeFilter, todayKey),
+    [activeFilter, todayKey],
   );
 
   const setZoomValue = useCallback((nextZoom: number) => {
@@ -123,13 +102,11 @@ export function SchedulePage() {
 
   const handleGoToToday = useCallback(() => {
     setActiveFilter('all');
-    setSelectedCountry('');
     scrollAfterRender(`[data-day-date="${todayKey}"]`);
   }, [scrollAfterRender, todayKey]);
 
   const handleGoToNextMatch = useCallback(() => {
     setActiveFilter('all');
-    setSelectedCountry('');
     scrollAfterRender('.schedule-match-cell-next');
   }, [scrollAfterRender]);
 
@@ -148,23 +125,7 @@ export function SchedulePage() {
   }, [setZoomValue]);
 
   return (
-    <main
-      className={[
-        'min-h-screen bg-white px-3 py-6 font-poster text-neutral-950',
-        isCaptureMode ? 'capture-mode' : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {isCaptureMode ? (
-        <button
-          type="button"
-          className="capture-exit fixed right-3 top-3 z-50 border border-neutral-800 bg-white px-3 py-2 text-xs font-black text-neutral-900"
-          onClick={() => setIsCaptureMode(false)}
-        >
-          캡처 모드 OFF
-        </button>
-      ) : null}
+    <main className="min-h-screen bg-white px-3 py-6 font-poster text-neutral-950">
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
@@ -181,7 +142,6 @@ export function SchedulePage() {
         />
         <ScheduleControls
           zoom={zoom}
-          isCaptureMode={isCaptureMode}
           isMiniView={isMiniView}
           onGoToToday={handleGoToToday}
           onGoToNextMatch={handleGoToNextMatch}
@@ -191,7 +151,6 @@ export function SchedulePage() {
           onZoomOut={() => setZoomValue(zoom - ZOOM_STEP)}
           onResetZoom={() => setZoomValue(100)}
           onFitToWidth={handleFitToWidth}
-          onToggleCaptureMode={() => setIsCaptureMode((currentMode) => !currentMode)}
         />
         <FilterBar
           activeFilter={activeFilter}
@@ -199,12 +158,14 @@ export function SchedulePage() {
           countryOptions={countryOptions}
           onFilterChange={setActiveFilter}
           onCountryChange={setSelectedCountry}
+          onClearCountry={() => setSelectedCountry('')}
         />
         {isMiniView ? (
           <MiniScheduleTable
             sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
+            selectedCountry={selectedCountry}
           />
         ) : (
           <ScheduleTable
@@ -213,6 +174,7 @@ export function SchedulePage() {
             nextMatchId={nextMatch?.id}
             scrollContainerRef={tableScrollRef}
             zoom={zoom}
+            selectedCountry={selectedCountry}
           />
         )}
       </div>

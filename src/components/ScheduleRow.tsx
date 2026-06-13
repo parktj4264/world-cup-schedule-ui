@@ -5,6 +5,7 @@ type ScheduleRowProps = {
   day: ScheduleDay;
   currentTime: Date;
   nextMatchId?: string;
+  selectedCountry?: string;
 };
 
 const CELL_COUNT = 4;
@@ -19,7 +20,12 @@ const normalizeCells = (cells: ScheduleCell[]) => {
   return visibleCells;
 };
 
-export function ScheduleRow({ day, currentTime, nextMatchId }: ScheduleRowProps) {
+export function ScheduleRow({
+  day,
+  currentTime,
+  nextMatchId,
+  selectedCountry,
+}: ScheduleRowProps) {
   return (
     <tr data-day-date={day.date}>
       <th
@@ -35,6 +41,7 @@ export function ScheduleRow({ day, currentTime, nextMatchId }: ScheduleRowProps)
           cell={scheduleCell}
           currentTime={currentTime}
           nextMatchId={nextMatchId}
+          selectedCountry={selectedCountry}
         />
       ))}
     </tr>

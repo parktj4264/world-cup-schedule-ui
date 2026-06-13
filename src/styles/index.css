@@ -87,10 +87,16 @@ button {
   font-size: var(--schedule-weekday-font);
 }
 
-.capture-mode .status-bar,
-.capture-mode .filter-bar,
-.capture-mode .schedule-controls {
-  display: none;
+.mini-overview-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.mini-overview-table-wrap {
+  max-width: none;
+  overflow: visible;
+  padding-bottom: 0;
 }
 
 @media print {
@@ -110,8 +116,7 @@ button {
 
   .status-bar,
   .filter-bar,
-  .schedule-controls,
-  .capture-exit {
+  .schedule-controls {
     display: none !important;
   }
 

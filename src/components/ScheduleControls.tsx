@@ -2,7 +2,6 @@ import { ZoomControls } from './ZoomControls';
 
 type ScheduleControlsProps = {
   zoom: number;
-  isCaptureMode: boolean;
   isMiniView: boolean;
   onGoToToday: () => void;
   onGoToNextMatch: () => void;
@@ -12,7 +11,6 @@ type ScheduleControlsProps = {
   onZoomOut: () => void;
   onResetZoom: () => void;
   onFitToWidth: () => void;
-  onToggleCaptureMode: () => void;
 };
 
 const buttonClassName =
@@ -20,7 +18,6 @@ const buttonClassName =
 
 export function ScheduleControls({
   zoom,
-  isCaptureMode,
   isMiniView,
   onGoToToday,
   onGoToNextMatch,
@@ -30,7 +27,6 @@ export function ScheduleControls({
   onZoomOut,
   onResetZoom,
   onFitToWidth,
-  onToggleCaptureMode,
 }: ScheduleControlsProps) {
   return (
     <div className="schedule-controls mx-auto flex w-full max-w-[980px] flex-wrap items-center justify-between gap-2 py-1">
@@ -46,9 +42,6 @@ export function ScheduleControls({
         </button>
         <button type="button" className={buttonClassName} onClick={onToggleMiniView}>
           {isMiniView ? '자세히 보기' : '미니 보기'}
-        </button>
-        <button type="button" className={buttonClassName} onClick={onToggleCaptureMode}>
-          {isCaptureMode ? '캡처 모드 OFF' : '캡처 모드'}
         </button>
       </div>
 
