@@ -1,10 +1,5 @@
 import type { Match } from '../data/schedule';
-import {
-  formatKstDateTime,
-  formatKstTime,
-  formatTimeUntilMatch,
-  getNextAutoRefreshTime,
-} from '../utils/timeUtils';
+import { formatKstDateTime, formatTimeUntilMatch } from '../utils/timeUtils';
 
 type StatusBarProps = {
   currentTime: Date;
@@ -39,7 +34,6 @@ export function StatusBar({
 }: StatusBarProps) {
   const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
   const liveScheduleUpdatedTime = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
-  const nextAutoRefreshTime = formatKstTime(getNextAutoRefreshTime(currentTime));
 
   return (
     <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
@@ -62,8 +56,6 @@ export function StatusBar({
         {liveScheduleUpdatedTime ? (
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
-        <span className="text-[12px] text-neutral-600">자동 확인: 매시 17분/47분</span>
-        <span className="text-[12px] text-neutral-600">다음 확인 예상: {nextAutoRefreshTime} KST</span>
         {liveScheduleError ? (
           <span className="text-[12px] text-neutral-600">최신 정보 확인 실패</span>
         ) : null}
