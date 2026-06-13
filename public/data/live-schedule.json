@@ -1,5 +1,38 @@
 {
-  "source": "static-empty",
-  "sourceUpdatedAt": null,
-  "matches": []
+  "source": "manual-seed",
+  "sourceUpdatedAt": "2026-06-13T12:25:00.000Z",
+  "matches": [
+    {
+      "id": "2026-06-12-04:00-멕시코-남아공",
+      "kickoff": "2026-06-12T04:00:00+09:00",
+      "status": "finished",
+      "homeScore": 2,
+      "awayScore": 0,
+      "winner": "home"
+    },
+    {
+      "id": "2026-06-12-11:00-대한민국-체코",
+      "kickoff": "2026-06-12T11:00:00+09:00",
+      "status": "finished",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "home"
+    },
+    {
+      "id": "2026-06-13-04:00-캐나다-보스니아",
+      "kickoff": "2026-06-13T04:00:00+09:00",
+      "status": "finished",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "draw"
+    },
+    {
+      "id": "2026-06-13-10:00-미국-파라과이",
+      "kickoff": "2026-06-13T10:00:00+09:00",
+      "status": "finished",
+      "homeScore": 4,
+      "awayScore": 1,
+      "winner": "home"
+    }
+  ]
 }
