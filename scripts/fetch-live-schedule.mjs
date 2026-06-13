@@ -10,6 +10,23 @@ const ENDPOINT = `https://v3.football.api-sports.io/fixtures?league=${LEAGUE}&se
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outputPath = path.resolve(__dirname, '../public/data/live-schedule.json');
 
+const summarizeApiErrors = (errors) => {
+  if (!errors) {
+    return 'none';
+  }
+
+  if (Array.isArray(errors)) {
+    return errors.length > 0 ? JSON.stringify(errors) : 'none';
+  }
+
+  if (typeof errors === 'object') {
+    const entries = Object.entries(errors);
+    return entries.length > 0 ? JSON.stringify(Object.fromEntries(entries.slice(0, 8))) : 'none';
+  }
+
+  return String(errors);
+};
+
 const TEAM_ALIASES = new Map(
   Object.entries({
     Algeria: '알제리',
@@ -266,10 +283,20 @@ if (!Array.isArray(data?.response)) {
   throw new Error('API-FOOTBALL response did not include a response array.');
 }
 
-const matches = data.response.map(normalizeFixture).filter(Boolean);
+console.log(`API-FOOTBALL request: league=${LEAGUE}, season=${SEASON}, timezone=Asia/Seoul`);
+console.log(`API-FOOTBALL response: results=${data.results ?? 'unknown'}, fixtures=${data.response.length}`);
+console.log(`API-FOOTBALL errors: ${summarizeApiErrors(data.errors)}`);
+
+const normalizedMatches = data.response.map(normalizeFixture);
+const matches = normalizedMatches.filter(Boolean);
+const skippedMatches = normalizedMatches.length - matches.length;
+
+console.log(`Normalized usable fixtures: ${matches.length}`);
+console.log(`Skipped unusable fixtures: ${skippedMatches}`);
 
 if (matches.length === 0) {
-  throw new Error('API-FOOTBALL returned no usable World Cup fixtures.');
+  console.warn('API-FOOTBALL returned no usable World Cup fixtures. Keeping existing live-schedule.json.');
+  process.exit(0);
 }
 
 const output = {
