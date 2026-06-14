@@ -28,6 +28,12 @@ const formatLiveScheduleUpdatedAt = (updatedAt: string | null | undefined) => {
   return `${formatKstDateTime(date)} KST`;
 };
 
+const BrowserCheckingBadge = () => (
+  <span className="ml-1 inline-flex border border-blue-700 bg-blue-50 px-1.5 py-[1px] text-[11px] font-black leading-4 text-blue-800">
+    확인 중
+  </span>
+);
+
 export function StatusBar({
   currentTime,
   nextMatch,
@@ -51,22 +57,31 @@ export function StatusBar({
           {nextMatch ? formatMatch(nextMatch) : '예정된 경기가 없습니다'}
         </span>
         {timeUntilNextMatch ? <span>다음 경기까지 {timeUntilNextMatch}</span> : null}
-        {liveMatches.length > 0 ? (
-          <span>
-            진행 중:{' '}
-            <span className="border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
-              LIVE
-            </span>{' '}
-            {liveMatches.map(formatMatch).join(' / ')}
-          </span>
-        ) : null}
+        <span>
+          진행 중:{' '}
+          {liveMatches.length > 0 ? (
+            <>
+              <span className="border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
+                LIVE
+              </span>{' '}
+              {liveMatches.map(formatMatch).join(' / ')}
+            </>
+          ) : (
+            '-'
+          )}
+        </span>
         {liveScheduleUpdatedTime ? (
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
         {browserLiveUpdatedTime ? (
-          <span className="text-[12px] text-neutral-600">브라우저 최신 확인: {browserLiveUpdatedTime}</span>
+          <span className="text-[12px] text-neutral-600">
+            브라우저 최신 확인: {browserLiveUpdatedTime}
+            {browserLiveChecking ? <BrowserCheckingBadge /> : null}
+          </span>
         ) : browserLiveChecking ? (
-          <span className="text-[12px] text-neutral-600">브라우저 최신 확인 중</span>
+          <span className="text-[12px] text-neutral-600">
+            브라우저 최신 확인: <BrowserCheckingBadge />
+          </span>
         ) : null}
         {liveScheduleError || browserLiveError ? (
           <span className="text-[12px] text-neutral-600">최신 정보 확인 실패</span>
