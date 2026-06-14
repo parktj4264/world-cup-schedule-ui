@@ -141,9 +141,12 @@ export function SchedulePage() {
   const [liveScheduleError, setLiveScheduleError] = useState(false);
   const [browserLiveUpdatedAt, setBrowserLiveUpdatedAt] = useState<string | null>(null);
   const [browserLiveError, setBrowserLiveError] = useState(false);
+  const [browserLiveChecking, setBrowserLiveChecking] = useState(true);
   const [shareMessage, setShareMessage] = useState('');
   const shareToastTimeoutRef = useRef<number | undefined>(undefined);
   const liveScheduleRef = useRef<LiveSchedule | undefined>(undefined);
+  const hasCompletedInitialBrowserCheckRef = useRef(false);
+  const pageLiveReloadRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
     liveScheduleRef.current = liveSchedule;
@@ -181,16 +184,30 @@ export function SchedulePage() {
         const parsed = parseLiveSchedule(await response.json());
 
         if (parsed) {
-          setLiveSchedule((currentSchedule) => {
-            const nextSchedule = shouldUseIncomingLiveSchedule(parsed, currentSchedule)
-              ? parsed
-              : currentSchedule;
+          if (!hasCompletedInitialBrowserCheckRef.current && !liveScheduleRef.current) {
+            setLiveScheduleError(false);
+            console.log(
+              '[world-cup-schedule] page live schedule held until browser check',
+              {
+                source: parsed.source,
+                sourceUpdatedAt: parsed.sourceUpdatedAt ?? 'unknown',
+                matchCount: parsed.matches.length,
+              },
+            );
+            return;
+          }
 
-            liveScheduleRef.current = nextSchedule;
+          const currentSchedule = liveScheduleRef.current;
+          const accepted = shouldUseIncomingLiveSchedule(parsed, currentSchedule);
+          const nextSchedule = accepted ? parsed : currentSchedule;
 
-            return nextSchedule;
-          });
-          setPageLiveUpdatedAt(parsed.sourceUpdatedAt);
+          liveScheduleRef.current = nextSchedule;
+          setLiveSchedule(nextSchedule);
+
+          if (accepted) {
+            setPageLiveUpdatedAt(parsed.sourceUpdatedAt);
+          }
+
           setLiveScheduleError(false);
           console.log(
             '[world-cup-schedule] live schedule loaded',
@@ -198,6 +215,7 @@ export function SchedulePage() {
               source: parsed.source,
               sourceUpdatedAt: parsed.sourceUpdatedAt ?? 'unknown',
               matchCount: parsed.matches.length,
+              accepted,
             },
           );
         } else {
@@ -210,10 +228,12 @@ export function SchedulePage() {
       }
     };
 
+    pageLiveReloadRef.current = loadLiveSchedule;
     loadLiveSchedule();
     const intervalId = window.setInterval(loadLiveSchedule, PAGE_JSON_REFRESH_MS);
 
     return () => {
+      pageLiveReloadRef.current = undefined;
       controller.abort();
       window.clearInterval(intervalId);
     };
@@ -260,6 +280,7 @@ export function SchedulePage() {
       }
 
       inFlight = true;
+      setBrowserLiveChecking(true);
 
       try {
         const parsed = await fetchBrowserLiveSchedule(controller.signal);
@@ -295,6 +316,15 @@ export function SchedulePage() {
         }
       } finally {
         inFlight = false;
+
+        if (!stopped) {
+          hasCompletedInitialBrowserCheckRef.current = true;
+          setBrowserLiveChecking(false);
+
+          if (!liveScheduleRef.current) {
+            pageLiveReloadRef.current?.();
+          }
+        }
 
         if (!stopped) {
           scheduleNextBrowserCheck(getNextDelay());
@@ -406,6 +436,7 @@ export function SchedulePage() {
           liveScheduleError={liveScheduleError}
           browserLiveUpdatedAt={browserLiveUpdatedAt}
           browserLiveError={browserLiveError}
+          browserLiveChecking={browserLiveChecking}
         />
         <ScheduleControls
           isMiniView={isMiniView}
