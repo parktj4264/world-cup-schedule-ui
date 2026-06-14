@@ -1,3 +1,4 @@
+import { FlagIcon } from './FlagIcon';
 import type { Match, ScheduleCell } from '../data/schedule';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
@@ -148,7 +149,7 @@ export function MatchCell({
                     data-match-id={match.id}
                     className="schedule-teams whitespace-nowrap text-center font-extrabold leading-[1.25] text-neutral-950"
                   >
-                    {match.homeFlag ? <span className="mr-1">{match.homeFlag}</span> : null}
+                    <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
                     {match.home}
                     {hasScore(match) ? (
                       <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
@@ -158,7 +159,7 @@ export function MatchCell({
                       <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
                     ) : null}
                     {match.away}
-                    {match.awayFlag ? <span className="ml-1">{match.awayFlag}</span> : null}
+                    <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
                   </div>
                 ))}
               </div>
