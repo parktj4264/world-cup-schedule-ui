@@ -13,6 +13,8 @@ export type LiveMatchUpdate = {
   elapsed?: number;
   homeScore?: number;
   awayScore?: number;
+  homeScorers?: string[];
+  awayScorers?: string[];
   winner?: 'home' | 'away' | 'draw';
   sourceUpdatedAt?: string;
 };
@@ -28,6 +30,10 @@ const isNumberOrUndefined = (value: unknown) =>
 
 const isStringOrUndefined = (value: unknown) =>
   typeof value === 'undefined' || typeof value === 'string';
+
+const isStringArrayOrUndefined = (value: unknown) =>
+  typeof value === 'undefined' ||
+  (Array.isArray(value) && value.every((item) => typeof item === 'string'));
 
 const normalizeTeamName = (teamName: string | undefined) =>
   (teamName ?? '')
@@ -107,6 +113,8 @@ const mergeMatch = (
     elapsed: update.elapsed ?? match.elapsed,
     homeScore: update.homeScore,
     awayScore: update.awayScore,
+    homeScorers: update.homeScorers,
+    awayScorers: update.awayScorers,
     winner: update.winner,
     sourceUpdatedAt: update.sourceUpdatedAt ?? sourceUpdatedAt ?? match.sourceUpdatedAt,
     home,
@@ -140,6 +148,8 @@ export const parseLiveSchedule = (payload: unknown): LiveSchedule | undefined =>
       isStringOrUndefined(candidate.kickoff) &&
       isStringOrUndefined(candidate.home) &&
       isStringOrUndefined(candidate.away) &&
+      isStringArrayOrUndefined(candidate.homeScorers) &&
+      isStringArrayOrUndefined(candidate.awayScorers) &&
       isNumberOrUndefined(candidate.apiFootballFixtureId) &&
       isNumberOrUndefined(candidate.homeScore) &&
       isNumberOrUndefined(candidate.awayScore) &&

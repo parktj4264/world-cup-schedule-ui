@@ -15,6 +15,8 @@ export type Match = {
   elapsed?: number;
   homeScore?: number;
   awayScore?: number;
+  homeScorers?: string[];
+  awayScorers?: string[];
   winner?: 'home' | 'away' | 'draw';
   sourceUpdatedAt?: string;
   stage?: MatchStage;

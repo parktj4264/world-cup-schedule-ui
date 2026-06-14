@@ -1,5 +1,5 @@
 import type { CSSProperties, RefObject } from 'react';
-import type { ScheduleSection } from '../data/schedule';
+import type { Match, ScheduleSection } from '../data/schedule';
 import { ScheduleRow } from './ScheduleRow';
 
 type ScheduleTableProps = {
@@ -11,6 +11,7 @@ type ScheduleTableProps = {
   selectedCountry?: string;
   todayKey?: string;
   className?: string;
+  onOpenMatchDetail?: (match: Match) => void;
 };
 
 const BASE_DATE_WIDTH = 86;
@@ -35,6 +36,7 @@ export function ScheduleTable({
   selectedCountry,
   todayKey,
   className = '',
+  onOpenMatchDetail,
 }: ScheduleTableProps) {
   const hasRows = sections.some((section) => section.days.length > 0);
   const zoomRatio = zoom / 100;
@@ -85,6 +87,7 @@ export function ScheduleTable({
                     nextMatchId={nextMatchId}
                     selectedCountry={selectedCountry}
                     todayKey={todayKey}
+                    onOpenMatchDetail={onOpenMatchDetail}
                   />
                 ))}
               </tbody>

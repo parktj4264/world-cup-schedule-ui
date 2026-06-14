@@ -151,6 +151,8 @@ type WorldCup26Game = {
   finished?: string | boolean;
   home_score?: string | number | null;
   away_score?: string | number | null;
+  home_scorers?: string | null;
+  away_scorers?: string | null;
 };
 
 const toKoreanTeamName = (teamName: string | undefined) =>
@@ -168,6 +170,34 @@ const parseNumber = (value: unknown) => {
   const parsed = Number(value);
 
   return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const parseScorers = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalized = value
+    .trim()
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'");
+
+  if (!normalized || /^null$/i.test(normalized) || normalized === '{}' || normalized === '[]') {
+    return undefined;
+  }
+
+  const quotedItems = Array.from(normalized.matchAll(/"([^"]+)"/g), (match) => match[1].trim())
+    .filter(Boolean);
+
+  const scorers = quotedItems.length > 0
+    ? quotedItems
+    : normalized
+      .replace(/^[{\[]|[}\]]$/g, '')
+      .split(/[,،]/)
+      .map((item) => item.trim().replace(/^"|"$/g, ''))
+      .filter(Boolean);
+
+  return scorers.length > 0 ? scorers : undefined;
 };
 
 const toKstIsoFromDate = (date: Date) => {
@@ -338,6 +368,8 @@ const normalizeWorldCup26Game = (game: WorldCup26Game): LiveMatchUpdate | undefi
     elapsed,
     homeScore,
     awayScore,
+    homeScorers: parseScorers(game.home_scorers),
+    awayScorers: parseScorers(game.away_scorers),
     winner: getWinnerFromScores(status, homeScore, awayScore),
   };
 };

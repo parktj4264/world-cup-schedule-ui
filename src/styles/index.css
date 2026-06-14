@@ -103,6 +103,15 @@ button {
   min-width: 1em;
 }
 
+.schedule-match-trigger {
+  font: inherit;
+}
+
+.schedule-match-trigger:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .schedule-date-label {
   font-size: var(--schedule-date-font);
 }

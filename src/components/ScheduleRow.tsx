@@ -1,4 +1,4 @@
-import type { ScheduleCell, ScheduleDay } from '../data/schedule';
+import type { Match, ScheduleCell, ScheduleDay } from '../data/schedule';
 import { MatchCell } from './MatchCell';
 
 type ScheduleRowProps = {
@@ -7,6 +7,7 @@ type ScheduleRowProps = {
   nextMatchId?: string;
   selectedCountry?: string;
   todayKey?: string;
+  onOpenMatchDetail?: (match: Match) => void;
 };
 
 const CELL_COUNT = 4;
@@ -27,6 +28,7 @@ export function ScheduleRow({
   nextMatchId,
   selectedCountry,
   todayKey,
+  onOpenMatchDetail,
 }: ScheduleRowProps) {
   const isToday = day.date === todayKey;
 
@@ -51,6 +53,7 @@ export function ScheduleRow({
           currentTime={currentTime}
           nextMatchId={nextMatchId}
           selectedCountry={selectedCountry}
+          onOpenMatchDetail={onOpenMatchDetail}
         />
       ))}
     </tr>
