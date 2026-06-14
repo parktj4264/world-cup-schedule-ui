@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ScheduleSection } from '../data/schedule';
+import type { Match, ScheduleSection } from '../data/schedule';
 import { BASE_TABLE_WIDTH, ScheduleTable } from './ScheduleTable';
 
 type MiniScheduleTableProps = {
@@ -8,6 +8,7 @@ type MiniScheduleTableProps = {
   nextMatchId?: string;
   selectedCountry?: string;
   todayKey?: string;
+  onOpenMatchDetail?: (match: Match) => void;
 };
 
 const getOverviewScale = (containerWidth: number) =>
@@ -19,6 +20,7 @@ export function MiniScheduleTable({
   nextMatchId,
   selectedCountry,
   todayKey,
+  onOpenMatchDetail,
 }: MiniScheduleTableProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -60,6 +62,7 @@ export function MiniScheduleTable({
             selectedCountry={selectedCountry}
             todayKey={todayKey}
             className="mini-overview-table-wrap overflow-visible pb-0"
+            onOpenMatchDetail={onOpenMatchDetail}
           />
         </div>
       </div>

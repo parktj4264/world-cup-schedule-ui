@@ -385,6 +385,34 @@ const parseNumber = (value) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+const parseScorers = (value) => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalized = value
+    .trim()
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'");
+
+  if (!normalized || /^null$/i.test(normalized) || normalized === '{}' || normalized === '[]') {
+    return undefined;
+  }
+
+  const quotedItems = Array.from(normalized.matchAll(/"([^"]+)"/g), (match) => match[1].trim())
+    .filter(Boolean);
+
+  const scorers = quotedItems.length > 0
+    ? quotedItems
+    : normalized
+      .replace(/^[{\[]|[}\]]$/g, '')
+      .split(/[,،]/)
+      .map((item) => item.trim().replace(/^"|"$/g, ''))
+      .filter(Boolean);
+
+  return scorers.length > 0 ? scorers : undefined;
+};
+
 const toKstIsoFromDate = (date) => {
   if (!Number.isFinite(date.getTime())) {
     return undefined;
@@ -645,6 +673,8 @@ const normalizeWorldCup26Game = (game) => {
     elapsed,
     homeScore,
     awayScore,
+    homeScorers: parseScorers(game?.home_scorers),
+    awayScorers: parseScorers(game?.away_scorers),
     winner: getWinnerFromScores(status, homeScore, awayScore),
   };
 };

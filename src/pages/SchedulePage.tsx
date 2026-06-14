@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FilterBar } from '../components/FilterBar';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
+import { MatchDetailModal } from '../components/MatchDetailModal';
 import { ScheduleControls } from '../components/ScheduleControls';
 import { ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
@@ -12,7 +13,7 @@ import {
   parseLiveSchedule,
   type LiveSchedule,
 } from '../utils/liveSchedule';
-import { getKstDateKey, getLiveMatches, getMatchStartTime, getNextMatch } from '../utils/timeUtils';
+import { flattenMatches, getKstDateKey, getLiveMatches, getMatchStartTime, getNextMatch } from '../utils/timeUtils';
 
 const DETAIL_VIEW_ZOOM = 70;
 const LIVE_SCHEDULE_URL = `${import.meta.env.BASE_URL}data/live-schedule.json`;
@@ -142,6 +143,7 @@ export function SchedulePage() {
   const [browserLiveUpdatedAt, setBrowserLiveUpdatedAt] = useState<string | null>(null);
   const [browserLiveError, setBrowserLiveError] = useState(false);
   const [browserLiveChecking, setBrowserLiveChecking] = useState(true);
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState('');
   const shareToastTimeoutRef = useRef<number | undefined>(undefined);
   const liveScheduleRef = useRef<LiveSchedule | undefined>(undefined);
@@ -366,6 +368,12 @@ export function SchedulePage() {
   const nextMatch = useMemo(() => getNextMatch(visibleSections, currentTime), [currentTime, visibleSections]);
   const liveMatches = useMemo(() => getLiveMatches(visibleSections, currentTime), [currentTime, visibleSections]);
   const countryOptions = useMemo(() => getCountryOptions(visibleSections), [visibleSections]);
+  const selectedMatch = useMemo(
+    () => selectedMatchId
+      ? flattenMatches(visibleSections).find((match) => match.id === selectedMatchId)
+      : undefined,
+    [selectedMatchId, visibleSections],
+  );
 
   const scrollAfterRender = useCallback((selector: string) => {
     window.requestAnimationFrame(() => {
@@ -457,6 +465,7 @@ export function SchedulePage() {
             nextMatchId={nextMatch?.id}
             selectedCountry={selectedCountry}
             todayKey={todayKey}
+            onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
         ) : (
           <ScheduleTable
@@ -466,8 +475,12 @@ export function SchedulePage() {
             zoom={DETAIL_VIEW_ZOOM}
             selectedCountry={selectedCountry}
             todayKey={todayKey}
+            onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
         )}
+        {selectedMatch ? (
+          <MatchDetailModal match={selectedMatch} onClose={() => setSelectedMatchId(null)} />
+        ) : null}
       </div>
     </main>
   );

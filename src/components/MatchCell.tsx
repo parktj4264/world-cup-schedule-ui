@@ -1,5 +1,6 @@
 import { FlagIcon } from './FlagIcon';
 import type { Match, ScheduleCell } from '../data/schedule';
+import { canOpenMatchDetail, getLiveBadgeLabel, hasScore } from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
 type MatchCellProps = {
@@ -7,6 +8,7 @@ type MatchCellProps = {
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry?: string;
+  onOpenMatchDetail?: (match: Match) => void;
 };
 
 type MatchGroup = {
@@ -39,9 +41,6 @@ const groupMatches = (matches: Match[]) =>
     ];
   }, []);
 
-const hasScore = (match: Match) =>
-  typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
-
 const getScoreClassName = (match: Match, side: 'home' | 'away') => {
   const isWinner =
     (side === 'home' && match.winner === 'home') ||
@@ -51,22 +50,6 @@ const getScoreClassName = (match: Match, side: 'home' | 'away') => {
     'mx-1 inline-block min-w-4 border border-neutral-400 bg-white px-1 text-center text-[12px] font-black leading-4',
     isWinner ? 'border-neutral-900 text-neutral-950' : 'text-neutral-700',
   ].join(' ');
-};
-
-const getStatusLabel = (match: Match) => {
-  if (match.status === 'postponed') {
-    return '연기';
-  }
-
-  if (match.status === 'cancelled') {
-    return '취소';
-  }
-
-  if (match.status === 'suspended') {
-    return '중단';
-  }
-
-  return undefined;
 };
 
 const includesSelectedCountry = (match: Match, selectedCountry: string) => {
@@ -83,6 +66,7 @@ export function MatchCell({
   currentTime,
   nextMatchId,
   selectedCountry = '',
+  onOpenMatchDetail,
 }: MatchCellProps) {
   const hasKorea = cell.matches.some((match) => match.isKorea);
   const hasSelectedCountry = cell.matches.some((match) =>
@@ -113,9 +97,7 @@ export function MatchCell({
       <div className="flex flex-col items-center gap-[3px]">
         {groupMatches(cell.matches).map((matchGroup, groupIndex) => {
           const isGroupPast = matchGroup.matches.every((match) => isPastMatch(match, currentTime));
-          const isGroupLive = matchGroup.matches.some((match) => isLiveMatch(match, currentTime));
-          const liveMatch = matchGroup.matches.find((match) => isLiveMatch(match, currentTime));
-          const statusLabel = matchGroup.matches.map(getStatusLabel).find(Boolean);
+          const liveBadgeLabel = matchGroup.matches.map(getLiveBadgeLabel).find(Boolean);
 
           return (
             <div
@@ -131,37 +113,52 @@ export function MatchCell({
               <div className="schedule-match-meta whitespace-nowrap text-center text-neutral-900">
                 <span className="schedule-match-time font-black">{matchGroup.timeLabel}</span>
                 <span className="font-semibold">, {matchGroup.group} {matchGroup.round}</span>
-                {isGroupLive ? (
+                {liveBadgeLabel ? (
                   <span className="ml-1 inline-block border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
-                    LIVE{typeof liveMatch?.elapsed === 'number' ? ` ${liveMatch.elapsed}'` : ''}
-                  </span>
-                ) : null}
-                {!isGroupLive && statusLabel ? (
-                  <span className="ml-1 inline-block border border-neutral-700 bg-neutral-100 px-1 text-[10px] font-black leading-4 text-neutral-800">
-                    {statusLabel}
+                    {liveBadgeLabel}
                   </span>
                 ) : null}
               </div>
               <div className="mt-[1px] flex flex-col items-center gap-[1px]">
-                {matchGroup.matches.map((match) => (
-                  <div
-                    key={match.id}
-                    data-match-id={match.id}
-                    className="schedule-teams whitespace-nowrap text-center font-extrabold leading-[1.25] text-neutral-950"
-                  >
-                    <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
-                    {match.home}
-                    {hasScore(match) ? (
-                      <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
-                    ) : null}
-                    <span className="px-1 font-black">:</span>
-                    {hasScore(match) ? (
-                      <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
-                    ) : null}
-                    {match.away}
-                    <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
-                  </div>
-                ))}
+                {matchGroup.matches.map((match) => {
+                  const matchContent = (
+                    <>
+                      <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
+                      {match.home}
+                      {hasScore(match) ? (
+                        <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
+                      ) : null}
+                      <span className="px-1 font-black">:</span>
+                      {hasScore(match) ? (
+                        <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
+                      ) : null}
+                      {match.away}
+                      <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
+                    </>
+                  );
+                  const openMatchDetail = canOpenMatchDetail(match) ? onOpenMatchDetail : undefined;
+
+                  return openMatchDetail ? (
+                    <button
+                      key={match.id}
+                      type="button"
+                      data-match-id={match.id}
+                      className="schedule-teams schedule-match-trigger whitespace-nowrap border-0 bg-transparent p-0 text-center font-extrabold leading-[1.25] text-neutral-950 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-900"
+                      aria-label={`${match.home} 대 ${match.away} 경기 상세 보기`}
+                      onClick={() => openMatchDetail(match)}
+                    >
+                      {matchContent}
+                    </button>
+                  ) : (
+                    <div
+                      key={match.id}
+                      data-match-id={match.id}
+                      className="schedule-teams whitespace-nowrap text-center font-extrabold leading-[1.25] text-neutral-950"
+                    >
+                      {matchContent}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
