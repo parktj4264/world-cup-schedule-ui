@@ -7,6 +7,8 @@ type StatusBarProps = {
   liveMatches: Match[];
   liveScheduleUpdatedAt?: string | null;
   liveScheduleError?: boolean;
+  browserLiveUpdatedAt?: string | null;
+  browserLiveError?: boolean;
 };
 
 const formatMatch = (match: Match) => `${match.timeLabel} ${match.home} : ${match.away}`;
@@ -31,9 +33,12 @@ export function StatusBar({
   liveMatches,
   liveScheduleUpdatedAt,
   liveScheduleError = false,
+  browserLiveUpdatedAt,
+  browserLiveError = false,
 }: StatusBarProps) {
   const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
   const liveScheduleUpdatedTime = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
+  const browserLiveUpdatedTime = formatLiveScheduleUpdatedAt(browserLiveUpdatedAt);
 
   return (
     <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
@@ -56,7 +61,10 @@ export function StatusBar({
         {liveScheduleUpdatedTime ? (
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
-        {liveScheduleError ? (
+        {browserLiveUpdatedTime ? (
+          <span className="text-[12px] text-neutral-600">브라우저 최신 확인: {browserLiveUpdatedTime}</span>
+        ) : null}
+        {liveScheduleError || browserLiveError ? (
           <span className="text-[12px] text-neutral-600">최신 정보 확인 실패</span>
         ) : null}
       </div>
