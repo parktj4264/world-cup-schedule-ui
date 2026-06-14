@@ -34,6 +34,26 @@ const BrowserCheckingBadge = () => (
   </span>
 );
 
+const BrowserLiveStatus = ({
+  updatedTime,
+  isChecking,
+}: {
+  updatedTime?: string;
+  isChecking: boolean;
+}) => {
+  if (!updatedTime && !isChecking) {
+    return null;
+  }
+
+  return (
+    <span className="inline-flex min-w-[278px] items-center gap-1 whitespace-nowrap text-[12px] leading-4 text-neutral-600">
+      <span>브라우저 최신 확인:</span>
+      {updatedTime ? <span>{updatedTime}</span> : null}
+      {isChecking ? <BrowserCheckingBadge /> : null}
+    </span>
+  );
+};
+
 export function StatusBar({
   currentTime,
   nextMatch,
@@ -73,17 +93,7 @@ export function StatusBar({
         {liveScheduleUpdatedTime ? (
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
-        {browserLiveUpdatedTime ? (
-          <span className="inline-flex items-center gap-1 whitespace-nowrap text-[12px] leading-4 text-neutral-600">
-            <span>브라우저 최신 확인: {browserLiveUpdatedTime}</span>
-            {browserLiveChecking ? <BrowserCheckingBadge /> : null}
-          </span>
-        ) : browserLiveChecking ? (
-          <span className="inline-flex items-center gap-1 whitespace-nowrap text-[12px] leading-4 text-neutral-600">
-            <span>브라우저 최신 확인:</span>
-            <BrowserCheckingBadge />
-          </span>
-        ) : null}
+        <BrowserLiveStatus updatedTime={browserLiveUpdatedTime} isChecking={browserLiveChecking} />
         {liveScheduleError || browserLiveError ? (
           <span className="text-[12px] text-neutral-600">최신 정보 확인 실패</span>
         ) : null}
