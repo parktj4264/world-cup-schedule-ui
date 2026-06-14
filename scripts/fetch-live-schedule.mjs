@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,9 +11,179 @@ const WORLD_CUP_26_GAMES_ENDPOINT = 'https://worldcup26.ir/get/games';
 const OPENFOOTBALL_ENDPOINT =
   'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json';
 const ENABLE_API_FOOTBALL = ENV.LIVE_SCHEDULE_PROVIDER === 'api-football';
+const DEPLOYED_LIVE_SCHEDULE_ENDPOINT =
+  ENV.LIVE_SCHEDULE_ENDPOINT ??
+  'https://parktj4264.github.io/world-cup-schedule-ui/data/live-schedule.json';
+const RECENT_LIVE_SKIP_MS = Number(ENV.LIVE_SCHEDULE_MIN_INTERVAL_MINUTES ?? 8) * 60 * 1000;
+const WORLD_CUP_26_RETRY_DELAYS_MS = (ENV.WORLD_CUP_26_RETRY_DELAYS_MS ?? '0,10000,30000,60000')
+  .split(',')
+  .map((value) => Number(value.trim()))
+  .filter((value) => Number.isFinite(value) && value >= 0);
+const LIVE_PROVIDER_SOURCES = new Set(['worldcup26.ir', 'api-football']);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outputPath = path.resolve(__dirname, '../public/data/live-schedule.json');
+
+class FetchHttpError extends Error {
+  constructor(url, response) {
+    super(`${url} failed: ${response.status} ${response.statusText}`);
+    this.name = 'FetchHttpError';
+    this.status = response.status;
+  }
+}
+
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+
+const getOutputSummary = (output) => {
+  const matches = Array.isArray(output?.matches) ? output.matches : [];
+  const live = matches.filter((match) => match?.status === 'live').length;
+  const finished = matches.filter((match) => match?.status === 'finished').length;
+  const scored = matches.filter(
+    (match) => typeof match?.homeScore === 'number' || typeof match?.awayScore === 'number',
+  ).length;
+
+  return {
+    total: matches.length,
+    live,
+    finished,
+    scored,
+    liveCapable: LIVE_PROVIDER_SOURCES.has(output?.source),
+  };
+};
+
+const logOutputSummary = (label, output) => {
+  if (!output) {
+    console.log(`${label}: none`);
+    return;
+  }
+
+  const summary = getOutputSummary(output);
+  console.log(
+    `${label}: source=${output.source}, updated=${output.sourceUpdatedAt ?? 'unknown'}, ` +
+      `matches=${summary.total}, live=${summary.live}, finished=${summary.finished}, scored=${summary.scored}`,
+  );
+};
+
+const getOutputTimestamp = (output) => {
+  const time = new Date(output?.sourceUpdatedAt ?? '').getTime();
+
+  return Number.isFinite(time) ? time : 0;
+};
+
+const getPreviousOutputRank = (output) => {
+  const summary = getOutputSummary(output);
+
+  if (summary.liveCapable) {
+    return 3;
+  }
+
+  if (summary.live > 0 || summary.scored > 0) {
+    return 2;
+  }
+
+  return 1;
+};
+
+const chooseBestPreviousOutput = (outputs) =>
+  outputs
+    .filter(Boolean)
+    .sort((left, right) => {
+      const rankDelta = getPreviousOutputRank(right) - getPreviousOutputRank(left);
+
+      if (rankDelta !== 0) {
+        return rankDelta;
+      }
+
+      return getOutputTimestamp(right) - getOutputTimestamp(left);
+    })[0];
+
+const parseLiveScheduleOutput = (payload) => {
+  if (!payload || typeof payload !== 'object') {
+    return undefined;
+  }
+
+  const source = typeof payload.source === 'string' ? payload.source : undefined;
+  const matches = Array.isArray(payload.matches) ? payload.matches.filter(Boolean) : undefined;
+
+  if (!source || !matches || matches.length === 0) {
+    return undefined;
+  }
+
+  return {
+    source,
+    sourceUpdatedAt: typeof payload.sourceUpdatedAt === 'string' ? payload.sourceUpdatedAt : null,
+    matches,
+  };
+};
+
+const loadPreviousOutput = async () => {
+  const deployedUrl = `${DEPLOYED_LIVE_SCHEDULE_ENDPOINT}?cacheBust=${Date.now()}`;
+  const outputs = [];
+  const candidates = [
+    [
+      'deployed Pages JSON',
+      async () => fetchJson(deployedUrl, {
+        headers: {
+          Accept: 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+      }),
+    ],
+    ['local repository JSON', async () => JSON.parse(await readFile(outputPath, 'utf8'))],
+  ];
+
+  for (const [label, load] of candidates) {
+    try {
+      const output = parseLiveScheduleOutput(await load());
+
+      if (output) {
+        logOutputSummary(`Loaded previous ${label}`, output);
+        outputs.push(output);
+        continue;
+      }
+
+      console.warn(`Previous ${label} did not look like live-schedule.json.`);
+    } catch (error) {
+      console.warn(`Could not load previous ${label}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  const bestOutput = chooseBestPreviousOutput(outputs);
+
+  if (bestOutput) {
+    logOutputSummary('Selected previous schedule baseline', bestOutput);
+  }
+
+  return bestOutput;
+};
+
+const isRecentLiveOutput = (output, now = new Date()) => {
+  if (!output || !LIVE_PROVIDER_SOURCES.has(output.source) || !output.sourceUpdatedAt) {
+    return false;
+  }
+
+  const updatedAt = new Date(output.sourceUpdatedAt).getTime();
+
+  if (!Number.isFinite(updatedAt)) {
+    return false;
+  }
+
+  const ageMs = now.getTime() - updatedAt;
+
+  return ageMs >= 0 && ageMs < RECENT_LIVE_SKIP_MS;
+};
+
+const shouldKeepPreviousInsteadOfStatic = (previousOutput) => {
+  if (!previousOutput) {
+    return false;
+  }
+
+  const summary = getOutputSummary(previousOutput);
+
+  return summary.liveCapable || summary.live > 0 || summary.scored > 0;
+};
 
 const STADIUM_TIME_ZONES = new Map(
   Object.entries({
@@ -514,10 +684,45 @@ const fetchJson = async (url, options) => {
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    throw new Error(`${url} failed: ${response.status} ${response.statusText}`);
+    throw new FetchHttpError(url, response);
   }
 
   return response.json();
+};
+
+const isRetryableFetchError = (error) => {
+  if (error instanceof FetchHttpError) {
+    return error.status === 429 || error.status >= 500;
+  }
+
+  return true;
+};
+
+const fetchJsonWithRetry = async (url, options, retryDelaysMs, label) => {
+  let lastError;
+
+  for (let attemptIndex = 0; attemptIndex < retryDelaysMs.length; attemptIndex += 1) {
+    const delayMs = retryDelaysMs[attemptIndex];
+
+    if (delayMs > 0) {
+      console.warn(`${label} retry ${attemptIndex + 1}/${retryDelaysMs.length} after ${delayMs}ms`);
+      await sleep(delayMs);
+    }
+
+    try {
+      return await fetchJson(url, options);
+    } catch (error) {
+      lastError = error;
+
+      if (!isRetryableFetchError(error) || attemptIndex === retryDelaysMs.length - 1) {
+        break;
+      }
+
+      console.warn(`${label} attempt ${attemptIndex + 1} failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  throw lastError;
 };
 
 const normalizeProviderMatches = (source, rawMatches, normalizeMatch) => {
@@ -555,11 +760,16 @@ const fetchApiFootballMatches = async () => {
 };
 
 const fetchWorldCup26Matches = async () => {
-  const data = await fetchJson(WORLD_CUP_26_GAMES_ENDPOINT, {
-    headers: {
-      Accept: 'application/json',
+  const data = await fetchJsonWithRetry(
+    WORLD_CUP_26_GAMES_ENDPOINT,
+    {
+      headers: {
+        Accept: 'application/json',
+      },
     },
-  });
+    WORLD_CUP_26_RETRY_DELAYS_MS.length > 0 ? WORLD_CUP_26_RETRY_DELAYS_MS : [0],
+    'worldcup26.ir',
+  );
 
   if (!Array.isArray(data?.games)) {
     throw new Error('worldcup26.ir response did not include a games array.');
@@ -578,41 +788,76 @@ const fetchOpenFootballMatches = async () => {
   return normalizeProviderMatches('openfootball', data.matches, normalizeOpenFootballMatch);
 };
 
-const providers = [
+const liveProviders = [
   ['worldcup26.ir', fetchWorldCup26Matches],
-  ['openfootball/worldcup.json', fetchOpenFootballMatches],
   ...(ENABLE_API_FOOTBALL ? [['api-football', fetchApiFootballMatches]] : []),
 ];
 
+const staticProviders = [['openfootball/worldcup.json', fetchOpenFootballMatches]];
+
+const fetchProviderOutput = async (providers, providerType) => {
+  for (const [source, fetchMatches] of providers) {
+    try {
+      const matches = await fetchMatches();
+
+      if (matches.length === 0) {
+        console.warn(`${source} returned no usable fixtures. Trying next ${providerType} provider.`);
+        continue;
+      }
+
+      const output = {
+        source,
+        sourceUpdatedAt: new Date().toISOString(),
+        matches,
+      };
+
+      logOutputSummary(`Fetched ${providerType} provider`, output);
+
+      return output;
+    } catch (error) {
+      console.warn(`${source} failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return undefined;
+};
+
+const previousOutput = await loadPreviousOutput();
 let output;
 
-for (const [source, fetchMatches] of providers) {
-  try {
-    const matches = await fetchMatches();
+if (isRecentLiveOutput(previousOutput)) {
+  output = previousOutput;
+  console.log(
+    `Previous live provider output is newer than ${RECENT_LIVE_SKIP_MS / 60_000} minutes. ` +
+      'Skipping provider fetch to avoid bursty duplicate checks.',
+  );
+} else {
+  output = await fetchProviderOutput(liveProviders, 'live');
+}
 
-    if (matches.length === 0) {
-      console.warn(`${source} returned no usable fixtures. Trying next provider.`);
-      continue;
-    }
+if (!output && previousOutput && shouldKeepPreviousInsteadOfStatic(previousOutput)) {
+  output = previousOutput;
+  console.warn('No live provider succeeded. Keeping previous live/scored schedule instead of downgrading to static data.');
+}
 
-    output = {
-      source,
-      sourceUpdatedAt: new Date().toISOString(),
-      matches,
-    };
-    break;
-  } catch (error) {
-    console.warn(`${source} failed: ${error instanceof Error ? error.message : String(error)}`);
+if (!output) {
+  const staticOutput = await fetchProviderOutput(staticProviders, 'static');
+
+  if (staticOutput && !shouldKeepPreviousInsteadOfStatic(previousOutput)) {
+    output = staticOutput;
+  } else if (previousOutput) {
+    output = previousOutput;
+    console.warn('Static fallback was not allowed to replace previous schedule quality. Keeping previous schedule.');
   }
 }
 
 if (!output) {
-  console.warn('No live schedule provider returned usable fixtures. Keeping existing live-schedule.json.');
+  console.warn('No provider returned usable fixtures and no previous schedule exists. Keeping repository live-schedule.json untouched.');
   process.exit(0);
 }
 
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 
-console.log(`Fetched ${output.source} fixtures at ${output.sourceUpdatedAt}`);
+logOutputSummary('Final live schedule output', output);
 console.log(`Wrote ${output.matches.length} live schedule updates to ${outputPath}`);
