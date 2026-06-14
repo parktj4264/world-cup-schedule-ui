@@ -29,7 +29,7 @@ const formatLiveScheduleUpdatedAt = (updatedAt: string | null | undefined) => {
 };
 
 const BrowserCheckingBadge = () => (
-  <span className="ml-1 inline-flex border border-blue-700 bg-blue-50 px-1.5 py-[1px] text-[11px] font-black leading-4 text-blue-800">
+  <span className="inline-flex h-4 items-center border border-blue-700 bg-blue-50 px-1.5 text-[10px] font-black leading-none text-blue-800">
     확인 중
   </span>
 );
@@ -74,13 +74,14 @@ export function StatusBar({
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
         {browserLiveUpdatedTime ? (
-          <span className="text-[12px] text-neutral-600">
-            브라우저 최신 확인: {browserLiveUpdatedTime}
+          <span className="inline-flex items-center gap-1 whitespace-nowrap text-[12px] leading-4 text-neutral-600">
+            <span>브라우저 최신 확인: {browserLiveUpdatedTime}</span>
             {browserLiveChecking ? <BrowserCheckingBadge /> : null}
           </span>
         ) : browserLiveChecking ? (
-          <span className="text-[12px] text-neutral-600">
-            브라우저 최신 확인: <BrowserCheckingBadge />
+          <span className="inline-flex items-center gap-1 whitespace-nowrap text-[12px] leading-4 text-neutral-600">
+            <span>브라우저 최신 확인:</span>
+            <BrowserCheckingBadge />
           </span>
         ) : null}
         {liveScheduleError || browserLiveError ? (
