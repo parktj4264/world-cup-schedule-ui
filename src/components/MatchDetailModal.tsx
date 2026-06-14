@@ -35,6 +35,7 @@ const ScorerList = ({ title, scorers }: { title: string; scorers?: string[] }) =
 };
 
 export function MatchDetailModal({ match, onClose }: MatchDetailModalProps) {
+  const kickoffTime = `${formatKstDateTime(new Date(match.kickoff))} KST`;
   const updatedAt = formatUpdatedAt(match.sourceUpdatedAt);
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
   const isScorelessFinishedMatch = hasScore(match) && match.homeScore === 0 && match.awayScore === 0;
@@ -70,7 +71,7 @@ export function MatchDetailModal({ match, onClose }: MatchDetailModalProps) {
         <div className="flex items-start justify-between gap-3 border-b border-neutral-800 pb-2">
           <div>
             <div className="text-[11px] font-black text-neutral-600">
-              {formatKstDateTime(new Date(match.kickoff))} KST · {match.group} {match.round}
+              {match.group} {match.round}
             </div>
             <h2 id="match-detail-title" className="mt-1 text-[18px] font-black leading-tight">
               경기 상세
@@ -98,12 +99,8 @@ export function MatchDetailModal({ match, onClose }: MatchDetailModalProps) {
         <div className="grid grid-cols-[88px_1fr] gap-y-2 border-y border-neutral-300 py-3 text-[13px]">
           <div className="font-black text-neutral-600">상태</div>
           <div className="font-bold">{getMatchDetailStatusLabel(match)}</div>
-          {typeof match.apiFootballFixtureId === 'number' ? (
-            <>
-              <div className="font-black text-neutral-600">경기 번호</div>
-              <div className="font-bold">{match.apiFootballFixtureId}</div>
-            </>
-          ) : null}
+          <div className="font-black text-neutral-600">경기 시간</div>
+          <div className="font-bold">{kickoffTime}</div>
           {updatedAt ? (
             <>
               <div className="font-black text-neutral-600">최근 확인</div>
