@@ -10,8 +10,10 @@ type MiniScheduleTableProps = {
   todayKey?: string;
 };
 
+const MINI_OVERVIEW_MAX_SCALE = 0.62;
+
 const getOverviewScale = (containerWidth: number) =>
-  Math.min(1, Math.max(0.32, containerWidth / BASE_TABLE_WIDTH));
+  Math.min(MINI_OVERVIEW_MAX_SCALE, Math.max(0.32, containerWidth / BASE_TABLE_WIDTH));
 
 export function MiniScheduleTable({
   sections,
