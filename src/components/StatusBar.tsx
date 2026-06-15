@@ -12,6 +12,9 @@ type StatusBarProps = {
   browserLiveChecking?: boolean;
 };
 
+const STALE_UPDATE_WARNING_MS = 6 * 60 * 60 * 1000;
+const CRITICAL_STALE_UPDATE_MS = 24 * 60 * 60 * 1000;
+
 const formatMatch = (match: Match) => `${match.timeLabel} ${match.home} : ${match.away}`;
 
 const formatLiveScheduleUpdatedAt = (updatedAt: string | null | undefined) => {
@@ -26,6 +29,55 @@ const formatLiveScheduleUpdatedAt = (updatedAt: string | null | undefined) => {
   }
 
   return `${formatKstDateTime(date)} KST`;
+};
+
+const getUpdatedAtTime = (updatedAt: string | null | undefined) => {
+  const time = new Date(updatedAt ?? '').getTime();
+
+  return Number.isFinite(time) ? time : 0;
+};
+
+const getLatestUpdatedAt = (...updatedAts: (string | null | undefined)[]) => {
+  const latest = updatedAts
+    .map((updatedAt) => ({ updatedAt, time: getUpdatedAtTime(updatedAt) }))
+    .sort((left, right) => right.time - left.time)[0];
+
+  return latest?.time ? latest.updatedAt : undefined;
+};
+
+const formatUpdateAge = (updatedAt: string | null | undefined, currentTime: Date) => {
+  const updatedTime = getUpdatedAtTime(updatedAt);
+
+  if (!updatedTime) {
+    return '알 수 없음';
+  }
+
+  const ageMinutes = Math.max(0, Math.floor((currentTime.getTime() - updatedTime) / 60_000));
+
+  if (ageMinutes < 1) {
+    return '방금 전';
+  }
+
+  if (ageMinutes < 60) {
+    return `${ageMinutes}분 전`;
+  }
+
+  const hours = Math.floor(ageMinutes / 60);
+  const minutes = ageMinutes % 60;
+
+  if (hours < 24) {
+    return minutes > 0 ? `${hours}시간 ${minutes}분 전` : `${hours}시간 전`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  return `${days}일 전`;
+};
+
+const getUpdateAgeMs = (updatedAt: string | null | undefined, currentTime: Date) => {
+  const updatedTime = getUpdatedAtTime(updatedAt);
+
+  return updatedTime ? Math.max(0, currentTime.getTime() - updatedTime) : Number.POSITIVE_INFINITY;
 };
 
 const BrowserCheckingBadge = () => (
@@ -68,6 +120,15 @@ export function StatusBar({
   const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
   const liveScheduleUpdatedTime = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
   const browserLiveUpdatedTime = formatLiveScheduleUpdatedAt(browserLiveUpdatedAt);
+  const hasUpdateError = liveScheduleError || browserLiveError;
+  const latestSuccessfulUpdateAt = getLatestUpdatedAt(liveScheduleUpdatedAt, browserLiveUpdatedAt);
+  const updateAge = formatUpdateAge(latestSuccessfulUpdateAt, currentTime);
+  const updateAgeMs = getUpdateAgeMs(latestSuccessfulUpdateAt, currentTime);
+  const isStale = updateAgeMs >= STALE_UPDATE_WARNING_MS;
+  const isCriticallyStale = updateAgeMs >= CRITICAL_STALE_UPDATE_MS;
+  const staleMessage = isStale
+    ? `정보가 오래됐습니다 · 기존 정보 기준: ${updateAge}`
+    : `최신 정보 확인 실패 · 기존 정보 기준: ${updateAge}`;
 
   return (
     <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
@@ -95,8 +156,15 @@ export function StatusBar({
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
         <BrowserLiveStatus updatedTime={browserLiveUpdatedTime} isChecking={browserLiveChecking} />
-        {liveScheduleError || browserLiveError ? (
-          <span className="text-[12px] text-neutral-600">최신 정보 확인 실패</span>
+        {hasUpdateError || isStale ? (
+          <span
+            className={[
+              'text-[12px]',
+              isCriticallyStale ? 'font-black text-red-900' : 'text-red-800',
+            ].join(' ')}
+          >
+            {staleMessage}
+          </span>
         ) : null}
       </div>
     </div>

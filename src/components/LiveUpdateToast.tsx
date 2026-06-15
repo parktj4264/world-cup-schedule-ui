@@ -79,11 +79,10 @@ export function LiveUpdateToast({ isChecking, hasError, updatedAt }: LiveUpdateT
         isError ? 'border-red-700' : isDone ? 'border-green-700' : 'border-blue-800',
       ].join(' ')}
     >
-      <span className="inline-flex items-center gap-2 whitespace-nowrap">
-        {toastState === 'checking' ? <span className="browser-checking-hourglass" aria-hidden="true" /> : null}
-        {toastState === 'checking' ? '최신 경기 정보를 확인하고 있어요' : null}
+      <span className="inline-flex items-center whitespace-nowrap">
+        {toastState === 'checking' ? '최신 경기 스코어 정보를 확인하고 있어요' : null}
         {toastState === 'done' ? '최신 정보 확인 완료' : null}
-        {toastState === 'error' ? '최신 정보 확인 실패. 기존 정보를 유지합니다' : null}
+        {toastState === 'error' ? '기존 정보를 유지합니다' : null}
       </span>
     </div>
   );
