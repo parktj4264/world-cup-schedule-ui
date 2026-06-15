@@ -1,5 +1,5 @@
 import type { Match } from '../data/schedule';
-import { isLiveMatch, isPastMatch } from './timeUtils';
+import { getMatchStartTime, isLiveMatch, isPastMatch } from './timeUtils';
 
 export const hasScore = (match: Match) =>
   typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
@@ -10,23 +10,55 @@ const isHalftimeStatus = (statusLabel: string | undefined) => {
   return ['ht', 'half', 'halftime', 'half-time'].includes(normalized);
 };
 
+const getElapsedMinute = (match: Match, currentTime?: Date) => {
+  if (typeof match.elapsed === 'number') {
+    return match.elapsed;
+  }
+
+  const statusElapsed = Number(match.statusLabel);
+
+  if (Number.isFinite(statusElapsed)) {
+    return statusElapsed;
+  }
+
+  if (!currentTime || !isLiveMatch(match, currentTime)) {
+    return undefined;
+  }
+
+  const elapsed = Math.floor((currentTime.getTime() - getMatchStartTime(match)) / 60_000) + 1;
+
+  return elapsed > 0 ? elapsed : undefined;
+};
+
+const formatLiveMinute = (minute: number) => {
+  const safeMinute = Math.max(1, Math.floor(minute));
+
+  if (safeMinute <= 45) {
+    return `전반 ${safeMinute}분`;
+  }
+
+  if (safeMinute <= 90) {
+    return `후반 ${safeMinute - 45}분`;
+  }
+
+  if (safeMinute <= 105) {
+    return `연장 전반 ${safeMinute - 90}분`;
+  }
+
+  if (safeMinute <= 120) {
+    return `연장 후반 ${safeMinute - 105}분`;
+  }
+
+  return `연장 ${safeMinute}분`;
+};
+
 export const getLiveBadgeLabel = (match: Match, currentTime?: Date) => {
   if (currentTime && !isLiveMatch(match, currentTime)) {
     return undefined;
   }
 
   if (match.status === 'live') {
-    if (isHalftimeStatus(match.statusLabel)) {
-      return 'HT';
-    }
-
-    if (typeof match.elapsed === 'number') {
-      return `LIVE ${match.elapsed}'`;
-    }
-
-    const elapsed = Number(match.statusLabel);
-
-    return Number.isFinite(elapsed) ? `LIVE ${elapsed}'` : 'LIVE';
+    return 'LIVE';
   }
 
   if (currentTime && isLiveMatch(match, currentTime)) {
@@ -36,11 +68,26 @@ export const getLiveBadgeLabel = (match: Match, currentTime?: Date) => {
   return undefined;
 };
 
+export const getLiveTimingLabel = (match: Match, currentTime?: Date) => {
+  if (currentTime && !isLiveMatch(match, currentTime)) {
+    return undefined;
+  }
+
+  if (isHalftimeStatus(match.statusLabel)) {
+    return 'HT';
+  }
+
+  const elapsedMinute = getElapsedMinute(match, currentTime);
+
+  return typeof elapsedMinute === 'number' ? formatLiveMinute(elapsedMinute) : undefined;
+};
+
 export const getMatchDetailStatusLabel = (match: Match, currentTime?: Date) => {
   const liveLabel = getLiveBadgeLabel(match, currentTime);
+  const liveTimingLabel = getLiveTimingLabel(match, currentTime);
 
   if (liveLabel) {
-    return liveLabel;
+    return liveTimingLabel ? `${liveLabel} · ${liveTimingLabel}` : liveLabel;
   }
 
   if (currentTime && isPastMatch(match, currentTime)) {
