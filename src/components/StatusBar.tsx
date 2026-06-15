@@ -88,6 +88,24 @@ const BrowserCheckingBadge = () => (
   </span>
 );
 
+const RefreshIcon = () => (
+  <svg
+    aria-hidden="true"
+    className="h-3 w-3"
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="square"
+    strokeLinejoin="miter"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path d="M20 6v5h-5" />
+    <path d="M4 18v-5h5" />
+    <path d="M18.3 8A7 7 0 0 0 6.8 5.7L4 8.3" />
+    <path d="M5.7 16A7 7 0 0 0 17.2 18.3L20 15.7" />
+  </svg>
+);
+
 const BrowserLiveStatus = ({
   updatedTime,
   isChecking,
@@ -109,11 +127,12 @@ const BrowserLiveStatus = ({
       {onRefresh ? (
         <button
           type="button"
-          className="ml-1 border border-sky-700 bg-white px-1.5 py-0.5 text-[11px] font-black leading-none text-sky-800 hover:bg-sky-50 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400"
+          className="ml-1 inline-flex items-center gap-1 border-2 border-neutral-900 bg-white px-2 py-0.5 text-[11px] font-black leading-none text-neutral-950 hover:bg-sky-50 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400"
           disabled={isChecking}
           onClick={onRefresh}
         >
-          최신 확인
+          <RefreshIcon />
+          새로고침
         </button>
       ) : null}
     </span>
