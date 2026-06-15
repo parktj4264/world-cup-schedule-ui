@@ -97,7 +97,9 @@ export function MatchCell({
       <div className="flex flex-col items-center gap-[3px]">
         {groupMatches(cell.matches).map((matchGroup, groupIndex) => {
           const isGroupPast = matchGroup.matches.every((match) => isPastMatch(match, currentTime));
-          const liveBadgeLabel = matchGroup.matches.map(getLiveBadgeLabel).find(Boolean);
+          const liveBadgeLabel = matchGroup.matches
+            .map((match) => getLiveBadgeLabel(match, currentTime))
+            .find(Boolean);
 
           return (
             <div
@@ -136,7 +138,7 @@ export function MatchCell({
                       <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
                     </>
                   );
-                  const openMatchDetail = canOpenMatchDetail(match) ? onOpenMatchDetail : undefined;
+                  const openMatchDetail = canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
 
                   return openMatchDetail ? (
                     <button

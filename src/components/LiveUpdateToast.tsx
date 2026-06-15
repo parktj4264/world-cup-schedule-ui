@@ -4,6 +4,7 @@ type LiveUpdateToastProps = {
   isChecking: boolean;
   hasError: boolean;
   updatedAt?: string | null;
+  refreshToken?: number;
 };
 
 type ToastState = 'checking' | 'done' | 'error';
@@ -11,11 +12,17 @@ type ToastState = 'checking' | 'done' | 'error';
 const DONE_TOAST_DURATION_MS = 1600;
 const ERROR_TOAST_DURATION_MS = 2800;
 
-export function LiveUpdateToast({ isChecking, hasError, updatedAt }: LiveUpdateToastProps) {
+export function LiveUpdateToast({
+  isChecking,
+  hasError,
+  updatedAt,
+  refreshToken = 0,
+}: LiveUpdateToastProps) {
   const [toastState, setToastState] = useState<ToastState | null>(() => (isChecking ? 'checking' : null));
   const toastStateRef = useRef<ToastState | null>(toastState);
   const hasShownInitialCheckRef = useRef(isChecking);
   const wasCheckingRef = useRef(isChecking);
+  const lastRefreshTokenRef = useRef(refreshToken);
   const hideTimeoutRef = useRef<number | undefined>(undefined);
 
   const clearHideTimeout = () => {
@@ -43,6 +50,13 @@ export function LiveUpdateToast({ isChecking, hasError, updatedAt }: LiveUpdateT
   }, []);
 
   useEffect(() => {
+    if (refreshToken !== lastRefreshTokenRef.current) {
+      lastRefreshTokenRef.current = refreshToken;
+      showToast('checking');
+      wasCheckingRef.current = true;
+      return;
+    }
+
     if (hasError) {
       showToast('error', ERROR_TOAST_DURATION_MS);
       wasCheckingRef.current = isChecking;
@@ -61,7 +75,7 @@ export function LiveUpdateToast({ isChecking, hasError, updatedAt }: LiveUpdateT
     }
 
     wasCheckingRef.current = isChecking;
-  }, [hasError, isChecking, updatedAt]);
+  }, [hasError, isChecking, refreshToken, updatedAt]);
 
   if (!toastState) {
     return null;

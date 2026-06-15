@@ -1,4 +1,5 @@
 import type { Match } from '../data/schedule';
+import { isLiveMatch, isPastMatch } from './timeUtils';
 
 export const hasScore = (match: Match) =>
   typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
@@ -9,29 +10,41 @@ const isHalftimeStatus = (statusLabel: string | undefined) => {
   return ['ht', 'half', 'halftime', 'half-time'].includes(normalized);
 };
 
-export const getLiveBadgeLabel = (match: Match) => {
-  if (match.status !== 'live') {
+export const getLiveBadgeLabel = (match: Match, currentTime?: Date) => {
+  if (currentTime && !isLiveMatch(match, currentTime)) {
     return undefined;
   }
 
-  if (isHalftimeStatus(match.statusLabel)) {
-    return 'HT';
+  if (match.status === 'live') {
+    if (isHalftimeStatus(match.statusLabel)) {
+      return 'HT';
+    }
+
+    if (typeof match.elapsed === 'number') {
+      return `LIVE ${match.elapsed}'`;
+    }
+
+    const elapsed = Number(match.statusLabel);
+
+    return Number.isFinite(elapsed) ? `LIVE ${elapsed}'` : 'LIVE';
   }
 
-  if (typeof match.elapsed === 'number') {
-    return `LIVE ${match.elapsed}'`;
+  if (currentTime && isLiveMatch(match, currentTime)) {
+    return 'LIVE';
   }
 
-  const elapsed = Number(match.statusLabel);
-
-  return Number.isFinite(elapsed) ? `LIVE ${elapsed}'` : 'LIVE';
+  return undefined;
 };
 
-export const getMatchDetailStatusLabel = (match: Match) => {
-  const liveLabel = getLiveBadgeLabel(match);
+export const getMatchDetailStatusLabel = (match: Match, currentTime?: Date) => {
+  const liveLabel = getLiveBadgeLabel(match, currentTime);
 
   if (liveLabel) {
     return liveLabel;
+  }
+
+  if (currentTime && isPastMatch(match, currentTime)) {
+    return match.status === 'finished' ? '종료' : '시간 기준 종료';
   }
 
   if (match.status === 'finished') {
@@ -53,5 +66,7 @@ export const getMatchDetailStatusLabel = (match: Match) => {
   return '예정';
 };
 
-export const canOpenMatchDetail = (match: Match) =>
-  match.status === 'live' || match.status === 'finished' || hasScore(match);
+export const canOpenMatchDetail = (match: Match, currentTime?: Date) =>
+  (currentTime ? isLiveMatch(match, currentTime) : match.status === 'live') ||
+  match.status === 'finished' ||
+  hasScore(match);

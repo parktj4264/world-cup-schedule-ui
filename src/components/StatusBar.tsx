@@ -10,6 +10,7 @@ type StatusBarProps = {
   browserLiveUpdatedAt?: string | null;
   browserLiveError?: boolean;
   browserLiveChecking?: boolean;
+  onRefreshLiveSchedule?: () => void;
 };
 
 const STALE_UPDATE_WARNING_MS = 6 * 60 * 60 * 1000;
@@ -90,11 +91,13 @@ const BrowserCheckingBadge = () => (
 const BrowserLiveStatus = ({
   updatedTime,
   isChecking,
+  onRefresh,
 }: {
   updatedTime?: string;
   isChecking: boolean;
+  onRefresh?: () => void;
 }) => {
-  if (!updatedTime && !isChecking) {
+  if (!updatedTime && !isChecking && !onRefresh) {
     return null;
   }
 
@@ -103,6 +106,16 @@ const BrowserLiveStatus = ({
       <span>브라우저 최신 확인:</span>
       {updatedTime ? <span>{updatedTime}</span> : null}
       {isChecking ? <BrowserCheckingBadge /> : null}
+      {onRefresh ? (
+        <button
+          type="button"
+          className="ml-1 border border-sky-700 bg-white px-1.5 py-0.5 text-[11px] font-black leading-none text-sky-800 hover:bg-sky-50 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400"
+          disabled={isChecking}
+          onClick={onRefresh}
+        >
+          최신 확인
+        </button>
+      ) : null}
     </span>
   );
 };
@@ -116,6 +129,7 @@ export function StatusBar({
   browserLiveUpdatedAt,
   browserLiveError = false,
   browserLiveChecking = false,
+  onRefreshLiveSchedule,
 }: StatusBarProps) {
   const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
   const liveScheduleUpdatedTime = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
@@ -153,7 +167,11 @@ export function StatusBar({
         {liveScheduleUpdatedTime ? (
           <span className="text-[12px] text-neutral-600">최근 자동 확인: {liveScheduleUpdatedTime}</span>
         ) : null}
-        <BrowserLiveStatus updatedTime={browserLiveUpdatedTime} isChecking={browserLiveChecking} />
+        <BrowserLiveStatus
+          updatedTime={browserLiveUpdatedTime}
+          isChecking={browserLiveChecking}
+          onRefresh={onRefreshLiveSchedule}
+        />
         {hasUpdateError || isStale ? (
           <span
             className={[

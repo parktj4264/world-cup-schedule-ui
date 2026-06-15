@@ -144,12 +144,14 @@ export function SchedulePage() {
   const [browserLiveUpdatedAt, setBrowserLiveUpdatedAt] = useState<string | null>(null);
   const [browserLiveError, setBrowserLiveError] = useState(false);
   const [browserLiveChecking, setBrowserLiveChecking] = useState(true);
+  const [manualLiveRefreshCount, setManualLiveRefreshCount] = useState(0);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState('');
   const shareToastTimeoutRef = useRef<number | undefined>(undefined);
   const liveScheduleRef = useRef<LiveSchedule | undefined>(undefined);
   const hasCompletedInitialBrowserCheckRef = useRef(false);
   const pageLiveReloadRef = useRef<(() => void) | undefined>(undefined);
+  const browserLiveRefreshRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
     liveScheduleRef.current = liveSchedule;
@@ -348,10 +350,19 @@ export function SchedulePage() {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    browserLiveRefreshRef.current = () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = undefined;
+      }
+
+      checkBrowserLiveSchedule();
+    };
 
     return () => {
       stopped = true;
       controller.abort();
+      browserLiveRefreshRef.current = undefined;
 
       if (timeoutId) {
         window.clearTimeout(timeoutId);
@@ -414,6 +425,17 @@ export function SchedulePage() {
     }
   }, [showShareMessage]);
 
+  const handleRefreshLiveSchedule = useCallback(() => {
+    const refresh = browserLiveRefreshRef.current;
+
+    if (!refresh) {
+      return;
+    }
+
+    setManualLiveRefreshCount((count) => count + 1);
+    refresh();
+  }, []);
+
   return (
     <main className="min-h-screen bg-white px-3 py-6 font-poster text-neutral-950">
       {shareMessage ? (
@@ -429,6 +451,7 @@ export function SchedulePage() {
         isChecking={browserLiveChecking}
         hasError={browserLiveError}
         updatedAt={browserLiveUpdatedAt}
+        refreshToken={manualLiveRefreshCount}
       />
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
@@ -451,6 +474,7 @@ export function SchedulePage() {
           browserLiveUpdatedAt={browserLiveUpdatedAt}
           browserLiveError={browserLiveError}
           browserLiveChecking={browserLiveChecking}
+          onRefreshLiveSchedule={handleRefreshLiveSchedule}
         />
         <ScheduleControls
           isMiniView={isMiniView}
@@ -485,7 +509,11 @@ export function SchedulePage() {
           />
         )}
         {selectedMatch ? (
-          <MatchDetailModal match={selectedMatch} onClose={() => setSelectedMatchId(null)} />
+          <MatchDetailModal
+            match={selectedMatch}
+            currentTime={currentTime}
+            onClose={() => setSelectedMatchId(null)}
+          />
         ) : null}
       </div>
     </main>

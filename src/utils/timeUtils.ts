@@ -1,23 +1,61 @@
 import type { Match, ScheduleSection } from '../data/schedule';
 
 export const MATCH_DURATION_MS = 2 * 60 * 60 * 1000;
+const TIME_SENSITIVE_STATUS_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 
 export const getMatchStartTime = (match: Match) => new Date(match.kickoff).getTime();
 
-export const isLiveMatch = (match: Match, now: Date) => {
-  if (match.status) {
-    return match.status === 'live';
+const getSourceUpdatedTime = (match: Match) => {
+  const time = new Date(match.sourceUpdatedAt ?? '').getTime();
+
+  return Number.isFinite(time) ? time : undefined;
+};
+
+const isTimeSensitiveStatusFresh = (match: Match, now: Date) => {
+  const sourceUpdatedTime = getSourceUpdatedTime(match);
+
+  if (!sourceUpdatedTime) {
+    return true;
   }
 
+  const ageMs = now.getTime() - sourceUpdatedTime;
+
+  return ageMs >= 0 && ageMs <= TIME_SENSITIVE_STATUS_MAX_AGE_MS;
+};
+
+const isTerminalStatus = (status: Match['status']) =>
+  status === 'finished' || status === 'postponed' || status === 'cancelled' || status === 'suspended';
+
+const isTimeBasedLiveMatch = (match: Match, now: Date) => {
   const start = getMatchStartTime(match);
   const current = now.getTime();
 
   return current >= start && current < start + MATCH_DURATION_MS;
 };
 
+export const isLiveMatch = (match: Match, now: Date) => {
+  if (match.status === 'live' && isTimeSensitiveStatusFresh(match, now)) {
+    return true;
+  }
+
+  if (isTerminalStatus(match.status)) {
+    return false;
+  }
+
+  return isTimeBasedLiveMatch(match, now);
+};
+
 export const isPastMatch = (match: Match, now: Date) => {
-  if (match.status) {
-    return match.status === 'finished';
+  if (match.status === 'finished') {
+    return true;
+  }
+
+  if (match.status === 'live' && isTimeSensitiveStatusFresh(match, now)) {
+    return false;
+  }
+
+  if (match.status === 'postponed' || match.status === 'cancelled' || match.status === 'suspended') {
+    return false;
   }
 
   const end = getMatchStartTime(match) + MATCH_DURATION_MS;
@@ -34,7 +72,12 @@ export const flattenMatches = (sections: ScheduleSection[]) =>
 
 export const getNextMatch = (sections: ScheduleSection[], now: Date) =>
   flattenMatches(sections)
-    .filter((match) => (!match.status || match.status === 'scheduled') && getMatchStartTime(match) > now.getTime())
+    .filter((match) =>
+      getMatchStartTime(match) > now.getTime() &&
+      !isLiveMatch(match, now) &&
+      !isPastMatch(match, now) &&
+      !isTerminalStatus(match.status),
+    )
     .sort((a, b) => getMatchStartTime(a) - getMatchStartTime(b))[0];
 
 export const getLiveMatches = (sections: ScheduleSection[], now: Date) =>

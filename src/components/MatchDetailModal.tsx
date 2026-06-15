@@ -6,6 +6,7 @@ import { FlagIcon } from './FlagIcon';
 
 type MatchDetailModalProps = {
   match: Match;
+  currentTime: Date;
   onClose: () => void;
 };
 
@@ -34,7 +35,7 @@ const ScorerList = ({ title, scorers }: { title: string; scorers?: string[] }) =
   );
 };
 
-export function MatchDetailModal({ match, onClose }: MatchDetailModalProps) {
+export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailModalProps) {
   const kickoffTime = `${formatKstDateTime(new Date(match.kickoff))} KST`;
   const updatedAt = formatUpdatedAt(match.sourceUpdatedAt);
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
@@ -98,7 +99,7 @@ export function MatchDetailModal({ match, onClose }: MatchDetailModalProps) {
 
         <div className="grid grid-cols-[88px_1fr] gap-y-2 border-y border-neutral-300 py-3 text-[13px]">
           <div className="font-black text-neutral-600">상태</div>
-          <div className="font-bold">{getMatchDetailStatusLabel(match)}</div>
+          <div className="font-bold">{getMatchDetailStatusLabel(match, currentTime)}</div>
           <div className="font-black text-neutral-600">경기 시간</div>
           <div className="font-bold">{kickoffTime}</div>
           {updatedAt ? (
