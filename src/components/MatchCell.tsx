@@ -1,6 +1,6 @@
 import { FlagIcon } from './FlagIcon';
 import type { Match, ScheduleCell } from '../data/schedule';
-import { canOpenMatchDetail, getLiveBadgeLabel, getLiveTimingLabel, hasScore } from '../utils/matchDisplay';
+import { canOpenMatchDetail, getDisplayScores, getLiveBadgeLabel, getLiveTimingLabel } from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
 type MatchCellProps = {
@@ -131,16 +131,17 @@ export function MatchCell({
               </div>
               <div className="mt-[1px] flex flex-col items-center gap-[1px]">
                 {matchGroup.matches.map((match) => {
+                  const displayScores = getDisplayScores(match, currentTime);
                   const matchContent = (
                     <>
                       <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
                       {match.home}
-                      {hasScore(match) ? (
-                        <span className={getScoreClassName(match, 'home')}>{match.homeScore}</span>
+                      {displayScores ? (
+                        <span className={getScoreClassName(match, 'home')}>{displayScores.homeScore}</span>
                       ) : null}
                       <span className="px-1 font-black">:</span>
-                      {hasScore(match) ? (
-                        <span className={getScoreClassName(match, 'away')}>{match.awayScore}</span>
+                      {displayScores ? (
+                        <span className={getScoreClassName(match, 'away')}>{displayScores.awayScore}</span>
                       ) : null}
                       {match.away}
                       <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />

@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Fetch live schedule
+        run: npm run fetch:live
+
       - name: Build
         run: npm run build
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Match } from '../data/schedule';
-import { getMatchDetailStatusLabel, hasScore } from '../utils/matchDisplay';
+import { getDisplayScores, getMatchDetailStatusLabel, hasScore } from '../utils/matchDisplay';
 import { formatKstDateTime } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
 
@@ -38,6 +38,7 @@ const ScorerList = ({ title, scorers }: { title: string; scorers?: string[] }) =
 export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailModalProps) {
   const kickoffTime = `${formatKstDateTime(new Date(match.kickoff))} KST`;
   const updatedAt = formatUpdatedAt(match.sourceUpdatedAt);
+  const displayScores = getDisplayScores(match, currentTime);
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
   const isScorelessFinishedMatch = hasScore(match) && match.homeScore === 0 && match.awayScore === 0;
 
@@ -90,9 +91,9 @@ export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailMod
         <div className="py-3 text-center text-[16px] font-black leading-snug">
           <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
           {match.home}
-          {hasScore(match) ? <span className="mx-2">{match.homeScore}</span> : null}
+          {displayScores ? <span className="mx-2">{displayScores.homeScore}</span> : null}
           <span className="mx-1">:</span>
-          {hasScore(match) ? <span className="mx-2">{match.awayScore}</span> : null}
+          {displayScores ? <span className="mx-2">{displayScores.awayScore}</span> : null}
           {match.away}
           <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
         </div>

@@ -4,6 +4,28 @@ import { getMatchStartTime, isLiveMatch, isPastMatch } from './timeUtils';
 export const hasScore = (match: Match) =>
   typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
 
+export const getDisplayScores = (match: Match, currentTime?: Date) => {
+  if (hasScore(match)) {
+    return {
+      homeScore: match.homeScore as number,
+      awayScore: match.awayScore as number,
+    };
+  }
+
+  const shouldShowLiveScore =
+    (currentTime ? isLiveMatch(match, currentTime) : match.status === 'live') &&
+    match.status !== 'finished';
+
+  if (!shouldShowLiveScore) {
+    return undefined;
+  }
+
+  return {
+    homeScore: typeof match.homeScore === 'number' ? match.homeScore : 0,
+    awayScore: typeof match.awayScore === 'number' ? match.awayScore : 0,
+  };
+};
+
 const isHalftimeStatus = (statusLabel: string | undefined) => {
   const normalized = (statusLabel ?? '').trim().toLowerCase().replace(/[\s_-]/g, '');
 
