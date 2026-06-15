@@ -17,8 +17,8 @@ type StatusBarProps = {
 const STALE_UPDATE_WARNING_MS = 6 * 60 * 60 * 1000;
 const CRITICAL_STALE_UPDATE_MS = 24 * 60 * 60 * 1000;
 
-const formatMatch = (match: Match, currentTime?: Date) => {
-  const displayScores = getDisplayScores(match, currentTime);
+const formatMatch = (match: Match) => {
+  const displayScores = getDisplayScores(match);
 
   if (displayScores) {
     return `${match.timeLabel} ${match.home} ${displayScores.homeScore} : ${displayScores.awayScore} ${match.away}`;
@@ -176,7 +176,7 @@ export function StatusBar({
         <span>현재 시각: {formatKstDateTime(currentTime)} KST</span>
         <span>
           다음 경기:{' '}
-          {nextMatch ? formatMatch(nextMatch, currentTime) : '예정된 경기가 없습니다'}
+          {nextMatch ? formatMatch(nextMatch) : '예정된 경기가 없습니다'}
         </span>
         {timeUntilNextMatch ? <span>다음 경기까지 {timeUntilNextMatch}</span> : null}
         <span>
@@ -186,7 +186,7 @@ export function StatusBar({
               <span className="border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
                 LIVE
               </span>{' '}
-              {liveMatches.map((match) => formatMatch(match, currentTime)).join(' / ')}
+              {liveMatches.map(formatMatch).join(' / ')}
             </>
           ) : (
             '-'

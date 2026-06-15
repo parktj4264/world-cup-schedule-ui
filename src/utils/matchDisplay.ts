@@ -4,7 +4,7 @@ import { getMatchStartTime, isLiveMatch, isPastMatch } from './timeUtils';
 export const hasScore = (match: Match) =>
   typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
 
-export const getDisplayScores = (match: Match, currentTime?: Date) => {
+export const getDisplayScores = (match: Match) => {
   if (hasScore(match)) {
     return {
       homeScore: match.homeScore as number,
@@ -12,18 +12,7 @@ export const getDisplayScores = (match: Match, currentTime?: Date) => {
     };
   }
 
-  const shouldShowLiveScore =
-    (currentTime ? isLiveMatch(match, currentTime) : match.status === 'live') &&
-    match.status !== 'finished';
-
-  if (!shouldShowLiveScore) {
-    return undefined;
-  }
-
-  return {
-    homeScore: typeof match.homeScore === 'number' ? match.homeScore : 0,
-    awayScore: typeof match.awayScore === 'number' ? match.awayScore : 0,
-  };
+  return undefined;
 };
 
 const isHalftimeStatus = (statusLabel: string | undefined) => {

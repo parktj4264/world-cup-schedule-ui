@@ -38,7 +38,7 @@ const ScorerList = ({ title, scorers }: { title: string; scorers?: string[] }) =
 export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailModalProps) {
   const kickoffTime = `${formatKstDateTime(new Date(match.kickoff))} KST`;
   const updatedAt = formatUpdatedAt(match.sourceUpdatedAt);
-  const displayScores = getDisplayScores(match, currentTime);
+  const displayScores = getDisplayScores(match);
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
   const isScorelessFinishedMatch = hasScore(match) && match.homeScore === 0 && match.awayScore === 0;
 

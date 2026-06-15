@@ -131,7 +131,7 @@ export function MatchCell({
               </div>
               <div className="mt-[1px] flex flex-col items-center gap-[1px]">
                 {matchGroup.matches.map((match) => {
-                  const displayScores = getDisplayScores(match, currentTime);
+                  const displayScores = getDisplayScores(match);
                   const matchContent = (
                     <>
                       <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
