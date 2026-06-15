@@ -4,7 +4,6 @@ import {
   canOpenMatchDetail,
   getDisplayScoreState,
   getLiveBadgeLabel,
-  getLiveTimingLabel,
 } from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
@@ -110,9 +109,6 @@ export function MatchCell({
           const liveBadgeLabel = matchGroup.matches
             .map((match) => getLiveBadgeLabel(match, currentTime))
             .find(Boolean);
-          const liveTimingLabel = matchGroup.matches
-            .map((match) => getLiveTimingLabel(match, currentTime))
-            .find(Boolean);
 
           return (
             <div
@@ -131,11 +127,6 @@ export function MatchCell({
                 {liveBadgeLabel ? (
                   <span className="ml-1 inline-block border border-red-700 bg-red-600 px-1 text-[10px] font-black leading-4 text-white">
                     {liveBadgeLabel}
-                  </span>
-                ) : null}
-                {liveTimingLabel ? (
-                  <span className="ml-1 inline-block text-[11px] font-black text-neutral-500">
-                    {liveTimingLabel}
                   </span>
                 ) : null}
               </div>
