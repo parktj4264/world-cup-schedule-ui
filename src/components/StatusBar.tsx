@@ -29,7 +29,8 @@ const formatLiveScheduleUpdatedAt = (updatedAt: string | null | undefined) => {
 };
 
 const BrowserCheckingBadge = () => (
-  <span className="inline-flex h-4 items-center border border-blue-700 bg-blue-50 px-1.5 text-[10px] font-black leading-none text-blue-800">
+  <span className="inline-flex h-4 items-center gap-1 border border-blue-700 bg-blue-50 px-1.5 text-[10px] font-black leading-none text-blue-800">
+    <span className="browser-checking-hourglass" aria-hidden="true" />
     확인 중
   </span>
 );

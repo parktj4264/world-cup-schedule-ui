@@ -112,6 +112,52 @@ button {
   text-underline-offset: 2px;
 }
 
+.browser-checking-hourglass {
+  position: relative;
+  display: inline-block;
+  width: 0.58rem;
+  height: 0.78rem;
+  flex: 0 0 auto;
+  border-top: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  animation: browser-checking-hourglass-turn 1.15s steps(2, end) infinite;
+}
+
+.browser-checking-hourglass::before,
+.browser-checking-hourglass::after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 0.23rem solid transparent;
+  border-right: 0.23rem solid transparent;
+  content: '';
+  transform: translateX(-50%);
+}
+
+.browser-checking-hourglass::before {
+  top: 0.12rem;
+  border-top: 0.28rem solid currentColor;
+}
+
+.browser-checking-hourglass::after {
+  bottom: 0.12rem;
+  border-bottom: 0.28rem solid currentColor;
+  opacity: 0.42;
+}
+
+@keyframes browser-checking-hourglass-turn {
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browser-checking-hourglass {
+    animation: none;
+  }
+}
+
 .schedule-date-label {
   font-size: var(--schedule-date-font);
 }
