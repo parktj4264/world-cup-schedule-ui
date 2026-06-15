@@ -195,7 +195,8 @@ button {
 
   .status-bar,
   .filter-bar,
-  .schedule-controls {
+  .schedule-controls,
+  .live-update-toast {
     display: none !important;
   }
 

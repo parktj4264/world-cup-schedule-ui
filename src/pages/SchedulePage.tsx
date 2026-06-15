@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FilterBar } from '../components/FilterBar';
+import { LiveUpdateToast } from '../components/LiveUpdateToast';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { MatchDetailModal } from '../components/MatchDetailModal';
 import { ScheduleControls } from '../components/ScheduleControls';
@@ -424,6 +425,11 @@ export function SchedulePage() {
           {shareMessage}
         </div>
       ) : null}
+      <LiveUpdateToast
+        isChecking={browserLiveChecking}
+        hasError={browserLiveError}
+        updatedAt={browserLiveUpdatedAt}
+      />
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
