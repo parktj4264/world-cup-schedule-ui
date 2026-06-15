@@ -76,7 +76,7 @@ export function LiveUpdateToast({ isChecking, hasError, updatedAt }: LiveUpdateT
       aria-live="polite"
       className={[
         'live-update-toast pointer-events-none fixed left-1/2 top-14 z-40 -translate-x-1/2 border-2 bg-white px-4 py-2 text-[12px] font-black text-neutral-950',
-        isError ? 'border-red-700' : isDone ? 'border-green-700' : 'border-blue-800',
+        isError ? 'border-neutral-950' : isDone ? 'border-green-700' : 'border-blue-800',
       ].join(' ')}
     >
       <span className="inline-flex items-center whitespace-nowrap">

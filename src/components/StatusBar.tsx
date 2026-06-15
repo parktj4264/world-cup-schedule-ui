@@ -126,9 +126,7 @@ export function StatusBar({
   const updateAgeMs = getUpdateAgeMs(latestSuccessfulUpdateAt, currentTime);
   const isStale = updateAgeMs >= STALE_UPDATE_WARNING_MS;
   const isCriticallyStale = updateAgeMs >= CRITICAL_STALE_UPDATE_MS;
-  const staleMessage = isStale
-    ? `정보가 오래됐습니다 · 기존 정보 기준: ${updateAge}`
-    : `최신 정보 확인 실패 · 기존 정보 기준: ${updateAge}`;
+  const staleMessage = isStale ? `정보가 오래됐습니다 · 기존 정보 기준: ${updateAge}` : `기존 정보 기준: ${updateAge}`;
 
   return (
     <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
@@ -160,7 +158,7 @@ export function StatusBar({
           <span
             className={[
               'text-[12px]',
-              isCriticallyStale ? 'font-black text-red-900' : 'text-red-800',
+              isCriticallyStale ? 'font-black text-sky-900' : 'text-sky-700',
             ].join(' ')}
           >
             {staleMessage}
