@@ -15,6 +15,34 @@ export const getDisplayScores = (match: Match) => {
   return undefined;
 };
 
+export type DisplayScoreState =
+  | {
+      kind: 'score';
+      homeScore: number;
+      awayScore: number;
+    }
+  | {
+      kind: 'pending';
+    };
+
+export const getDisplayScoreState = (
+  match: Match,
+  currentTime?: Date,
+): DisplayScoreState | undefined => {
+  const displayScores = getDisplayScores(match);
+
+  if (displayScores) {
+    return {
+      kind: 'score',
+      ...displayScores,
+    };
+  }
+
+  const isLive = currentTime ? isLiveMatch(match, currentTime) : match.status === 'live';
+
+  return isLive ? { kind: 'pending' } : undefined;
+};
+
 const isHalftimeStatus = (statusLabel: string | undefined) => {
   const normalized = (statusLabel ?? '').trim().toLowerCase().replace(/[\s_-]/g, '');
 

@@ -1,6 +1,11 @@
 import { FlagIcon } from './FlagIcon';
 import type { Match, ScheduleCell } from '../data/schedule';
-import { canOpenMatchDetail, getDisplayScores, getLiveBadgeLabel, getLiveTimingLabel } from '../utils/matchDisplay';
+import {
+  canOpenMatchDetail,
+  getDisplayScoreState,
+  getLiveBadgeLabel,
+  getLiveTimingLabel,
+} from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
 type MatchCellProps = {
@@ -41,14 +46,19 @@ const groupMatches = (matches: Match[]) =>
     ];
   }, []);
 
-const getScoreClassName = (match: Match, side: 'home' | 'away') => {
+const getScoreClassName = (match: Match, side: 'home' | 'away', isPending = false) => {
   const isWinner =
-    (side === 'home' && match.winner === 'home') ||
-    (side === 'away' && match.winner === 'away');
+    !isPending &&
+    ((side === 'home' && match.winner === 'home') ||
+      (side === 'away' && match.winner === 'away'));
 
   return [
     'mx-1 inline-block min-w-4 border border-neutral-400 bg-white px-1 text-center text-[12px] font-black leading-4',
-    isWinner ? 'border-neutral-900 text-neutral-950' : 'text-neutral-700',
+    isPending
+      ? 'border-neutral-300 bg-neutral-50 text-neutral-400'
+      : isWinner
+        ? 'border-neutral-900 text-neutral-950'
+        : 'text-neutral-700',
   ].join(' ');
 };
 
@@ -131,17 +141,24 @@ export function MatchCell({
               </div>
               <div className="mt-[1px] flex flex-col items-center gap-[1px]">
                 {matchGroup.matches.map((match) => {
-                  const displayScores = getDisplayScores(match);
+                  const displayScoreState = getDisplayScoreState(match, currentTime);
+                  const isScorePending = displayScoreState?.kind === 'pending';
+                  const homeScoreLabel = displayScoreState?.kind === 'score'
+                    ? displayScoreState.homeScore
+                    : '-';
+                  const awayScoreLabel = displayScoreState?.kind === 'score'
+                    ? displayScoreState.awayScore
+                    : '-';
                   const matchContent = (
                     <>
                       <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
                       {match.home}
-                      {displayScores ? (
-                        <span className={getScoreClassName(match, 'home')}>{displayScores.homeScore}</span>
+                      {displayScoreState ? (
+                        <span className={getScoreClassName(match, 'home', isScorePending)}>{homeScoreLabel}</span>
                       ) : null}
                       <span className="px-1 font-black">:</span>
-                      {displayScores ? (
-                        <span className={getScoreClassName(match, 'away')}>{displayScores.awayScore}</span>
+                      {displayScoreState ? (
+                        <span className={getScoreClassName(match, 'away', isScorePending)}>{awayScoreLabel}</span>
                       ) : null}
                       {match.away}
                       <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />

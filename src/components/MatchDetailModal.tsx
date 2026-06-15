@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Match } from '../data/schedule';
-import { getDisplayScores, getMatchDetailStatusLabel, hasScore } from '../utils/matchDisplay';
+import { getDisplayScoreState, getMatchDetailStatusLabel, hasScore } from '../utils/matchDisplay';
 import { formatKstDateTime } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
 
@@ -38,7 +38,10 @@ const ScorerList = ({ title, scorers }: { title: string; scorers?: string[] }) =
 export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailModalProps) {
   const kickoffTime = `${formatKstDateTime(new Date(match.kickoff))} KST`;
   const updatedAt = formatUpdatedAt(match.sourceUpdatedAt);
-  const displayScores = getDisplayScores(match);
+  const displayScoreState = getDisplayScoreState(match, currentTime);
+  const isScorePending = displayScoreState?.kind === 'pending';
+  const homeScoreLabel = displayScoreState?.kind === 'score' ? displayScoreState.homeScore : '-';
+  const awayScoreLabel = displayScoreState?.kind === 'score' ? displayScoreState.awayScore : '-';
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
   const isScorelessFinishedMatch = hasScore(match) && match.homeScore === 0 && match.awayScore === 0;
 
@@ -91,12 +94,25 @@ export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailMod
         <div className="py-3 text-center text-[16px] font-black leading-snug">
           <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
           {match.home}
-          {displayScores ? <span className="mx-2">{displayScores.homeScore}</span> : null}
+          {displayScoreState ? (
+            <span className={['mx-2', isScorePending ? 'text-neutral-400' : ''].join(' ')}>
+              {homeScoreLabel}
+            </span>
+          ) : null}
           <span className="mx-1">:</span>
-          {displayScores ? <span className="mx-2">{displayScores.awayScore}</span> : null}
+          {displayScoreState ? (
+            <span className={['mx-2', isScorePending ? 'text-neutral-400' : ''].join(' ')}>
+              {awayScoreLabel}
+            </span>
+          ) : null}
           {match.away}
           <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
         </div>
+        {isScorePending ? (
+          <div className="-mt-2 pb-3 text-center text-[12px] font-bold text-neutral-500">
+            스코어 확인중
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-[88px_1fr] gap-y-2 border-y border-neutral-300 py-3 text-[13px]">
           <div className="font-black text-neutral-600">상태</div>
