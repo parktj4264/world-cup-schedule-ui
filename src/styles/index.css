@@ -74,7 +74,7 @@ button {
 }
 
 .schedule-date-cell.schedule-date-cell-round-of-16 {
-  background: #d9f0ec;
+  background: #e0f2d8;
 }
 
 .schedule-date-cell.schedule-date-cell-quarter-final {
@@ -207,7 +207,7 @@ button {
   flex-wrap: wrap;
   justify-content: center;
   gap: 2px;
-  margin-top: 1px;
+  margin-bottom: 2px;
 }
 
 .schedule-round-badge {
@@ -231,7 +231,7 @@ button {
 }
 
 .schedule-round-badge-round-of-16 {
-  background: #0f766e;
+  background: #3f7f1f;
 }
 
 .schedule-round-badge-quarter-final {

@@ -84,8 +84,6 @@ export function ScheduleRow({
           .join(' ')}
       >
         <div className="schedule-date-content">
-          <div className="schedule-date-label font-black leading-tight text-neutral-950">{day.dateLabel}</div>
-          <div className="schedule-weekday mt-[2px] font-black leading-tight text-neutral-950">({day.weekday})</div>
           {tournamentStages.length > 0 ? (
             <div
               className="schedule-round-badges"
@@ -103,6 +101,8 @@ export function ScheduleRow({
               ))}
             </div>
           ) : null}
+          <div className="schedule-date-label font-black leading-tight text-neutral-950">{day.dateLabel}</div>
+          <div className="schedule-weekday mt-[2px] font-black leading-tight text-neutral-950">({day.weekday})</div>
         </div>
       </th>
       {normalizeCells(day.cells).map((scheduleCell, index) => (
