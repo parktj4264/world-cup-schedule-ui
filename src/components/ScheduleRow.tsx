@@ -69,6 +69,7 @@ export function ScheduleRow({
 }: ScheduleRowProps) {
   const isToday = day.date === todayKey;
   const tournamentStages = getTournamentStages(day);
+  const primaryTournamentStage = tournamentStages[0];
 
   return (
     <tr data-day-date={day.date} className={isToday ? 'schedule-today-row' : undefined}>
@@ -76,6 +77,7 @@ export function ScheduleRow({
         scope="row"
         className={[
           'schedule-date-cell border border-neutral-800 text-center align-middle',
+          primaryTournamentStage ? `schedule-date-cell-${primaryTournamentStage}` : '',
           isToday ? 'schedule-today-date-cell' : '',
         ]
           .filter(Boolean)

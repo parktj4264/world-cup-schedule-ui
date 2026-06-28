@@ -69,6 +69,30 @@ button {
   box-shadow: 3px 0 0 #111111, inset 0 0 0 2px #3f7f52;
 }
 
+.schedule-date-cell.schedule-date-cell-round-of-32 {
+  background: #d9eaf0;
+}
+
+.schedule-date-cell.schedule-date-cell-round-of-16 {
+  background: #d9f0ec;
+}
+
+.schedule-date-cell.schedule-date-cell-quarter-final {
+  background: #f6e6c8;
+}
+
+.schedule-date-cell.schedule-date-cell-semi-final {
+  background: #f8d9dc;
+}
+
+.schedule-date-cell.schedule-date-cell-third-place {
+  background: #e7e3df;
+}
+
+.schedule-date-cell.schedule-date-cell-final {
+  background: #e3e0ee;
+}
+
 .schedule-match-cell {
   width: var(--schedule-match-width);
   min-width: var(--schedule-match-width);
