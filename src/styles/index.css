@@ -166,6 +166,66 @@ button {
   font-size: var(--schedule-weekday-font);
 }
 
+.schedule-date-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.schedule-date-content .schedule-weekday {
+  margin-top: 1px;
+}
+
+.schedule-round-badges {
+  display: flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 1px;
+}
+
+.schedule-round-badge {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #111111;
+  border-radius: 2px;
+  padding: 0 3px;
+  color: #ffffff;
+  font-size: max(7.5px, calc(var(--schedule-weekday-font) * 0.56));
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.schedule-round-badge-round-of-32 {
+  background: #2f5365;
+}
+
+.schedule-round-badge-round-of-16 {
+  background: #0f766e;
+}
+
+.schedule-round-badge-quarter-final {
+  background: #9a5b13;
+}
+
+.schedule-round-badge-semi-final {
+  background: #b42318;
+}
+
+.schedule-round-badge-third-place {
+  background: #57534e;
+}
+
+.schedule-round-badge-final {
+  background: #111827;
+}
+
 .mini-overview-stage {
   position: relative;
   width: 100%;
