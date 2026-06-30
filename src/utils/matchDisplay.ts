@@ -4,11 +4,16 @@ import { isLiveMatch, isPastMatch } from './timeUtils';
 export const hasScore = (match: Match) =>
   typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
 
+export const hasPenaltyScore = (match: Match) =>
+  typeof match.homePenaltyScore === 'number' && typeof match.awayPenaltyScore === 'number';
+
 export const getDisplayScores = (match: Match) => {
   if (hasScore(match)) {
     return {
       homeScore: match.homeScore as number,
       awayScore: match.awayScore as number,
+      homePenaltyScore: match.homePenaltyScore,
+      awayPenaltyScore: match.awayPenaltyScore,
     };
   }
 
@@ -20,6 +25,8 @@ export type DisplayScoreState =
       kind: 'score';
       homeScore: number;
       awayScore: number;
+      homePenaltyScore?: number;
+      awayPenaltyScore?: number;
     }
   | {
       kind: 'pending';
@@ -58,6 +65,11 @@ export const getLiveBadgeLabel = (match: Match, currentTime?: Date) => {
 
   return undefined;
 };
+
+export const getPenaltyShootoutLabel = (match: Match) =>
+  hasPenaltyScore(match)
+    ? `승부차기 ${match.homePenaltyScore} : ${match.awayPenaltyScore}`
+    : undefined;
 
 export const getMatchDetailStatusLabel = (match: Match, currentTime?: Date) => {
   const liveLabel = getLiveBadgeLabel(match, currentTime);

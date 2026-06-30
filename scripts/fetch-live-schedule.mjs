@@ -544,7 +544,7 @@ const toKstIso = (dateString) => {
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:00+09:00`;
 };
 
-const getWinnerFromScores = (status, homeScore, awayScore) => {
+const getWinnerFromScores = (status, homeScore, awayScore, homePenaltyScore, awayPenaltyScore) => {
   if (status !== 'finished' || typeof homeScore !== 'number' || typeof awayScore !== 'number') {
     return undefined;
   }
@@ -557,10 +557,20 @@ const getWinnerFromScores = (status, homeScore, awayScore) => {
     return 'away';
   }
 
+  if (typeof homePenaltyScore === 'number' && typeof awayPenaltyScore === 'number') {
+    if (homePenaltyScore > awayPenaltyScore) {
+      return 'home';
+    }
+
+    if (awayPenaltyScore > homePenaltyScore) {
+      return 'away';
+    }
+  }
+
   return 'draw';
 };
 
-const getWinner = (fixture, status, homeScore, awayScore) => {
+const getWinner = (fixture, status, homeScore, awayScore, homePenaltyScore, awayPenaltyScore) => {
   if (fixture?.teams?.home?.winner === true) {
     return 'home';
   }
@@ -576,6 +586,16 @@ const getWinner = (fixture, status, homeScore, awayScore) => {
 
     if (awayScore > homeScore) {
       return 'away';
+    }
+
+    if (typeof homePenaltyScore === 'number' && typeof awayPenaltyScore === 'number') {
+      if (homePenaltyScore > awayPenaltyScore) {
+        return 'home';
+      }
+
+      if (awayPenaltyScore > homePenaltyScore) {
+        return 'away';
+      }
     }
 
     return 'draw';
@@ -601,6 +621,8 @@ const normalizeFixture = (fixture) => {
   const status = STATUS_MAP.get(statusCode) ?? 'scheduled';
   const homeScore = fixture?.goals?.home;
   const awayScore = fixture?.goals?.away;
+  const homePenaltyScore = fixture?.score?.penalty?.home;
+  const awayPenaltyScore = fixture?.score?.penalty?.away;
 
   if (!apiFootballFixtureId || !kickoff) {
     return undefined;
@@ -619,7 +641,9 @@ const normalizeFixture = (fixture) => {
     elapsed: fixture?.fixture?.status?.elapsed ?? undefined,
     homeScore: typeof homeScore === 'number' ? homeScore : undefined,
     awayScore: typeof awayScore === 'number' ? awayScore : undefined,
-    winner: getWinner(fixture, status, homeScore, awayScore),
+    homePenaltyScore: typeof homePenaltyScore === 'number' ? homePenaltyScore : undefined,
+    awayPenaltyScore: typeof awayPenaltyScore === 'number' ? awayPenaltyScore : undefined,
+    winner: getWinner(fixture, status, homeScore, awayScore, homePenaltyScore, awayPenaltyScore),
   };
 };
 
@@ -655,6 +679,8 @@ const normalizeWorldCup26Game = (game) => {
   const elapsed = parseNumber(game?.time_elapsed);
   const homeScore = status !== 'scheduled' ? parseNumber(game?.home_score) : undefined;
   const awayScore = status !== 'scheduled' ? parseNumber(game?.away_score) : undefined;
+  const homePenaltyScore = status !== 'scheduled' ? parseNumber(game?.home_penalty_score) : undefined;
+  const awayPenaltyScore = status !== 'scheduled' ? parseNumber(game?.away_penalty_score) : undefined;
 
   if (!matchNumber || !kickoff) {
     return undefined;
@@ -673,9 +699,15 @@ const normalizeWorldCup26Game = (game) => {
     elapsed,
     homeScore,
     awayScore,
+    homePenaltyScore,
+    awayPenaltyScore,
     homeScorers: parseScorers(game?.home_scorers),
     awayScorers: parseScorers(game?.away_scorers),
-    winner: getWinnerFromScores(status, homeScore, awayScore),
+    homePenaltyScorers: parseScorers(game?.home_penalty_scorers),
+    awayPenaltyScorers: parseScorers(game?.away_penalty_scorers),
+    homePenaltyMisses: parseScorers(game?.home_penalty_misses),
+    awayPenaltyMisses: parseScorers(game?.away_penalty_misses),
+    winner: getWinnerFromScores(status, homeScore, awayScore, homePenaltyScore, awayPenaltyScore),
   };
 };
 

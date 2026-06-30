@@ -15,8 +15,14 @@ export type Match = {
   elapsed?: number;
   homeScore?: number;
   awayScore?: number;
+  homePenaltyScore?: number;
+  awayPenaltyScore?: number;
   homeScorers?: string[];
   awayScorers?: string[];
+  homePenaltyScorers?: string[];
+  awayPenaltyScorers?: string[];
+  homePenaltyMisses?: string[];
+  awayPenaltyMisses?: string[];
   winner?: 'home' | 'away' | 'draw';
   sourceUpdatedAt?: string;
   stage?: MatchStage;

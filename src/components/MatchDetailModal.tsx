@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import type { Match } from '../data/schedule';
-import { getDisplayScoreState, getMatchDetailStatusLabel, hasScore } from '../utils/matchDisplay';
+import {
+  getDisplayScoreState,
+  getMatchDetailStatusLabel,
+  getPenaltyShootoutLabel,
+  hasScore,
+} from '../utils/matchDisplay';
 import { formatKstDateTime } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
 
@@ -44,6 +49,7 @@ export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailMod
   const awayScoreLabel = displayScoreState?.kind === 'score' ? displayScoreState.awayScore : '-';
   const hasScorers = Boolean(match.homeScorers?.length || match.awayScorers?.length);
   const isScorelessFinishedMatch = hasScore(match) && match.homeScore === 0 && match.awayScore === 0;
+  const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -111,6 +117,11 @@ export function MatchDetailModal({ match, currentTime, onClose }: MatchDetailMod
         {isScorePending ? (
           <div className="-mt-2 pb-3 text-center text-[12px] font-bold text-neutral-500">
             스코어 확인중
+          </div>
+        ) : null}
+        {!isScorePending && penaltyShootoutLabel ? (
+          <div className="-mt-2 pb-3 text-center text-[12px] font-black text-neutral-700">
+            {penaltyShootoutLabel}
           </div>
         ) : null}
 

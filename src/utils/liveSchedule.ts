@@ -13,8 +13,14 @@ export type LiveMatchUpdate = {
   elapsed?: number;
   homeScore?: number;
   awayScore?: number;
+  homePenaltyScore?: number;
+  awayPenaltyScore?: number;
   homeScorers?: string[];
   awayScorers?: string[];
+  homePenaltyScorers?: string[];
+  awayPenaltyScorers?: string[];
+  homePenaltyMisses?: string[];
+  awayPenaltyMisses?: string[];
   winner?: 'home' | 'away' | 'draw';
   sourceUpdatedAt?: string;
 };
@@ -113,8 +119,14 @@ const mergeMatch = (
     elapsed: update.elapsed ?? match.elapsed,
     homeScore: update.homeScore,
     awayScore: update.awayScore,
+    homePenaltyScore: update.homePenaltyScore,
+    awayPenaltyScore: update.awayPenaltyScore,
     homeScorers: update.homeScorers,
     awayScorers: update.awayScorers,
+    homePenaltyScorers: update.homePenaltyScorers,
+    awayPenaltyScorers: update.awayPenaltyScorers,
+    homePenaltyMisses: update.homePenaltyMisses,
+    awayPenaltyMisses: update.awayPenaltyMisses,
     winner: update.winner,
     sourceUpdatedAt: update.sourceUpdatedAt ?? sourceUpdatedAt ?? match.sourceUpdatedAt,
     home,
@@ -150,9 +162,15 @@ export const parseLiveSchedule = (payload: unknown): LiveSchedule | undefined =>
       isStringOrUndefined(candidate.away) &&
       isStringArrayOrUndefined(candidate.homeScorers) &&
       isStringArrayOrUndefined(candidate.awayScorers) &&
+      isStringArrayOrUndefined(candidate.homePenaltyScorers) &&
+      isStringArrayOrUndefined(candidate.awayPenaltyScorers) &&
+      isStringArrayOrUndefined(candidate.homePenaltyMisses) &&
+      isStringArrayOrUndefined(candidate.awayPenaltyMisses) &&
       isNumberOrUndefined(candidate.apiFootballFixtureId) &&
       isNumberOrUndefined(candidate.homeScore) &&
       isNumberOrUndefined(candidate.awayScore) &&
+      isNumberOrUndefined(candidate.homePenaltyScore) &&
+      isNumberOrUndefined(candidate.awayPenaltyScore) &&
       isNumberOrUndefined(candidate.elapsed)
     );
   });

@@ -4,6 +4,7 @@ import {
   canOpenMatchDetail,
   getDisplayScoreState,
   getLiveBadgeLabel,
+  getPenaltyShootoutLabel,
 } from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
@@ -58,6 +59,17 @@ const getScoreClassName = (match: Match, side: 'home' | 'away', isPending = fals
       : isWinner
         ? 'border-neutral-900 text-neutral-950'
         : 'text-neutral-700',
+  ].join(' ');
+};
+
+const getPenaltyScoreClassName = (match: Match, side: 'home' | 'away') => {
+  const isWinner =
+    (side === 'home' && match.winner === 'home') ||
+    (side === 'away' && match.winner === 'away');
+
+  return [
+    'mx-[1px] inline-block text-[11px] font-black leading-4',
+    isWinner ? 'text-neutral-950' : 'text-neutral-600',
   ].join(' ');
 };
 
@@ -140,6 +152,17 @@ export function MatchCell({
                   const awayScoreLabel = displayScoreState?.kind === 'score'
                     ? displayScoreState.awayScore
                     : '-';
+                  const hasPenaltyScore =
+                    displayScoreState?.kind === 'score' &&
+                    typeof displayScoreState.homePenaltyScore === 'number' &&
+                    typeof displayScoreState.awayPenaltyScore === 'number';
+                  const homePenaltyScore = displayScoreState?.kind === 'score'
+                    ? displayScoreState.homePenaltyScore
+                    : undefined;
+                  const awayPenaltyScore = displayScoreState?.kind === 'score'
+                    ? displayScoreState.awayPenaltyScore
+                    : undefined;
+                  const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
                   const matchContent = (
                     <>
                       <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
@@ -147,7 +170,23 @@ export function MatchCell({
                       {displayScoreState ? (
                         <span className={getScoreClassName(match, 'home', isScorePending)}>{homeScoreLabel}</span>
                       ) : null}
+                      {hasPenaltyScore ? (
+                        <span
+                          className={getPenaltyScoreClassName(match, 'home')}
+                          aria-label={penaltyShootoutLabel}
+                        >
+                          ({homePenaltyScore})
+                        </span>
+                      ) : null}
                       <span className="px-1 font-black">:</span>
+                      {hasPenaltyScore ? (
+                        <span
+                          className={getPenaltyScoreClassName(match, 'away')}
+                          aria-label={penaltyShootoutLabel}
+                        >
+                          ({awayPenaltyScore})
+                        </span>
+                      ) : null}
                       {displayScoreState ? (
                         <span className={getScoreClassName(match, 'away', isScorePending)}>{awayScoreLabel}</span>
                       ) : null}

@@ -151,8 +151,14 @@ type WorldCup26Game = {
   finished?: string | boolean;
   home_score?: string | number | null;
   away_score?: string | number | null;
+  home_penalty_score?: string | number | null;
+  away_penalty_score?: string | number | null;
   home_scorers?: string | null;
   away_scorers?: string | null;
+  home_penalty_scorers?: string | null;
+  away_penalty_scorers?: string | null;
+  home_penalty_misses?: string | null;
+  away_penalty_misses?: string | null;
 };
 
 const toKoreanTeamName = (teamName: string | undefined) =>
@@ -325,6 +331,8 @@ const getWinnerFromScores = (
   status: LiveMatchUpdate['status'],
   homeScore: number | undefined,
   awayScore: number | undefined,
+  homePenaltyScore?: number,
+  awayPenaltyScore?: number,
 ) => {
   if (status !== 'finished' || typeof homeScore !== 'number' || typeof awayScore !== 'number') {
     return undefined;
@@ -336,6 +344,16 @@ const getWinnerFromScores = (
 
   if (awayScore > homeScore) {
     return 'away';
+  }
+
+  if (typeof homePenaltyScore === 'number' && typeof awayPenaltyScore === 'number') {
+    if (homePenaltyScore > awayPenaltyScore) {
+      return 'home';
+    }
+
+    if (awayPenaltyScore > homePenaltyScore) {
+      return 'away';
+    }
   }
 
   return 'draw';
@@ -350,6 +368,8 @@ const normalizeWorldCup26Game = (game: WorldCup26Game): LiveMatchUpdate | undefi
   const elapsed = parseNumber(game.time_elapsed);
   const homeScore = status !== 'scheduled' ? parseNumber(game.home_score) : undefined;
   const awayScore = status !== 'scheduled' ? parseNumber(game.away_score) : undefined;
+  const homePenaltyScore = status !== 'scheduled' ? parseNumber(game.home_penalty_score) : undefined;
+  const awayPenaltyScore = status !== 'scheduled' ? parseNumber(game.away_penalty_score) : undefined;
 
   if (!matchNumber || !kickoff) {
     return undefined;
@@ -368,9 +388,15 @@ const normalizeWorldCup26Game = (game: WorldCup26Game): LiveMatchUpdate | undefi
     elapsed,
     homeScore,
     awayScore,
+    homePenaltyScore,
+    awayPenaltyScore,
     homeScorers: parseScorers(game.home_scorers),
     awayScorers: parseScorers(game.away_scorers),
-    winner: getWinnerFromScores(status, homeScore, awayScore),
+    homePenaltyScorers: parseScorers(game.home_penalty_scorers),
+    awayPenaltyScorers: parseScorers(game.away_penalty_scorers),
+    homePenaltyMisses: parseScorers(game.home_penalty_misses),
+    awayPenaltyMisses: parseScorers(game.away_penalty_misses),
+    winner: getWinnerFromScores(status, homeScore, awayScore, homePenaltyScore, awayPenaltyScore),
   };
 };
 
