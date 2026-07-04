@@ -81,24 +81,90 @@ const SHEET_TABS: SheetTab[] = [
 
 const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
 
-const BRACKET_COLUMNS: { label: string; matchNumbers: number[] }[] = [
+const BRACKET_WIDTH = 1000;
+const BRACKET_HEIGHT = 680;
+const BRACKET_NODE_WIDTH = 210;
+
+const BRACKET_ROUNDS: {
+  label: string;
+  left: number;
+  matches: { matchNumber: number; centerY: number }[];
+}[] = [
   {
     label: '16강',
-    matchNumbers: [90, 89, 93, 94, 91, 92, 95, 96],
+    left: 0,
+    matches: [
+      { matchNumber: 90, centerY: 26 },
+      { matchNumber: 89, centerY: 112 },
+      { matchNumber: 93, centerY: 198 },
+      { matchNumber: 94, centerY: 284 },
+      { matchNumber: 91, centerY: 370 },
+      { matchNumber: 92, centerY: 456 },
+      { matchNumber: 95, centerY: 542 },
+      { matchNumber: 96, centerY: 628 },
+    ],
   },
   {
     label: '8강',
-    matchNumbers: [97, 98, 99, 100],
+    left: 263,
+    matches: [
+      { matchNumber: 97, centerY: 69 },
+      { matchNumber: 98, centerY: 241 },
+      { matchNumber: 99, centerY: 413 },
+      { matchNumber: 100, centerY: 585 },
+    ],
   },
   {
     label: '4강',
-    matchNumbers: [101, 102],
+    left: 526,
+    matches: [
+      { matchNumber: 101, centerY: 155 },
+      { matchNumber: 102, centerY: 499 },
+    ],
   },
   {
     label: '결승',
-    matchNumbers: [104],
+    left: 789,
+    matches: [{ matchNumber: 104, centerY: 327 }],
   },
 ];
+
+const BRACKET_LINKS = [
+  { from: [90, 89], to: 97 },
+  { from: [93, 94], to: 98 },
+  { from: [91, 92], to: 99 },
+  { from: [95, 96], to: 100 },
+  { from: [97, 98], to: 101 },
+  { from: [99, 100], to: 102 },
+  { from: [101, 102], to: 104 },
+];
+
+const BRACKET_NODES_BY_MATCH_NUMBER = new Map(
+  BRACKET_ROUNDS.flatMap((round) =>
+    round.matches.map((match) => [
+      match.matchNumber,
+      {
+        ...match,
+        left: round.left,
+      },
+    ]),
+  ),
+);
+
+const getBracketLinePath = (fromMatchNumber: number, toMatchNumber: number) => {
+  const fromNode = BRACKET_NODES_BY_MATCH_NUMBER.get(fromMatchNumber);
+  const toNode = BRACKET_NODES_BY_MATCH_NUMBER.get(toMatchNumber);
+
+  if (!fromNode || !toNode) {
+    return '';
+  }
+
+  const startX = fromNode.left + BRACKET_NODE_WIDTH;
+  const endX = toNode.left;
+  const middleX = startX + (endX - startX) * 0.55;
+
+  return `M ${startX} ${fromNode.centerY} H ${middleX} V ${toNode.centerY} H ${endX}`;
+};
 
 const getMatchNumber = (match: Match) => {
   if (typeof match.apiFootballFixtureId === 'number') {
@@ -547,36 +613,56 @@ export function TournamentSheets({
             월드컵 16강 이후 토너먼트표
           </h3>
           <div className="tournament-bracket-scroll">
-            <div className="tournament-bracket-grid">
-              {BRACKET_COLUMNS.map((column, columnIndex) => (
-                <div
-                  key={column.label}
-                  className={[
-                    'tournament-bracket-column',
-                    columnIndex < BRACKET_COLUMNS.length - 1 ? 'tournament-bracket-column-connected' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
+            <div className="tournament-bracket-board">
+              <div className="tournament-bracket-header-row" aria-hidden="true">
+                {BRACKET_ROUNDS.map((round) => (
                   <div
+                    key={round.label}
                     className={[
                       'tournament-bracket-column-label',
-                      column.label === activeBracketLabel ? 'tournament-bracket-column-label-active' : '',
+                      round.label === activeBracketLabel ? 'tournament-bracket-column-label-active' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
+                    style={{
+                      left: `${(round.left / BRACKET_WIDTH) * 100}%`,
+                      width: `${(BRACKET_NODE_WIDTH / BRACKET_WIDTH) * 100}%`,
+                    }}
                   >
-                    {column.label}
+                    {round.label}
                   </div>
-                  <div
-                    className={[
-                      'tournament-bracket-match-list',
-                      `tournament-bracket-match-list-${column.matchNumbers.length}`,
-                    ].join(' ')}
-                  >
-                    {column.matchNumbers.map((matchNumber) => (
+                ))}
+              </div>
+              <div className="tournament-bracket-field">
+                <svg
+                  className="tournament-bracket-lines"
+                  viewBox={`0 0 ${BRACKET_WIDTH} ${BRACKET_HEIGHT}`}
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  {BRACKET_LINKS.flatMap((link) =>
+                    link.from.map((fromMatchNumber) => (
+                      <path
+                        key={`${fromMatchNumber}-${link.to}`}
+                        className="tournament-bracket-line"
+                        d={getBracketLinePath(fromMatchNumber, link.to)}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    )),
+                  )}
+                </svg>
+                {BRACKET_ROUNDS.flatMap((round) =>
+                  round.matches.map(({ matchNumber, centerY }) => (
+                    <div
+                      key={matchNumber}
+                      className="tournament-bracket-node"
+                      style={{
+                        left: `${(round.left / BRACKET_WIDTH) * 100}%`,
+                        top: `${(centerY / BRACKET_HEIGHT) * 100}%`,
+                        width: `${(BRACKET_NODE_WIDTH / BRACKET_WIDTH) * 100}%`,
+                      }}
+                    >
                       <BracketMatchBox
-                        key={matchNumber}
                         entry={entriesByNumber.get(matchNumber)}
                         matchNumber={matchNumber}
                         currentTime={currentTime}
@@ -584,10 +670,10 @@ export function TournamentSheets({
                         selectedCountry={selectedCountry}
                         onOpenMatchDetail={onOpenMatchDetail}
                       />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                    </div>
+                  )),
+                )}
+              </div>
             </div>
             {thirdPlaceEntry ? (
               <div className="tournament-bracket-placement">
