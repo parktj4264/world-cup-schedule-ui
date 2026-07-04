@@ -186,7 +186,6 @@ const OverviewMatchNode = ({
               {getCompactTeamName(match.home)}
             </span>
           </span>
-          <span className="tournament-overview-score">{scoreLabel}</span>
           <span className="tournament-overview-team">
             <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-overview-flag" />
             <span
@@ -198,6 +197,7 @@ const OverviewMatchNode = ({
             </span>
           </span>
         </span>
+        <span className="tournament-overview-score">{scoreLabel}</span>
       </button>
     </div>
   );

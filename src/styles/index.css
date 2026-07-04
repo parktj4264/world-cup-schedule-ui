@@ -379,9 +379,10 @@ button.tournament-overview-box:focus-visible {
 .tournament-overview-meta {
   display: flex;
   max-width: 100%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 1px;
 }
 
 .tournament-overview-date,
@@ -407,9 +408,9 @@ button.tournament-overview-box:focus-visible {
   display: grid;
   width: 100%;
   min-width: 0;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: end;
-  gap: 3px;
+  gap: 4px;
 }
 
 .tournament-overview-team {
@@ -421,9 +422,11 @@ button.tournament-overview-box:focus-visible {
 
 .tournament-overview-team-name {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
   font-size: 10px;
+  white-space: normal;
 }
 
 .schedule-flag-icon.tournament-overview-flag {
@@ -438,7 +441,6 @@ button.tournament-overview-box:focus-visible {
 }
 
 .tournament-overview-score {
-  align-self: center;
   color: #111111;
   font-size: 10px;
 }
@@ -1285,7 +1287,7 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-board {
-    height: 300px;
+    height: 306px;
     max-width: none;
   }
 
@@ -1310,10 +1312,10 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-box {
-    min-height: 58px;
+    min-height: 62px;
     border-width: 1px;
     gap: 2px;
-    padding: 3px 1px;
+    padding: 3px 1px 2px;
     box-shadow: none;
   }
 
@@ -1324,12 +1326,12 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-date {
-    font-size: 6.5px;
+    font-size: 7px;
     line-height: 1.1;
   }
 
   .tournament-overview-time {
-    font-size: 7px;
+    font-size: 8px;
     line-height: 1.1;
   }
 
@@ -1346,7 +1348,7 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-team-name {
-    font-size: 5.5px;
+    font-size: 5px;
     line-height: 1.05;
   }
 
@@ -1361,7 +1363,7 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-score {
-    font-size: 5.5px;
+    font-size: 6px;
     line-height: 1;
   }
 }
