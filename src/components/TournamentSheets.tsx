@@ -82,7 +82,7 @@ const SHEET_TABS: SheetTab[] = [
 const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
 
 const BRACKET_WIDTH = 1000;
-const BRACKET_HEIGHT = 560;
+const BRACKET_HEIGHT = 520;
 const BRACKET_NODE_WIDTH = 210;
 
 const BRACKET_ROUNDS: {
@@ -94,38 +94,38 @@ const BRACKET_ROUNDS: {
     label: '16강',
     left: 0,
     matches: [
-      { matchNumber: 90, centerY: 24 },
-      { matchNumber: 89, centerY: 96 },
-      { matchNumber: 93, centerY: 168 },
-      { matchNumber: 94, centerY: 240 },
-      { matchNumber: 91, centerY: 312 },
-      { matchNumber: 92, centerY: 384 },
-      { matchNumber: 95, centerY: 456 },
-      { matchNumber: 96, centerY: 528 },
+      { matchNumber: 90, centerY: 32 },
+      { matchNumber: 89, centerY: 97 },
+      { matchNumber: 93, centerY: 162 },
+      { matchNumber: 94, centerY: 227 },
+      { matchNumber: 91, centerY: 292 },
+      { matchNumber: 92, centerY: 357 },
+      { matchNumber: 95, centerY: 422 },
+      { matchNumber: 96, centerY: 487 },
     ],
   },
   {
     label: '8강',
     left: 263,
     matches: [
-      { matchNumber: 97, centerY: 60 },
-      { matchNumber: 98, centerY: 204 },
-      { matchNumber: 99, centerY: 348 },
-      { matchNumber: 100, centerY: 492 },
+      { matchNumber: 97, centerY: 65 },
+      { matchNumber: 98, centerY: 195 },
+      { matchNumber: 99, centerY: 325 },
+      { matchNumber: 100, centerY: 455 },
     ],
   },
   {
     label: '4강',
     left: 526,
     matches: [
-      { matchNumber: 101, centerY: 132 },
-      { matchNumber: 102, centerY: 420 },
+      { matchNumber: 101, centerY: 130 },
+      { matchNumber: 102, centerY: 390 },
     ],
   },
   {
     label: '결승',
     left: 789,
-    matches: [{ matchNumber: 104, centerY: 276 }],
+    matches: [{ matchNumber: 104, centerY: 260 }],
   },
 ];
 
@@ -452,7 +452,7 @@ const BracketMatchBox = ({
       <div className="tournament-bracket-meta">
         <span className="tournament-bracket-number">{matchNumber}번</span>
         <span className="tournament-bracket-time">
-          {entry.dateLabel} {match.timeLabel}
+          {entry.dateLabel}({entry.weekday}) {match.timeLabel}
         </span>
       </div>
       <div className="tournament-bracket-teams">
