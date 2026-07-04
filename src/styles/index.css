@@ -494,31 +494,6 @@ button.tournament-overview-box:focus-visible {
   background: #ffffff;
 }
 
-.tournament-sheet-rule {
-  height: 5px;
-  background: #2f5365;
-}
-
-.tournament-sheet-title {
-  margin: 0;
-  padding: 10px 8px 4px;
-  text-align: center;
-  color: #111827;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: 0;
-  line-height: 1.15;
-}
-
-.tournament-sheet-subtitle {
-  padding: 0 2px 8px;
-  text-align: right;
-  color: #404040;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
 .tournament-sheet-block {
   margin-top: 18px;
 }
@@ -991,21 +966,6 @@ button.tournament-overview-box:focus-visible {
 
   .tournament-sheet-page {
     max-width: 100%;
-  }
-
-  .tournament-sheet-rule {
-    height: 4px;
-  }
-
-  .tournament-sheet-title {
-    padding: 8px 2px 3px;
-    font-size: 16px;
-    white-space: normal;
-  }
-
-  .tournament-sheet-subtitle {
-    padding: 0 0 6px;
-    font-size: 10px;
   }
 
   .tournament-sheet-block {

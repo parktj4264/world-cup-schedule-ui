@@ -72,22 +72,6 @@ const SHEET_TABS: SheetTab[] = [
 
 const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
 
-const formatSheetIssuedAt = (date: Date) => {
-  const parts = new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: '2-digit',
-    month: 'numeric',
-    day: 'numeric',
-    weekday: 'short',
-  }).formatToParts(date);
-  const year = parts.find((part) => part.type === 'year')?.value ?? '26';
-  const month = parts.find((part) => part.type === 'month')?.value ?? '';
-  const day = parts.find((part) => part.type === 'day')?.value ?? '';
-  const weekday = parts.find((part) => part.type === 'weekday')?.value ?? '';
-
-  return `'${year}. ${month}. ${day}.(${weekday}) KST`;
-};
-
 const includesSelectedCountry = (match: Match, selectedCountry: string) => {
   const countryQuery = selectedCountry.trim();
 
@@ -293,7 +277,6 @@ export function TournamentSheets({
     { length: activeTab.matchesPerRow },
     (_, index) => index,
   );
-  const issuedAt = formatSheetIssuedAt(currentTime);
 
   return (
     <section className="tournament-sheets mx-auto w-full max-w-[1040px] pb-6">
@@ -319,10 +302,6 @@ export function TournamentSheets({
       </div>
 
       <div className="tournament-sheet-page">
-        <div className="tournament-sheet-rule" />
-        <div className="tournament-sheet-subtitle">{issuedAt}</div>
-        <div className="tournament-sheet-rule" />
-
         <section className="tournament-sheet-block" aria-labelledby="tournament-sheet-heading">
           <h3 id="tournament-sheet-heading" className="tournament-sheet-heading">
             <span aria-hidden="true">□</span>
