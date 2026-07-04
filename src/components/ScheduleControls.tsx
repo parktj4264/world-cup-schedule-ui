@@ -1,4 +1,4 @@
-export type ScheduleViewMode = 'mini' | 'detail' | 'tournament-sheets';
+export type ScheduleViewMode = 'mini' | 'tournament-sheets';
 
 type ScheduleControlsProps = {
   viewMode: ScheduleViewMode;
@@ -15,7 +15,6 @@ const viewButtonBaseClassName =
 
 const viewOptions: { label: string; mode: ScheduleViewMode }[] = [
   { label: '전체 일정', mode: 'mini' },
-  { label: '확대 일정', mode: 'detail' },
   { label: '토너먼트 시트', mode: 'tournament-sheets' },
 ];
 

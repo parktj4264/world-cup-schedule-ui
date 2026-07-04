@@ -4,7 +4,6 @@ import { LiveUpdateToast } from '../components/LiveUpdateToast';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { MatchDetailModal } from '../components/MatchDetailModal';
 import { ScheduleControls, type ScheduleViewMode } from '../components/ScheduleControls';
-import { ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
 import { TournamentSheets } from '../components/TournamentSheets';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
@@ -17,7 +16,6 @@ import {
 } from '../utils/liveSchedule';
 import { flattenMatches, getKstDateKey, getLiveMatches, getMatchStartTime, getNextMatch } from '../utils/timeUtils';
 
-const DETAIL_VIEW_ZOOM = 70;
 const LIVE_SCHEDULE_URL = `${import.meta.env.BASE_URL}data/live-schedule.json`;
 const SHARE_TOAST_DURATION_MS = 2200;
 const PAGE_JSON_REFRESH_MS = 5 * 60 * 1000;
@@ -494,17 +492,6 @@ export function SchedulePage() {
             sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
-            selectedCountry={selectedCountry}
-            todayKey={todayKey}
-            onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
-          />
-        ) : null}
-        {viewMode === 'detail' ? (
-          <ScheduleTable
-            sections={visibleSections}
-            currentTime={currentTime}
-            nextMatchId={nextMatch?.id}
-            zoom={DETAIL_VIEW_ZOOM}
             selectedCountry={selectedCountry}
             todayKey={todayKey}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
