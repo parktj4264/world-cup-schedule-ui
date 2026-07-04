@@ -314,32 +314,33 @@ button {
 }
 
 .tournament-overview-node-round-of-16 {
-  width: 82px;
+  width: 92px;
 }
 
 .tournament-overview-node-quarter-final {
-  width: 132px;
+  width: 142px;
 }
 
 .tournament-overview-node-semi-final {
-  width: 152px;
+  width: 162px;
 }
 
 .tournament-overview-node-final {
-  width: 260px;
+  width: 270px;
 }
 
 .tournament-overview-box {
   display: flex;
   width: 100%;
-  min-height: 56px;
+  min-height: 80px;
   border: 2px solid #111111;
   background: #f7f7f7;
   color: #111111;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px 4px;
+  gap: 4px;
+  padding: 5px 4px 6px;
   text-align: center;
   box-shadow: 0 1px 0 #d4d4d4;
 }
@@ -375,22 +376,77 @@ button.tournament-overview-box:focus-visible {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.24);
 }
 
+.tournament-overview-meta {
+  display: flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .tournament-overview-date,
-.tournament-overview-time {
+.tournament-overview-time,
+.tournament-overview-score,
+.tournament-overview-team-name {
   display: block;
   font-weight: 900;
   letter-spacing: 0;
-  line-height: 1.18;
+  line-height: 1.12;
   white-space: nowrap;
 }
 
 .tournament-overview-date {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .tournament-overview-time {
-  margin-top: 3px;
-  font-size: 18px;
+  font-size: 14px;
+}
+
+.tournament-overview-teams {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 3px;
+}
+
+.tournament-overview-team {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 2px;
+}
+
+.tournament-overview-team-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 10px;
+}
+
+.schedule-flag-icon.tournament-overview-flag {
+  width: 22px;
+  height: 15px;
+  border: 1px solid #a3a3a3;
+}
+
+.schedule-flag-emoji.tournament-overview-flag {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.tournament-overview-score {
+  align-self: center;
+  color: #111111;
+  font-size: 10px;
+}
+
+.tournament-overview-team-winner {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
 }
 
 .tournament-sheet-tabs {
@@ -1238,24 +1294,25 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-node-round-of-16 {
-    width: 42px;
+    width: 40px;
   }
 
   .tournament-overview-node-quarter-final {
-    width: 66px;
+    width: 68px;
   }
 
   .tournament-overview-node-semi-final {
-    width: 74px;
+    width: 78px;
   }
 
   .tournament-overview-node-final {
-    width: 118px;
+    width: 126px;
   }
 
   .tournament-overview-box {
-    min-height: 42px;
+    min-height: 58px;
     border-width: 1px;
+    gap: 2px;
     padding: 3px 1px;
     box-shadow: none;
   }
@@ -1267,14 +1324,45 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-date {
-    font-size: 9px;
+    font-size: 6.5px;
     line-height: 1.1;
   }
 
   .tournament-overview-time {
-    margin-top: 2px;
-    font-size: 11px;
+    font-size: 7px;
     line-height: 1.1;
+  }
+
+  .tournament-overview-meta {
+    gap: 1px;
+  }
+
+  .tournament-overview-teams {
+    gap: 1px;
+  }
+
+  .tournament-overview-team {
+    gap: 1px;
+  }
+
+  .tournament-overview-team-name {
+    font-size: 5.5px;
+    line-height: 1.05;
+  }
+
+  .schedule-flag-icon.tournament-overview-flag {
+    width: 10px;
+    height: 7px;
+    border-width: 0;
+  }
+
+  .schedule-flag-emoji.tournament-overview-flag {
+    font-size: 8px;
+  }
+
+  .tournament-overview-score {
+    font-size: 5.5px;
+    line-height: 1;
   }
 }
 

@@ -1,6 +1,7 @@
 import type { Match, ScheduleSection } from '../data/schedule';
-import { canOpenMatchDetail } from '../utils/matchDisplay';
+import { canOpenMatchDetail, getDisplayScoreState } from '../utils/matchDisplay';
 import { isLiveMatch } from '../utils/timeUtils';
+import { FlagIcon } from './FlagIcon';
 import { getTournamentEntries, type TournamentEntry } from './TournamentBracket';
 
 type TournamentOverviewBracketProps = {
@@ -70,6 +71,47 @@ const getOverviewLinePath = (parentNumber: number, childNumber: number) => {
 const formatOverviewDate = (entry: TournamentEntry) =>
   `${entry.dateLabel.replace(/\s+/g, '')}(${entry.weekday})`;
 
+const getCompactTeamName = (teamName: string) => {
+  const placeholder = /^(\d+)번\s*(승자|패자)$/.exec(teamName);
+
+  if (placeholder) {
+    return `${placeholder[1]}${placeholder[2] === '승자' ? '승' : '패'}`;
+  }
+
+  return teamName;
+};
+
+const getOverviewScoreLabel = (match: Match, currentTime: Date) => {
+  const displayScoreState = getDisplayScoreState(match, currentTime);
+
+  if (!displayScoreState) {
+    return 'vs';
+  }
+
+  if (displayScoreState.kind === 'pending') {
+    return '-:-';
+  }
+
+  const homePenalty =
+    typeof displayScoreState.homePenaltyScore === 'number'
+      ? `(${displayScoreState.homePenaltyScore})`
+      : '';
+  const awayPenalty =
+    typeof displayScoreState.awayPenaltyScore === 'number'
+      ? `(${displayScoreState.awayPenaltyScore})`
+      : '';
+
+  return `${displayScoreState.homeScore}${homePenalty}:${displayScoreState.awayScore}${awayPenalty}`;
+};
+
+const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
+  const isWinner =
+    (side === 'home' && match.winner === 'home') ||
+    (side === 'away' && match.winner === 'away');
+
+  return isWinner ? 'tournament-overview-team-winner' : '';
+};
+
 const OverviewMatchNode = ({
   node,
   entry,
@@ -91,6 +133,7 @@ const OverviewMatchNode = ({
   const isSelected = match?.id === selectedMatchId;
   const isNext = match?.id === nextMatchId;
   const isLive = match ? isLiveMatch(match, currentTime) : false;
+  const scoreLabel = match ? getOverviewScoreLabel(match, currentTime) : undefined;
   const openMatchDetail = match && canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
   const className = [
     'tournament-overview-box',
@@ -128,8 +171,33 @@ const OverviewMatchNode = ({
         onClick={() => onSelectMatch?.(match)}
         onDoubleClick={() => openMatchDetail?.(match)}
       >
-        <span className="tournament-overview-date">{formatOverviewDate(entry)}</span>
-        <span className="tournament-overview-time">{match.timeLabel}</span>
+        <span className="tournament-overview-meta">
+          <span className="tournament-overview-date">{formatOverviewDate(entry)}</span>
+          <span className="tournament-overview-time">{match.timeLabel}</span>
+        </span>
+        <span className="tournament-overview-teams">
+          <span className="tournament-overview-team">
+            <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-overview-flag" />
+            <span
+              className={['tournament-overview-team-name', getWinnerClassName(match, 'home')]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {getCompactTeamName(match.home)}
+            </span>
+          </span>
+          <span className="tournament-overview-score">{scoreLabel}</span>
+          <span className="tournament-overview-team">
+            <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-overview-flag" />
+            <span
+              className={['tournament-overview-team-name', getWinnerClassName(match, 'away')]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {getCompactTeamName(match.away)}
+            </span>
+          </span>
+        </span>
       </button>
     </div>
   );
