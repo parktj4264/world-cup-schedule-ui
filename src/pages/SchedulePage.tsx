@@ -3,9 +3,10 @@ import { FilterBar } from '../components/FilterBar';
 import { LiveUpdateToast } from '../components/LiveUpdateToast';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { MatchDetailModal } from '../components/MatchDetailModal';
-import { ScheduleControls } from '../components/ScheduleControls';
+import { ScheduleControls, type ScheduleViewMode } from '../components/ScheduleControls';
 import { ScheduleTable } from '../components/ScheduleTable';
 import { StatusBar } from '../components/StatusBar';
+import { TournamentSheets } from '../components/TournamentSheets';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
 import { fetchBrowserLiveSchedule } from '../utils/browserLiveProvider';
 import {
@@ -137,7 +138,7 @@ const getCountryOptions = (sections: ScheduleSection[]) =>
 export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [isMiniView, setIsMiniView] = useState(true);
+  const [viewMode, setViewMode] = useState<ScheduleViewMode>('mini');
   const [liveSchedule, setLiveSchedule] = useState<LiveSchedule>();
   const [pageLiveUpdatedAt, setPageLiveUpdatedAt] = useState<string | null>(null);
   const [liveScheduleError, setLiveScheduleError] = useState(false);
@@ -401,7 +402,7 @@ export function SchedulePage() {
 
   const handleShowKorea = useCallback(() => {
     setSelectedCountry('대한민국');
-    scrollAfterRender('.schedule-korea-cell');
+    scrollAfterRender('.schedule-korea-cell, .tournament-sheet-korea-match');
   }, [scrollAfterRender]);
 
   const showShareMessage = useCallback((message: string) => {
@@ -477,10 +478,10 @@ export function SchedulePage() {
           onRefreshLiveSchedule={handleRefreshLiveSchedule}
         />
         <ScheduleControls
-          isMiniView={isMiniView}
+          viewMode={viewMode}
           onCopyShareLink={handleCopyShareLink}
           onShowKorea={handleShowKorea}
-          onToggleMiniView={() => setIsMiniView((currentMode) => !currentMode)}
+          onViewModeChange={setViewMode}
         />
         <FilterBar
           selectedCountry={selectedCountry}
@@ -488,7 +489,7 @@ export function SchedulePage() {
           onCountryChange={setSelectedCountry}
           onClearCountry={() => setSelectedCountry('')}
         />
-        {isMiniView ? (
+        {viewMode === 'mini' ? (
           <MiniScheduleTable
             sections={visibleSections}
             currentTime={currentTime}
@@ -497,7 +498,8 @@ export function SchedulePage() {
             todayKey={todayKey}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
-        ) : (
+        ) : null}
+        {viewMode === 'detail' ? (
           <ScheduleTable
             sections={visibleSections}
             currentTime={currentTime}
@@ -507,7 +509,16 @@ export function SchedulePage() {
             todayKey={todayKey}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
-        )}
+        ) : null}
+        {viewMode === 'tournament-sheets' ? (
+          <TournamentSheets
+            sections={visibleSections}
+            currentTime={currentTime}
+            nextMatchId={nextMatch?.id}
+            selectedCountry={selectedCountry}
+            onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
+          />
+        ) : null}
         {selectedMatch ? (
           <MatchDetailModal
             match={selectedMatch}

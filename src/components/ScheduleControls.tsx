@@ -1,21 +1,29 @@
+export type ScheduleViewMode = 'mini' | 'detail' | 'tournament-sheets';
+
 type ScheduleControlsProps = {
-  isMiniView: boolean;
+  viewMode: ScheduleViewMode;
   onCopyShareLink: () => void;
   onShowKorea: () => void;
-  onToggleMiniView: () => void;
+  onViewModeChange: (viewMode: ScheduleViewMode) => void;
 };
 
 const buttonClassName =
   'border border-neutral-700 bg-white px-2 py-1 text-xs font-black leading-none text-neutral-900 hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600';
 
-const viewButtonClassName =
-  'border-2 border-neutral-900 bg-neutral-900 px-4 py-1.5 text-sm font-black leading-none text-white hover:bg-[#2f5365] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600';
+const viewButtonBaseClassName =
+  'border-2 border-neutral-900 px-3 py-1.5 text-xs font-black leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 sm:text-sm';
+
+const viewOptions: { label: string; mode: ScheduleViewMode }[] = [
+  { label: '전체 일정', mode: 'mini' },
+  { label: '확대 일정', mode: 'detail' },
+  { label: '토너먼트 시트', mode: 'tournament-sheets' },
+];
 
 export function ScheduleControls({
-  isMiniView,
+  viewMode,
   onCopyShareLink,
   onShowKorea,
-  onToggleMiniView,
+  onViewModeChange,
 }: ScheduleControlsProps) {
   return (
     <div className="schedule-controls mx-auto flex w-full max-w-[980px] flex-wrap items-center justify-between gap-1 py-1">
@@ -27,9 +35,28 @@ export function ScheduleControls({
           공유 링크 복사
         </button>
       </div>
-      <button type="button" className={viewButtonClassName} onClick={onToggleMiniView}>
-        {isMiniView ? '🔍 Zoom In' : '🔎 Zoom Out'}
-      </button>
+      <div className="flex flex-wrap items-center justify-end gap-1">
+        {viewOptions.map((option) => {
+          const isActive = option.mode === viewMode;
+
+          return (
+            <button
+              key={option.mode}
+              type="button"
+              className={[
+                viewButtonBaseClassName,
+                isActive
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-white text-neutral-900 hover:bg-neutral-100',
+              ].join(' ')}
+              aria-pressed={isActive}
+              onClick={() => onViewModeChange(option.mode)}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
