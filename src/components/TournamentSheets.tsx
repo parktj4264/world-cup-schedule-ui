@@ -445,6 +445,7 @@ export function TournamentSheets({
     { length: activeTab.matchesPerRow },
     (_, index) => index,
   );
+  const activeBracketLabel = activeTab.id === 'round-of-32' ? undefined : activeTab.label;
   const thirdPlaceEntry = entriesByNumber.get(103);
   const issuedAt = formatSheetIssuedAt(currentTime);
 
@@ -552,24 +553,39 @@ export function TournamentSheets({
                   key={column.label}
                   className={[
                     'tournament-bracket-column',
-                    `tournament-bracket-column-${column.matchNumbers.length}`,
                     columnIndex < BRACKET_COLUMNS.length - 1 ? 'tournament-bracket-column-connected' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  <div className="tournament-bracket-column-label">{column.label}</div>
-                  {column.matchNumbers.map((matchNumber) => (
-                    <BracketMatchBox
-                      key={matchNumber}
-                      entry={entriesByNumber.get(matchNumber)}
-                      matchNumber={matchNumber}
-                      currentTime={currentTime}
-                      nextMatchId={nextMatchId}
-                      selectedCountry={selectedCountry}
-                      onOpenMatchDetail={onOpenMatchDetail}
-                    />
-                  ))}
+                  <div
+                    className={[
+                      'tournament-bracket-column-label',
+                      column.label === activeBracketLabel ? 'tournament-bracket-column-label-active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    {column.label}
+                  </div>
+                  <div
+                    className={[
+                      'tournament-bracket-match-list',
+                      `tournament-bracket-match-list-${column.matchNumbers.length}`,
+                    ].join(' ')}
+                  >
+                    {column.matchNumbers.map((matchNumber) => (
+                      <BracketMatchBox
+                        key={matchNumber}
+                        entry={entriesByNumber.get(matchNumber)}
+                        matchNumber={matchNumber}
+                        currentTime={currentTime}
+                        nextMatchId={nextMatchId}
+                        selectedCountry={selectedCountry}
+                        onOpenMatchDetail={onOpenMatchDetail}
+                      />
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
