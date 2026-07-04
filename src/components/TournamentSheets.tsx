@@ -25,7 +25,17 @@ type TournamentEntry = {
   matchNumber?: number;
 };
 
-const SHEET_TABS = [
+type SheetTabId = 'round-of-32' | 'round-of-16' | 'quarter-final' | 'semi-final' | 'finals';
+
+type SheetTab = {
+  id: SheetTabId;
+  label: string;
+  title: string;
+  heading: string;
+  stages: TournamentStage[];
+};
+
+const SHEET_TABS: SheetTab[] = [
   {
     id: 'round-of-32',
     label: '32강',
@@ -61,10 +71,7 @@ const SHEET_TABS = [
     heading: '월드컵 3·4위전 / 결승 일정',
     stages: ['third-place', 'final'],
   },
-] as const;
-
-type SheetTab = (typeof SHEET_TABS)[number];
-type SheetTabId = SheetTab['id'];
+];
 
 const BRACKET_COLUMNS: { label: string; matchNumbers: number[] }[] = [
   {
