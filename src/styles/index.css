@@ -548,8 +548,8 @@ button {
 
 .tournament-bracket-grid {
   display: grid;
-  min-width: 1120px;
-  grid-template-columns: repeat(5, minmax(170px, 1fr));
+  min-width: 900px;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
   gap: 24px;
   padding: 2px 4px 12px;
 }
@@ -823,7 +823,7 @@ button {
   .tournament-bracket-grid {
     width: 100%;
     min-width: 0;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
     padding: 2px 0 8px;
   }

@@ -75,10 +75,6 @@ const SHEET_TABS: SheetTab[] = [
 
 const BRACKET_COLUMNS: { label: string; matchNumbers: number[] }[] = [
   {
-    label: '32강',
-    matchNumbers: [73, 75, 74, 77, 83, 84, 81, 82, 76, 78, 79, 80, 86, 88, 85, 87],
-  },
-  {
     label: '16강',
     matchNumbers: [90, 89, 93, 94, 91, 92, 95, 96],
   },
@@ -526,7 +522,7 @@ export function TournamentSheets({
         <section className="tournament-sheet-block" aria-labelledby="tournament-bracket-heading">
           <h3 id="tournament-bracket-heading" className="tournament-sheet-heading">
             <span aria-hidden="true">□</span>
-            월드컵 전체 토너먼트표
+            월드컵 16강 이후 토너먼트표
           </h3>
           <div className="tournament-bracket-scroll">
             <div className="tournament-bracket-grid">
