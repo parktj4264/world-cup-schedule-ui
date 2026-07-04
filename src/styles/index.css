@@ -269,8 +269,16 @@ button {
   padding: 0;
 }
 
-.schedule-overview-bracket-section .schedule-section-title {
-  max-width: none;
+.schedule-overview-heading {
+  display: flex;
+  margin: 0 0 10px;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.2;
 }
 
 .schedule-overview-bracket-shell {
@@ -1022,6 +1030,12 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-sheet-heading {
+    margin-bottom: 7px;
+    gap: 5px;
+    font-size: 14px;
+  }
+
+  .schedule-overview-heading {
     margin-bottom: 7px;
     gap: 5px;
     font-size: 14px;

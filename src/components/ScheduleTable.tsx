@@ -27,6 +27,9 @@ const BASE_WEEKDAY_FONT = 17;
 
 export const BASE_TABLE_WIDTH = BASE_DATE_WIDTH + BASE_MATCH_WIDTH * 4;
 
+const getScheduleSectionHeading = (section: ScheduleSection) =>
+  section.stage === 'group' ? '월드컵 조별리그 일정' : '월드컵 토너먼트 일정';
+
 export function ScheduleTable({
   sections,
   currentTime,
@@ -62,38 +65,43 @@ export function ScheduleTable({
       style={tableStyle}
     >
       {hasRows ? (
-        sections.map((section) => (
-          <div key={section.id} className="schedule-section mx-auto mb-4">
-            <h2 className="schedule-section-title border-x-2 border-t-2 border-neutral-900 bg-white py-1 text-center text-sm font-black text-neutral-950">
-              {section.title}
-            </h2>
-            <table
-              className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-center"
-              aria-label={section.title}
-            >
-              <colgroup>
-                <col className="schedule-date-col" />
-                <col className="schedule-match-col" />
-                <col className="schedule-match-col" />
-                <col className="schedule-match-col" />
-                <col className="schedule-match-col" />
-              </colgroup>
-              <tbody>
-                {section.days.map((day) => (
-                  <ScheduleRow
-                    key={day.date}
-                    day={day}
-                    currentTime={currentTime}
-                    nextMatchId={nextMatchId}
-                    selectedCountry={selectedCountry}
-                    todayKey={todayKey}
-                    onOpenMatchDetail={onOpenMatchDetail}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))
+        sections.map((section) => {
+          const heading = getScheduleSectionHeading(section);
+
+          return (
+            <div key={section.id} className="schedule-section mx-auto mb-4">
+              <h2 className="schedule-overview-heading">
+                <span aria-hidden="true">□</span>
+                {heading}
+              </h2>
+              <table
+                className="schedule-table mx-auto table-fixed border-collapse border-2 border-neutral-900 bg-white text-center"
+                aria-label={heading}
+              >
+                <colgroup>
+                  <col className="schedule-date-col" />
+                  <col className="schedule-match-col" />
+                  <col className="schedule-match-col" />
+                  <col className="schedule-match-col" />
+                  <col className="schedule-match-col" />
+                </colgroup>
+                <tbody>
+                  {section.days.map((day) => (
+                    <ScheduleRow
+                      key={day.date}
+                      day={day}
+                      currentTime={currentTime}
+                      nextMatchId={nextMatchId}
+                      selectedCountry={selectedCountry}
+                      todayKey={todayKey}
+                      onOpenMatchDetail={onOpenMatchDetail}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        })
       ) : (
         <div className="mx-auto w-[974px] border-2 border-neutral-900 bg-white p-6 text-center text-sm font-bold text-neutral-700">
           표시할 일정이 없습니다.

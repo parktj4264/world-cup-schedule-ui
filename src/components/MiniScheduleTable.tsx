@@ -74,11 +74,12 @@ export function MiniScheduleTable({
       >
         <h2
           id="schedule-overview-bracket-heading"
-          className="schedule-section-title border-x-2 border-t-2 border-neutral-900 bg-white py-1 text-center text-sm font-black text-neutral-950"
+          className="schedule-overview-heading"
         >
+          <span aria-hidden="true">□</span>
           월드컵 16강 이후 토너먼트표
         </h2>
-        <div className="schedule-overview-bracket-shell border-x-2 border-b-2 border-neutral-900 bg-white px-2 py-2">
+        <div className="schedule-overview-bracket-shell border-2 border-neutral-900 bg-white px-2 py-2">
           <TournamentOverviewBracket
             sections={sections}
             currentTime={currentTime}
