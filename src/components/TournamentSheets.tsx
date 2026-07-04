@@ -82,7 +82,7 @@ const SHEET_TABS: SheetTab[] = [
 const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
 
 const BRACKET_WIDTH = 1000;
-const BRACKET_HEIGHT = 680;
+const BRACKET_HEIGHT = 560;
 const BRACKET_NODE_WIDTH = 210;
 
 const BRACKET_ROUNDS: {
@@ -94,38 +94,38 @@ const BRACKET_ROUNDS: {
     label: '16강',
     left: 0,
     matches: [
-      { matchNumber: 90, centerY: 26 },
-      { matchNumber: 89, centerY: 112 },
-      { matchNumber: 93, centerY: 198 },
-      { matchNumber: 94, centerY: 284 },
-      { matchNumber: 91, centerY: 370 },
-      { matchNumber: 92, centerY: 456 },
-      { matchNumber: 95, centerY: 542 },
-      { matchNumber: 96, centerY: 628 },
+      { matchNumber: 90, centerY: 24 },
+      { matchNumber: 89, centerY: 96 },
+      { matchNumber: 93, centerY: 168 },
+      { matchNumber: 94, centerY: 240 },
+      { matchNumber: 91, centerY: 312 },
+      { matchNumber: 92, centerY: 384 },
+      { matchNumber: 95, centerY: 456 },
+      { matchNumber: 96, centerY: 528 },
     ],
   },
   {
     label: '8강',
     left: 263,
     matches: [
-      { matchNumber: 97, centerY: 69 },
-      { matchNumber: 98, centerY: 241 },
-      { matchNumber: 99, centerY: 413 },
-      { matchNumber: 100, centerY: 585 },
+      { matchNumber: 97, centerY: 60 },
+      { matchNumber: 98, centerY: 204 },
+      { matchNumber: 99, centerY: 348 },
+      { matchNumber: 100, centerY: 492 },
     ],
   },
   {
     label: '4강',
     left: 526,
     matches: [
-      { matchNumber: 101, centerY: 155 },
-      { matchNumber: 102, centerY: 499 },
+      { matchNumber: 101, centerY: 132 },
+      { matchNumber: 102, centerY: 420 },
     ],
   },
   {
     label: '결승',
     left: 789,
-    matches: [{ matchNumber: 104, centerY: 327 }],
+    matches: [{ matchNumber: 104, centerY: 276 }],
   },
 ];
 
@@ -341,18 +341,23 @@ const SheetMatch = ({
   currentTime,
   nextMatchId,
   selectedCountry,
+  selectedMatchId,
+  onSelectMatch,
   onOpenMatchDetail,
 }: {
   entry: TournamentEntry;
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry: string;
+  selectedMatchId?: string | null;
+  onSelectMatch: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
 }) => {
   const { match, matchNumber } = entry;
   const scoreParts = getScoreParts(match, currentTime);
   const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
   const highlightClassName = getMatchHighlightClassName(match, selectedCountry, nextMatchId, currentTime);
+  const isSelected = match.id === selectedMatchId;
   const matchContent = (
     <>
       <div className="tournament-sheet-time-row">
@@ -388,29 +393,25 @@ const SheetMatch = ({
   );
   const openMatchDetail = canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
 
-  if (openMatchDetail) {
-    return (
-      <button
-        type="button"
-        data-match-id={match.id}
-        className={['tournament-sheet-match tournament-sheet-match-button', highlightClassName]
-          .filter(Boolean)
-          .join(' ')}
-        aria-label={`${match.home} 대 ${match.away} 경기 상세 보기`}
-        onClick={() => openMatchDetail(match)}
-      >
-        {matchContent}
-      </button>
-    );
-  }
-
   return (
-    <div
+    <button
+      type="button"
       data-match-id={match.id}
-      className={['tournament-sheet-match', highlightClassName].filter(Boolean).join(' ')}
+      className={[
+        'tournament-sheet-match',
+        'tournament-sheet-match-button',
+        highlightClassName,
+        isSelected ? 'tournament-sheet-match-selected' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-label={`${match.home} 대 ${match.away} 경기 선택`}
+      aria-pressed={isSelected}
+      onClick={() => onSelectMatch(match)}
+      onDoubleClick={() => openMatchDetail?.(match)}
     >
       {matchContent}
-    </div>
+    </button>
   );
 };
 
@@ -420,6 +421,8 @@ const BracketMatchBox = ({
   currentTime,
   nextMatchId,
   selectedCountry,
+  selectedMatchId,
+  onSelectMatch,
   onOpenMatchDetail,
 }: {
   entry?: TournamentEntry;
@@ -427,6 +430,8 @@ const BracketMatchBox = ({
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry: string;
+  selectedMatchId?: string | null;
+  onSelectMatch: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
 }) => {
   if (!entry) {
@@ -441,44 +446,59 @@ const BracketMatchBox = ({
   const { match } = entry;
   const scoreLabel = getCompactScoreLabel(match, currentTime);
   const highlightClassName = getMatchHighlightClassName(match, selectedCountry, nextMatchId, currentTime);
+  const isSelected = match.id === selectedMatchId;
   const boxContent = (
     <>
-      <div className="tournament-bracket-number">{matchNumber}번</div>
-      <div className="tournament-bracket-time">
-        {entry.dateLabel}.({entry.weekday}) {match.timeLabel}
+      <div className="tournament-bracket-meta">
+        <span className="tournament-bracket-number">{matchNumber}번</span>
+        <span className="tournament-bracket-time">
+          {entry.dateLabel} {match.timeLabel}
+        </span>
       </div>
       <div className="tournament-bracket-teams">
-        <span className={getWinnerClassName(match, 'home')}>{match.home}</span>
+        <span className="tournament-bracket-team">
+          <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-bracket-flag" />
+          <span className={['tournament-bracket-team-name', getWinnerClassName(match, 'home')]
+            .filter(Boolean)
+            .join(' ')}
+          >
+            {match.home}
+          </span>
+        </span>
         <span className="tournament-bracket-versus">vs</span>
-        <span className={getWinnerClassName(match, 'away')}>{match.away}</span>
+        <span className="tournament-bracket-team">
+          <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-bracket-flag" />
+          <span className={['tournament-bracket-team-name', getWinnerClassName(match, 'away')]
+            .filter(Boolean)
+            .join(' ')}
+          >
+            {match.away}
+          </span>
+        </span>
       </div>
       {scoreLabel ? <div className="tournament-bracket-score">{scoreLabel}</div> : null}
     </>
   );
   const openMatchDetail = canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
 
-  if (openMatchDetail) {
-    return (
-      <button
-        type="button"
-        data-match-id={match.id}
-        className={['tournament-bracket-box tournament-bracket-box-button', highlightClassName]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={() => openMatchDetail(match)}
-      >
-        {boxContent}
-      </button>
-    );
-  }
-
   return (
-    <div
+    <button
+      type="button"
       data-match-id={match.id}
-      className={['tournament-bracket-box', highlightClassName].filter(Boolean).join(' ')}
+      className={[
+        'tournament-bracket-box',
+        'tournament-bracket-box-button',
+        highlightClassName,
+        isSelected ? 'tournament-bracket-box-selected' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-pressed={isSelected}
+      onClick={() => onSelectMatch(match)}
+      onDoubleClick={() => openMatchDetail?.(match)}
     >
       {boxContent}
-    </div>
+    </button>
   );
 };
 
@@ -490,6 +510,7 @@ export function TournamentSheets({
   onOpenMatchDetail,
 }: TournamentSheetsProps) {
   const [activeTabId, setActiveTabId] = useState<SheetTabId>('round-of-32');
+  const [selectedTournamentMatchId, setSelectedTournamentMatchId] = useState<string | null>(null);
   const tournamentEntries = useMemo(() => getTournamentEntries(sections), [sections]);
   const entriesByNumber = useMemo(
     () =>
@@ -512,6 +533,9 @@ export function TournamentSheets({
     (_, index) => index,
   );
   const activeBracketLabel = activeTab.id === 'round-of-32' ? undefined : activeTab.label;
+  const selectedBracketMatchNumber = selectedTournamentMatchId
+    ? tournamentEntries.find((entry) => entry.match.id === selectedTournamentMatchId)?.matchNumber
+    : undefined;
   const thirdPlaceEntry = entriesByNumber.get(103);
   const issuedAt = formatSheetIssuedAt(currentTime);
 
@@ -588,6 +612,8 @@ export function TournamentSheets({
                               currentTime={currentTime}
                               nextMatchId={nextMatchId}
                               selectedCountry={selectedCountry}
+                              selectedMatchId={selectedTournamentMatchId}
+                              onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
                               onOpenMatchDetail={onOpenMatchDetail}
                             />
                           ) : null}
@@ -644,7 +670,15 @@ export function TournamentSheets({
                     link.from.map((fromMatchNumber) => (
                       <path
                         key={`${fromMatchNumber}-${link.to}`}
-                        className="tournament-bracket-line"
+                        className={[
+                          'tournament-bracket-line',
+                          selectedBracketMatchNumber === fromMatchNumber ||
+                          selectedBracketMatchNumber === link.to
+                            ? 'tournament-bracket-line-selected'
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
                         d={getBracketLinePath(fromMatchNumber, link.to)}
                         vectorEffect="non-scaling-stroke"
                       />
@@ -668,6 +702,8 @@ export function TournamentSheets({
                         currentTime={currentTime}
                         nextMatchId={nextMatchId}
                         selectedCountry={selectedCountry}
+                        selectedMatchId={selectedTournamentMatchId}
+                        onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
                         onOpenMatchDetail={onOpenMatchDetail}
                       />
                     </div>
@@ -684,6 +720,8 @@ export function TournamentSheets({
                   currentTime={currentTime}
                   nextMatchId={nextMatchId}
                   selectedCountry={selectedCountry}
+                  selectedMatchId={selectedTournamentMatchId}
+                  onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
                   onOpenMatchDetail={onOpenMatchDetail}
                 />
               </div>

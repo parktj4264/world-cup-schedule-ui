@@ -582,6 +582,11 @@ button {
   box-shadow: inset 0 0 0 3px #dc2626;
 }
 
+.tournament-sheet-match-selected {
+  background: #ecfeff;
+  box-shadow: inset 0 0 0 3px #0f766e;
+}
+
 .tournament-bracket-board {
   position: relative;
   width: 100%;
@@ -597,7 +602,7 @@ button {
 
 .tournament-bracket-field {
   position: relative;
-  height: 680px;
+  height: 560px;
 }
 
 .tournament-bracket-lines {
@@ -617,6 +622,12 @@ button {
   stroke-linejoin: round;
   stroke-width: 2px;
   opacity: 0.78;
+}
+
+.tournament-bracket-line-selected {
+  stroke: #0f766e;
+  stroke-width: 3px;
+  opacity: 1;
 }
 
 .tournament-bracket-node {
@@ -646,10 +657,10 @@ button {
 .tournament-bracket-box {
   display: block;
   width: 100%;
-  min-height: 58px;
+  min-height: 50px;
   border: 2px solid #111111;
   background: #ffffff;
-  padding: 5px 6px;
+  padding: 4px 5px;
   color: #111827;
   text-align: center;
   box-shadow: 0 2px 0 #d1d5db;
@@ -661,48 +672,87 @@ button {
   color: #737373;
 }
 
+.tournament-bracket-box-selected {
+  border-color: #0f766e;
+  background: #ecfeff;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2), 0 2px 0 #99f6e4;
+}
+
+.tournament-bracket-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
 .tournament-bracket-number {
+  flex: 0 0 auto;
+  color: #111827;
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
 }
 
 .tournament-bracket-time {
-  margin-top: 3px;
-  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1;
 }
 
 .tournament-bracket-teams {
   display: flex;
   min-width: 0;
-  margin-top: 3px;
+  margin-top: 4px;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   color: #111827;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
-.tournament-bracket-teams span {
+.tournament-bracket-team {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 2px;
+}
+
+.tournament-bracket-team-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.schedule-flag-icon.tournament-bracket-flag {
+  width: 18px;
+  height: 12px;
+  flex: 0 0 auto;
+  border: 1px solid #9ca3af;
+}
+
+.schedule-flag-emoji.tournament-bracket-flag {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 1;
+}
+
 .tournament-bracket-versus {
   flex: 0 0 auto;
   color: #525252;
-  font-size: 9px;
+  font-size: 8px;
 }
 
 .tournament-bracket-score {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   line-height: 1;
 }
@@ -943,11 +993,15 @@ button {
   }
 
   .tournament-bracket-field {
-    height: 540px;
+    height: 440px;
   }
 
   .tournament-bracket-line {
     stroke-width: 1.5px;
+  }
+
+  .tournament-bracket-line-selected {
+    stroke-width: 2.25px;
   }
 
   .tournament-bracket-column-label {
@@ -960,35 +1014,55 @@ button {
   }
 
   .tournament-bracket-box {
-    min-height: 36px;
+    min-height: 34px;
     border-width: 1px;
-    padding: 3px 2px;
+    padding: 2px;
     box-shadow: none;
   }
 
+  .tournament-bracket-box-selected {
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.22);
+  }
+
+  .tournament-bracket-meta {
+    gap: 2px;
+  }
+
   .tournament-bracket-number {
-    font-size: 7px;
+    font-size: 6px;
   }
 
   .tournament-bracket-time {
-    margin-top: 2px;
-    font-size: 8px;
-    line-height: 1.1;
+    font-size: 7px;
+    line-height: 1;
   }
 
   .tournament-bracket-teams {
     margin-top: 2px;
-    gap: 2px;
-    font-size: 8px;
+    gap: 1px;
+    font-size: 7px;
     line-height: 1.1;
   }
 
+  .tournament-bracket-team {
+    gap: 1px;
+  }
+
+  .schedule-flag-icon.tournament-bracket-flag {
+    width: 11px;
+    height: 8px;
+  }
+
+  .schedule-flag-emoji.tournament-bracket-flag {
+    font-size: 9px;
+  }
+
   .tournament-bracket-versus {
-    font-size: 7px;
+    font-size: 6px;
   }
 
   .tournament-bracket-score {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .tournament-bracket-placement {
