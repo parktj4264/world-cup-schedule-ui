@@ -365,6 +365,10 @@ button {
   width: calc((100% - 78px) / 2);
 }
 
+.tournament-sheet-table-three-matches .tournament-sheet-match-col {
+  width: calc((100% - 78px) / 3);
+}
+
 .tournament-sheet-table th,
 .tournament-sheet-table td {
   border: 1px solid #424242;
@@ -428,6 +432,10 @@ button {
   text-align: center;
 }
 
+.tournament-sheet-table-three-matches .tournament-sheet-match {
+  padding: 6px;
+}
+
 .tournament-sheet-match-button,
 .tournament-bracket-box-button {
   cursor: pointer;
@@ -462,6 +470,11 @@ button {
   font-weight: 900;
 }
 
+.tournament-sheet-table-three-matches .tournament-sheet-time-row {
+  gap: 5px;
+  font-size: 16px;
+}
+
 .tournament-sheet-versus-row {
   display: grid;
   margin-top: 6px;
@@ -481,6 +494,10 @@ button {
   line-height: 1.15;
 }
 
+.tournament-sheet-table-three-matches .tournament-sheet-team {
+  font-size: 14px;
+}
+
 .tournament-sheet-team span {
   max-width: 100%;
   overflow: hidden;
@@ -494,9 +511,18 @@ button {
   border: 1px solid #9ca3af;
 }
 
+.tournament-sheet-table-three-matches .schedule-flag-icon.tournament-sheet-flag {
+  width: 68px;
+  height: 45px;
+}
+
 .schedule-flag-emoji.tournament-sheet-flag {
   font-size: 42px;
   line-height: 1;
+}
+
+.tournament-sheet-table-three-matches .schedule-flag-emoji.tournament-sheet-flag {
+  font-size: 34px;
 }
 
 .tournament-sheet-score {
@@ -512,9 +538,19 @@ button {
   line-height: 1;
 }
 
+.tournament-sheet-table-three-matches .tournament-sheet-score {
+  min-width: 36px;
+  padding-bottom: 16px;
+  font-size: 16px;
+}
+
 .tournament-sheet-colon {
   padding: 0 4px;
   font-size: 22px;
+}
+
+.tournament-sheet-table-three-matches .tournament-sheet-colon {
+  font-size: 19px;
 }
 
 .tournament-sheet-penalty {
@@ -738,10 +774,22 @@ button {
     width: calc((100% - 42px) / 2);
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-date-col {
+    width: 38px;
+  }
+
+  .tournament-sheet-table-three-matches .tournament-sheet-match-col {
+    width: calc((100% - 38px) / 3);
+  }
+
   .tournament-sheet-table thead th {
     height: 22px;
     font-size: 11px;
     line-height: 1.1;
+  }
+
+  .tournament-sheet-table-three-matches thead th {
+    font-size: 9px;
   }
 
   .tournament-sheet-date-cell {
@@ -754,6 +802,10 @@ button {
     height: 76px;
   }
 
+  .tournament-sheet-table-three-matches td {
+    height: 68px;
+  }
+
   .tournament-sheet-empty {
     padding: 14px !important;
     font-size: 11px;
@@ -764,14 +816,28 @@ button {
     padding: 4px 3px;
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-match {
+    min-height: 68px;
+    padding: 3px 2px;
+  }
+
   .tournament-sheet-time-row {
     min-height: 16px;
     gap: 3px;
     font-size: 12px;
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-time-row {
+    gap: 1px;
+    font-size: 10px;
+  }
+
   .tournament-sheet-match-number {
     font-size: 8px;
+  }
+
+  .tournament-sheet-table-three-matches .tournament-sheet-match-number {
+    font-size: 7px;
   }
 
   .tournament-sheet-versus-row {
@@ -780,10 +846,20 @@ button {
     gap: 3px;
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-versus-row {
+    grid-template-columns: minmax(0, 1fr) minmax(18px, auto) minmax(0, 1fr);
+    gap: 1px;
+  }
+
   .tournament-sheet-team {
     gap: 2px;
     font-size: 10px;
     line-height: 1.1;
+  }
+
+  .tournament-sheet-table-three-matches .tournament-sheet-team {
+    gap: 1px;
+    font-size: 8px;
   }
 
   .schedule-flag-icon.tournament-sheet-flag {
@@ -791,8 +867,17 @@ button {
     height: 23px;
   }
 
+  .tournament-sheet-table-three-matches .schedule-flag-icon.tournament-sheet-flag {
+    width: 25px;
+    height: 17px;
+  }
+
   .schedule-flag-emoji.tournament-sheet-flag {
     font-size: 24px;
+  }
+
+  .tournament-sheet-table-three-matches .schedule-flag-emoji.tournament-sheet-flag {
+    font-size: 18px;
   }
 
   .tournament-sheet-score {
@@ -802,14 +887,29 @@ button {
     font-size: 11px;
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-score {
+    min-width: 18px;
+    padding-bottom: 6px;
+    font-size: 9px;
+  }
+
   .tournament-sheet-colon {
     padding: 0 1px;
     font-size: 13px;
   }
 
+  .tournament-sheet-table-three-matches .tournament-sheet-colon {
+    padding: 0;
+    font-size: 10px;
+  }
+
   .tournament-sheet-penalty {
     margin: 0;
     font-size: 8px;
+  }
+
+  .tournament-sheet-table-three-matches .tournament-sheet-penalty {
+    font-size: 6px;
   }
 
   .tournament-sheet-next-match {

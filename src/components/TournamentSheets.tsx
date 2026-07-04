@@ -32,6 +32,7 @@ type SheetTab = {
   label: string;
   title: string;
   heading: string;
+  matchesPerRow: 2 | 3;
   stages: TournamentStage[];
 };
 
@@ -41,6 +42,7 @@ const SHEET_TABS: SheetTab[] = [
     label: '32강',
     title: '32강',
     heading: '월드컵 32강 일정',
+    matchesPerRow: 3,
     stages: ['round-of-32'],
   },
   {
@@ -48,6 +50,7 @@ const SHEET_TABS: SheetTab[] = [
     label: '16강',
     title: '16강',
     heading: '월드컵 16강 일정',
+    matchesPerRow: 2,
     stages: ['round-of-16'],
   },
   {
@@ -55,6 +58,7 @@ const SHEET_TABS: SheetTab[] = [
     label: '8강',
     title: '8강',
     heading: '월드컵 8강 일정',
+    matchesPerRow: 2,
     stages: ['quarter-final'],
   },
   {
@@ -62,6 +66,7 @@ const SHEET_TABS: SheetTab[] = [
     label: '4강',
     title: '4강',
     heading: '월드컵 4강 일정',
+    matchesPerRow: 2,
     stages: ['semi-final'],
   },
   {
@@ -69,9 +74,12 @@ const SHEET_TABS: SheetTab[] = [
     label: '결승',
     title: '결승',
     heading: '월드컵 3·4위전 / 결승 일정',
+    matchesPerRow: 2,
     stages: ['third-place', 'final'],
   },
 ];
+
+const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
 
 const BRACKET_COLUMNS: { label: string; matchNumbers: number[] }[] = [
   {
@@ -154,7 +162,7 @@ const getTournamentEntries = (sections: ScheduleSection[]) =>
     ),
   );
 
-const getRowsForEntries = (entries: TournamentEntry[]) => {
+const getRowsForEntries = (entries: TournamentEntry[], matchesPerRow: 2 | 3) => {
   const groupedByDate = entries.reduce<
     {
       date: string;
@@ -184,12 +192,12 @@ const getRowsForEntries = (entries: TournamentEntry[]) => {
   return groupedByDate.flatMap((group) => {
     const rows = [];
 
-    for (let index = 0; index < group.matches.length; index += 2) {
+    for (let index = 0; index < group.matches.length; index += matchesPerRow) {
       rows.push({
         key: `${group.date}-${index}`,
         dateLabel: group.dateLabel,
         weekday: group.weekday,
-        matches: group.matches.slice(index, index + 2),
+        matches: group.matches.slice(index, index + matchesPerRow),
       });
     }
 
@@ -432,7 +440,11 @@ export function TournamentSheets({
   const activeEntries = tournamentEntries.filter((entry) =>
     activeTab.stages.includes(entry.match.stage as TournamentStage),
   );
-  const sheetRows = getRowsForEntries(activeEntries);
+  const sheetRows = getRowsForEntries(activeEntries, activeTab.matchesPerRow);
+  const matchColumnIndexes = Array.from(
+    { length: activeTab.matchesPerRow },
+    (_, index) => index,
+  );
   const thirdPlaceEntry = entriesByNumber.get(103);
   const issuedAt = formatSheetIssuedAt(currentTime);
 
@@ -471,17 +483,26 @@ export function TournamentSheets({
             {activeTab.heading}
           </h3>
           <div className="tournament-sheet-table-scroll">
-            <table className="tournament-sheet-table">
+            <table
+              className={[
+                'tournament-sheet-table',
+                activeTab.matchesPerRow === 3 ? 'tournament-sheet-table-three-matches' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
               <colgroup>
                 <col className="tournament-sheet-date-col" />
-                <col className="tournament-sheet-match-col" />
-                <col className="tournament-sheet-match-col" />
+                {matchColumnIndexes.map((index) => (
+                  <col key={index} className="tournament-sheet-match-col" />
+                ))}
               </colgroup>
               <thead>
                 <tr>
                   <th className="tournament-sheet-corner" aria-label="날짜" />
-                  <th>첫 번째 경기</th>
-                  <th>두 번째 경기</th>
+                  {matchColumnIndexes.map((index) => (
+                    <th key={index}>{SHEET_MATCH_COLUMN_LABELS[index]}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -492,7 +513,7 @@ export function TournamentSheets({
                         <span>{row.dateLabel}</span>
                         <span>({row.weekday})</span>
                       </th>
-                      {[0, 1].map((index) => (
+                      {matchColumnIndexes.map((index) => (
                         <td key={index}>
                           {row.matches[index] ? (
                             <SheetMatch
@@ -509,7 +530,7 @@ export function TournamentSheets({
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="tournament-sheet-empty">
+                    <td colSpan={activeTab.matchesPerRow + 1} className="tournament-sheet-empty">
                       표시할 토너먼트 일정이 없습니다.
                     </td>
                   </tr>
