@@ -11,6 +11,7 @@ type ScheduleTableProps = {
   selectedCountry?: string;
   todayKey?: string;
   className?: string;
+  sectionHeadingStyle?: CSSProperties;
   onOpenMatchDetail?: (match: Match) => void;
 };
 
@@ -39,6 +40,7 @@ export function ScheduleTable({
   selectedCountry,
   todayKey,
   className = '',
+  sectionHeadingStyle,
   onOpenMatchDetail,
 }: ScheduleTableProps) {
   const hasRows = sections.some((section) => section.days.length > 0);
@@ -70,7 +72,7 @@ export function ScheduleTable({
 
           return (
             <div key={section.id} className="schedule-section mx-auto mb-4">
-              <h2 className="schedule-overview-heading">
+              <h2 className="schedule-overview-heading" style={sectionHeadingStyle}>
                 <span aria-hidden="true">□</span>
                 {heading}
               </h2>

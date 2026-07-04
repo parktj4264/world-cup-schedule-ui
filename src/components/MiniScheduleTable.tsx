@@ -15,6 +15,11 @@ type MiniScheduleTableProps = {
 const getOverviewScale = (containerWidth: number) =>
   Math.min(1, Math.max(0.32, containerWidth / BASE_TABLE_WIDTH));
 
+const getOverviewHeadingLayout = (containerWidth: number) =>
+  containerWidth <= 640
+    ? { fontSize: 14, gap: 5, marginBottom: 7 }
+    : { fontSize: 20, gap: 8, marginBottom: 10 };
+
 export function MiniScheduleTable({
   sections,
   currentTime,
@@ -27,20 +32,30 @@ export function MiniScheduleTable({
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.4);
   const [baseHeight, setBaseHeight] = useState(1118);
+  const [headingLayout, setHeadingLayout] = useState(() => getOverviewHeadingLayout(BASE_TABLE_WIDTH));
   const [selectedTournamentMatchId, setSelectedTournamentMatchId] = useState<string | null>(null);
+  const sectionHeadingStyle = {
+    fontSize: `${headingLayout.fontSize / scale}px`,
+    gap: `${headingLayout.gap / scale}px`,
+    marginBottom: `${headingLayout.marginBottom / scale}px`,
+  };
 
   useEffect(() => {
     const updateLayout = () => {
       const width = wrapperRef.current?.clientWidth ?? BASE_TABLE_WIDTH;
       setScale(getOverviewScale(width));
-      setBaseHeight(contentRef.current?.offsetHeight ?? 1118);
+      setHeadingLayout(getOverviewHeadingLayout(width));
     };
 
     updateLayout();
     window.addEventListener('resize', updateLayout);
 
     return () => window.removeEventListener('resize', updateLayout);
-  }, [sections]);
+  }, []);
+
+  useEffect(() => {
+    setBaseHeight(contentRef.current?.offsetHeight ?? 1118);
+  }, [headingLayout, scale, sections]);
 
   return (
     <div ref={wrapperRef} className="mini-overview-wrap mx-auto w-full max-w-[1040px] pb-4">
@@ -64,6 +79,7 @@ export function MiniScheduleTable({
             selectedCountry={selectedCountry}
             todayKey={todayKey}
             className="mini-overview-table-wrap overflow-visible pb-0"
+            sectionHeadingStyle={sectionHeadingStyle}
             onOpenMatchDetail={onOpenMatchDetail}
           />
         </div>
@@ -79,7 +95,7 @@ export function MiniScheduleTable({
           <span aria-hidden="true">□</span>
           월드컵 16강 이후 토너먼트표
         </h2>
-        <div className="schedule-overview-bracket-shell border-2 border-neutral-900 bg-white px-2 py-2">
+        <div className="schedule-overview-bracket-shell bg-white px-2 py-2">
           <TournamentOverviewBracket
             sections={sections}
             currentTime={currentTime}
