@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Match, ScheduleSection } from '../data/schedule';
 import { BASE_TABLE_WIDTH, ScheduleTable } from './ScheduleTable';
-import { TournamentBracket } from './TournamentBracket';
+import { TournamentOverviewBracket } from './TournamentOverviewBracket';
 
 type MiniScheduleTableProps = {
   sections: ScheduleSection[];
@@ -79,11 +79,10 @@ export function MiniScheduleTable({
           월드컵 16강 이후 토너먼트표
         </h2>
         <div className="schedule-overview-bracket-shell border-x-2 border-b-2 border-neutral-900 bg-white px-2 py-2">
-          <TournamentBracket
+          <TournamentOverviewBracket
             sections={sections}
             currentTime={currentTime}
             nextMatchId={nextMatchId}
-            selectedCountry={selectedCountry}
             selectedMatchId={selectedTournamentMatchId}
             onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
             onOpenMatchDetail={onOpenMatchDetail}
