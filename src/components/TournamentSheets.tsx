@@ -20,7 +20,6 @@ type TournamentSheetsProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry?: string;
   activeTabId?: SheetTabId;
   onOpenMatchDetail?: (match: Match) => void;
 };
@@ -72,15 +71,6 @@ export const TOURNAMENT_SHEET_TABS: SheetTab[] = [
 ];
 
 const SHEET_MATCH_COLUMN_LABELS = ['첫 번째 경기', '두 번째 경기', '세 번째 경기'];
-
-const includesSelectedCountry = (match: Match, selectedCountry: string) => {
-  const countryQuery = selectedCountry.trim();
-
-  return (
-    countryQuery !== '' &&
-    (match.home.includes(countryQuery) || match.away.includes(countryQuery))
-  );
-};
 
 const isKoreaMatch = (match: Match) =>
   match.isKorea || match.home === '대한민국' || match.away === '대한민국';
@@ -138,11 +128,9 @@ const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
 
 const getMatchHighlightClassName = (
   match: Match,
-  selectedCountry: string,
   nextMatchId: string | undefined,
   currentTime: Date,
 ) => [
-  includesSelectedCountry(match, selectedCountry) ? 'tournament-sheet-selected-country' : '',
   isKoreaMatch(match) ? 'tournament-sheet-korea-match' : '',
   match.id === nextMatchId ? 'tournament-sheet-next-match' : '',
   isLiveMatch(match, currentTime) ? 'tournament-sheet-live-match' : '',
@@ -184,7 +172,6 @@ const SheetMatch = ({
   entry,
   currentTime,
   nextMatchId,
-  selectedCountry,
   selectedMatchId,
   onSelectMatch,
   onOpenMatchDetail,
@@ -192,7 +179,6 @@ const SheetMatch = ({
   entry: TournamentEntry;
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry: string;
   selectedMatchId?: string | null;
   onSelectMatch: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
@@ -200,7 +186,7 @@ const SheetMatch = ({
   const { match, matchNumber } = entry;
   const scoreParts = getScoreParts(match, currentTime);
   const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
-  const highlightClassName = getMatchHighlightClassName(match, selectedCountry, nextMatchId, currentTime);
+  const highlightClassName = getMatchHighlightClassName(match, nextMatchId, currentTime);
   const isSelected = match.id === selectedMatchId;
   const matchContent = (
     <>
@@ -263,7 +249,6 @@ export function TournamentSheets({
   sections,
   currentTime,
   nextMatchId,
-  selectedCountry = '',
   activeTabId = 'round-of-32',
   onOpenMatchDetail,
 }: TournamentSheetsProps) {
@@ -326,7 +311,6 @@ export function TournamentSheets({
                               entry={row.matches[index]}
                               currentTime={currentTime}
                               nextMatchId={nextMatchId}
-                              selectedCountry={selectedCountry}
                               selectedMatchId={selectedTournamentMatchId}
                               onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
                               onOpenMatchDetail={onOpenMatchDetail}

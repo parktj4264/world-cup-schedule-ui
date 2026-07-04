@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FilterBar } from '../components/FilterBar';
 import { LiveUpdateToast } from '../components/LiveUpdateToast';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { MatchDetailModal } from '../components/MatchDetailModal';
@@ -7,10 +6,9 @@ import { ScheduleControls } from '../components/ScheduleControls';
 import { StatusBar } from '../components/StatusBar';
 import { TournamentSheets } from '../components/TournamentSheets';
 import { WorkbookTabs, type WorkbookSheetId } from '../components/WorkbookTabs';
-import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
+import { scheduleSections, type ScheduleSection } from '../data/schedule';
 import { fetchBrowserLiveSchedule } from '../utils/browserLiveProvider';
 import {
-  isResolvedTeamName,
   mergeLiveSchedule,
   parseLiveSchedule,
   type LiveSchedule,
@@ -119,24 +117,8 @@ const isNearAnyMatchWindow = (sections: ScheduleSection[], now: Date) => {
   );
 };
 
-const getCountryOptions = (sections: ScheduleSection[]) =>
-  Array.from(
-    new Set(
-      sections.flatMap((section) =>
-        section.days.flatMap((day) =>
-          day.cells.flatMap((scheduleCell) =>
-            scheduleCell.matches
-              .flatMap((match: Match) => [match.home, match.away])
-              .filter(isResolvedTeamName),
-          ),
-        ),
-      ),
-    ),
-  ).sort((firstCountry, secondCountry) => firstCountry.localeCompare(secondCountry, 'ko-KR'));
-
 export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [selectedCountry, setSelectedCountry] = useState('');
   const [activeSheetId, setActiveSheetId] = useState<WorkbookSheetId>('all');
   const [liveSchedule, setLiveSchedule] = useState<LiveSchedule>();
   const [pageLiveUpdatedAt, setPageLiveUpdatedAt] = useState<string | null>(null);
@@ -379,30 +361,12 @@ export function SchedulePage() {
   );
   const nextMatch = useMemo(() => getNextMatch(visibleSections, currentTime), [currentTime, visibleSections]);
   const liveMatches = useMemo(() => getLiveMatches(visibleSections, currentTime), [currentTime, visibleSections]);
-  const countryOptions = useMemo(() => getCountryOptions(visibleSections), [visibleSections]);
   const selectedMatch = useMemo(
     () => selectedMatchId
       ? flattenMatches(visibleSections).find((match) => match.id === selectedMatchId)
       : undefined,
     [selectedMatchId, visibleSections],
   );
-
-  const scrollAfterRender = useCallback((selector: string) => {
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        document.querySelector<HTMLElement>(selector)?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-          inline: 'center',
-        });
-      });
-    });
-  }, []);
-
-  const handleShowKorea = useCallback(() => {
-    setSelectedCountry('대한민국');
-    scrollAfterRender('.schedule-korea-cell, .tournament-sheet-korea-match');
-  }, [scrollAfterRender]);
 
   const showShareMessage = useCallback((message: string) => {
     setShareMessage(message);
@@ -478,13 +442,6 @@ export function SchedulePage() {
         />
         <ScheduleControls
           onCopyShareLink={handleCopyShareLink}
-          onShowKorea={handleShowKorea}
-        />
-        <FilterBar
-          selectedCountry={selectedCountry}
-          countryOptions={countryOptions}
-          onCountryChange={setSelectedCountry}
-          onClearCountry={() => setSelectedCountry('')}
         />
         <WorkbookTabs activeSheetId={activeSheetId} onSheetChange={setActiveSheetId} />
         {activeSheetId === 'all' ? (
@@ -492,7 +449,6 @@ export function SchedulePage() {
             sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
-            selectedCountry={selectedCountry}
             todayKey={todayKey}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
@@ -502,7 +458,6 @@ export function SchedulePage() {
             sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
-            selectedCountry={selectedCountry}
             activeTabId={activeSheetId}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />

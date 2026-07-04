@@ -5,7 +5,7 @@ type ScheduleRowProps = {
   day: ScheduleDay;
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry?: string;
+  selectedMatchId?: string | null;
   todayKey?: string;
   onOpenMatchDetail?: (match: Match) => void;
 };
@@ -63,7 +63,7 @@ export function ScheduleRow({
   day,
   currentTime,
   nextMatchId,
-  selectedCountry,
+  selectedMatchId,
   todayKey,
   onOpenMatchDetail,
 }: ScheduleRowProps) {
@@ -111,7 +111,7 @@ export function ScheduleRow({
           cell={scheduleCell}
           currentTime={currentTime}
           nextMatchId={nextMatchId}
-          selectedCountry={selectedCountry}
+          selectedMatchId={selectedMatchId}
           onOpenMatchDetail={onOpenMatchDetail}
         />
       ))}

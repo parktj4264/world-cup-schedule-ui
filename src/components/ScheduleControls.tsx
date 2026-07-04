@@ -1,6 +1,5 @@
 type ScheduleControlsProps = {
   onCopyShareLink: () => void;
-  onShowKorea: () => void;
 };
 
 const buttonClassName =
@@ -8,14 +7,10 @@ const buttonClassName =
 
 export function ScheduleControls({
   onCopyShareLink,
-  onShowKorea,
 }: ScheduleControlsProps) {
   return (
     <div className="schedule-controls mx-auto flex w-full max-w-[980px] flex-wrap items-center gap-1 py-1">
       <div className="flex flex-wrap items-center gap-1">
-        <button type="button" className={buttonClassName} onClick={onShowKorea}>
-          한국 경기
-        </button>
         <button type="button" className={buttonClassName} onClick={onCopyShareLink}>
           공유 링크 복사
         </button>

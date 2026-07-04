@@ -7,7 +7,6 @@ type MiniScheduleTableProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry?: string;
   todayKey?: string;
   onOpenMatchDetail?: (match: Match) => void;
 };
@@ -24,7 +23,6 @@ export function MiniScheduleTable({
   sections,
   currentTime,
   nextMatchId,
-  selectedCountry,
   todayKey,
   onOpenMatchDetail,
 }: MiniScheduleTableProps) {
@@ -76,7 +74,7 @@ export function MiniScheduleTable({
             currentTime={currentTime}
             nextMatchId={nextMatchId}
             zoom={100}
-            selectedCountry={selectedCountry}
+            selectedMatchId={selectedTournamentMatchId}
             todayKey={todayKey}
             className="mini-overview-table-wrap overflow-visible pb-0"
             sectionHeadingStyle={sectionHeadingStyle}

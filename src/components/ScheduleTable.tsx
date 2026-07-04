@@ -8,7 +8,7 @@ type ScheduleTableProps = {
   nextMatchId?: string;
   scrollContainerRef?: RefObject<HTMLDivElement | null>;
   zoom: number;
-  selectedCountry?: string;
+  selectedMatchId?: string | null;
   todayKey?: string;
   className?: string;
   sectionHeadingStyle?: CSSProperties;
@@ -37,7 +37,7 @@ export function ScheduleTable({
   nextMatchId,
   scrollContainerRef,
   zoom,
-  selectedCountry,
+  selectedMatchId,
   todayKey,
   className = '',
   sectionHeadingStyle,
@@ -94,7 +94,7 @@ export function ScheduleTable({
                       day={day}
                       currentTime={currentTime}
                       nextMatchId={nextMatchId}
-                      selectedCountry={selectedCountry}
+                      selectedMatchId={selectedMatchId}
                       todayKey={todayKey}
                       onOpenMatchDetail={onOpenMatchDetail}
                     />

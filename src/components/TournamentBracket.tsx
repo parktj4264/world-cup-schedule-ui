@@ -17,7 +17,6 @@ type TournamentBracketProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry?: string;
   activeBracketLabel?: string;
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
@@ -143,15 +142,6 @@ export const getTournamentEntries = (sections: ScheduleSection[]) =>
     ),
   );
 
-const includesSelectedCountry = (match: Match, selectedCountry: string) => {
-  const countryQuery = selectedCountry.trim();
-
-  return (
-    countryQuery !== '' &&
-    (match.home.includes(countryQuery) || match.away.includes(countryQuery))
-  );
-};
-
 const isKoreaMatch = (match: Match) =>
   match.isKorea || match.home === '대한민국' || match.away === '대한민국';
 
@@ -165,11 +155,9 @@ const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
 
 const getMatchHighlightClassName = (
   match: Match,
-  selectedCountry: string,
   nextMatchId: string | undefined,
   currentTime: Date,
 ) => [
-  includesSelectedCountry(match, selectedCountry) ? 'tournament-sheet-selected-country' : '',
   isKoreaMatch(match) ? 'tournament-sheet-korea-match' : '',
   match.id === nextMatchId ? 'tournament-sheet-next-match' : '',
   isLiveMatch(match, currentTime) ? 'tournament-sheet-live-match' : '',
@@ -225,7 +213,6 @@ const BracketMatchBox = ({
   matchNumber,
   currentTime,
   nextMatchId,
-  selectedCountry,
   selectedMatchId,
   onSelectMatch,
   onOpenMatchDetail,
@@ -234,7 +221,6 @@ const BracketMatchBox = ({
   matchNumber: number;
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry: string;
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
@@ -250,7 +236,7 @@ const BracketMatchBox = ({
 
   const { match } = entry;
   const scoreLabel = getCompactScoreLabel(match, currentTime);
-  const highlightClassName = getMatchHighlightClassName(match, selectedCountry, nextMatchId, currentTime);
+  const highlightClassName = getMatchHighlightClassName(match, nextMatchId, currentTime);
   const isSelected = match.id === selectedMatchId;
   const openMatchDetail = canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
 
@@ -306,7 +292,6 @@ export function TournamentBracket({
   sections,
   currentTime,
   nextMatchId,
-  selectedCountry = '',
   activeBracketLabel,
   selectedMatchId,
   onSelectMatch,
@@ -389,7 +374,6 @@ export function TournamentBracket({
                   matchNumber={matchNumber}
                   currentTime={currentTime}
                   nextMatchId={nextMatchId}
-                  selectedCountry={selectedCountry}
                   selectedMatchId={selectedMatchId}
                   onSelectMatch={onSelectMatch}
                   onOpenMatchDetail={onOpenMatchDetail}
@@ -407,7 +391,6 @@ export function TournamentBracket({
             matchNumber={103}
             currentTime={currentTime}
             nextMatchId={nextMatchId}
-            selectedCountry={selectedCountry}
             selectedMatchId={selectedMatchId}
             onSelectMatch={onSelectMatch}
             onOpenMatchDetail={onOpenMatchDetail}

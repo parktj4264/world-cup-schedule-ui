@@ -12,7 +12,7 @@ type MatchCellProps = {
   cell: ScheduleCell;
   currentTime: Date;
   nextMatchId?: string;
-  selectedCountry?: string;
+  selectedMatchId?: string | null;
   onOpenMatchDetail?: (match: Match) => void;
 };
 
@@ -73,33 +73,22 @@ const getPenaltyScoreClassName = (match: Match, side: 'home' | 'away') => {
   ].join(' ');
 };
 
-const includesSelectedCountry = (match: Match, selectedCountry: string) => {
-  const countryQuery = selectedCountry.trim();
-
-  return (
-    countryQuery !== '' &&
-    (match.home.includes(countryQuery) || match.away.includes(countryQuery))
-  );
-};
-
 export function MatchCell({
   cell,
   currentTime,
   nextMatchId,
-  selectedCountry = '',
+  selectedMatchId,
   onOpenMatchDetail,
 }: MatchCellProps) {
   const hasKorea = cell.matches.some((match) => match.isKorea);
-  const hasSelectedCountry = cell.matches.some((match) =>
-    includesSelectedCountry(match, selectedCountry),
-  );
+  const hasSelectedMatch = cell.matches.some((match) => match.id === selectedMatchId);
   const hasNextMatch = cell.matches.some((match) => match.id === nextMatchId);
   const hasLiveMatch = cell.matches.some((match) => isLiveMatch(match, currentTime));
 
   const cellClassName = [
     'schedule-match-cell relative border border-neutral-700 text-center align-middle',
-    hasSelectedCountry
-      ? 'schedule-selected-country-cell bg-[#e8f7cf]'
+    hasSelectedMatch
+      ? 'schedule-selected-match-cell bg-[#e8f7cf]'
       : hasKorea
         ? 'schedule-korea-cell bg-[#fff8a8]'
         : 'bg-white',
