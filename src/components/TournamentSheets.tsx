@@ -27,7 +27,6 @@ type SheetTabId = 'round-of-32' | 'round-of-16' | 'quarter-final' | 'semi-final'
 type SheetTab = {
   id: SheetTabId;
   label: string;
-  title: string;
   heading: string;
   matchesPerRow: 2 | 3;
   stages: TournamentStage[];
@@ -37,7 +36,6 @@ const SHEET_TABS: SheetTab[] = [
   {
     id: 'round-of-32',
     label: '32강',
-    title: '32강',
     heading: '월드컵 32강 일정',
     matchesPerRow: 3,
     stages: ['round-of-32'],
@@ -45,7 +43,6 @@ const SHEET_TABS: SheetTab[] = [
   {
     id: 'round-of-16',
     label: '16강',
-    title: '16강',
     heading: '월드컵 16강 일정',
     matchesPerRow: 2,
     stages: ['round-of-16'],
@@ -53,7 +50,6 @@ const SHEET_TABS: SheetTab[] = [
   {
     id: 'quarter-final',
     label: '8강',
-    title: '8강',
     heading: '월드컵 8강 일정',
     matchesPerRow: 2,
     stages: ['quarter-final'],
@@ -61,7 +57,6 @@ const SHEET_TABS: SheetTab[] = [
   {
     id: 'semi-final',
     label: '4강',
-    title: '4강',
     heading: '월드컵 4강 일정',
     matchesPerRow: 2,
     stages: ['semi-final'],
@@ -69,7 +64,6 @@ const SHEET_TABS: SheetTab[] = [
   {
     id: 'finals',
     label: '결승',
-    title: '결승',
     heading: '월드컵 3·4위전 / 결승 일정',
     matchesPerRow: 2,
     stages: ['third-place', 'final'],
@@ -326,7 +320,6 @@ export function TournamentSheets({
 
       <div className="tournament-sheet-page">
         <div className="tournament-sheet-rule" />
-        <h2 className="tournament-sheet-title">제23회 2026 북중미 월드컵 {activeTab.title} 일정</h2>
         <div className="tournament-sheet-subtitle">{issuedAt}</div>
         <div className="tournament-sheet-rule" />
 
