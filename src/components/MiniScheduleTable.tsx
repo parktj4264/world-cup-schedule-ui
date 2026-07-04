@@ -66,31 +66,30 @@ export function MiniScheduleTable({
             className="mini-overview-table-wrap overflow-visible pb-0"
             onOpenMatchDetail={onOpenMatchDetail}
           />
-          <section
-            className="schedule-section schedule-overview-bracket-section mx-auto mb-4"
-            style={{ width: `${BASE_TABLE_WIDTH}px` }}
-            aria-labelledby="schedule-overview-bracket-heading"
-          >
-            <h2
-              id="schedule-overview-bracket-heading"
-              className="schedule-section-title border-x-2 border-t-2 border-neutral-900 bg-white py-1 text-center text-sm font-black text-neutral-950"
-            >
-              월드컵 16강 이후 토너먼트표
-            </h2>
-            <div className="schedule-overview-bracket-shell border-x-2 border-b-2 border-neutral-900 bg-white px-2 py-2">
-              <TournamentBracket
-                sections={sections}
-                currentTime={currentTime}
-                nextMatchId={nextMatchId}
-                selectedCountry={selectedCountry}
-                selectedMatchId={selectedTournamentMatchId}
-                onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
-                onOpenMatchDetail={onOpenMatchDetail}
-              />
-            </div>
-          </section>
         </div>
       </div>
+      <section
+        className="schedule-overview-bracket-section mx-auto mb-4"
+        aria-labelledby="schedule-overview-bracket-heading"
+      >
+        <h2
+          id="schedule-overview-bracket-heading"
+          className="schedule-section-title border-x-2 border-t-2 border-neutral-900 bg-white py-1 text-center text-sm font-black text-neutral-950"
+        >
+          월드컵 16강 이후 토너먼트표
+        </h2>
+        <div className="schedule-overview-bracket-shell border-x-2 border-b-2 border-neutral-900 bg-white px-2 py-2">
+          <TournamentBracket
+            sections={sections}
+            currentTime={currentTime}
+            nextMatchId={nextMatchId}
+            selectedCountry={selectedCountry}
+            selectedMatchId={selectedTournamentMatchId}
+            onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
+            onOpenMatchDetail={onOpenMatchDetail}
+          />
+        </div>
+      </section>
     </div>
   );
 }

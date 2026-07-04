@@ -263,6 +263,12 @@ button {
 }
 
 .schedule-overview-bracket-section {
+  width: 100%;
+  max-width: 974px;
+  padding: 0 4px;
+}
+
+.schedule-overview-bracket-section .schedule-section-title {
   max-width: none;
 }
 
@@ -1098,6 +1104,64 @@ button {
   .tournament-bracket-placement-label {
     padding: 5px 4px;
     font-size: 9px;
+  }
+
+  .schedule-overview-bracket-section {
+    padding: 0;
+  }
+
+  .schedule-overview-bracket-shell {
+    overflow: hidden;
+    padding: 6px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-scroll {
+    overflow-x: auto;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-board {
+    min-width: 680px;
+    padding-bottom: 10px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-field {
+    height: 440px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-column-label {
+    font-size: 11px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-box {
+    min-height: 48px;
+    padding: 3px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-number,
+  .schedule-overview-bracket-shell .tournament-bracket-time {
+    font-size: 8px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-teams {
+    gap: 3px;
+    font-size: 8px;
+  }
+
+  .schedule-overview-bracket-shell .schedule-flag-icon.tournament-bracket-flag {
+    width: 18px;
+    height: 12px;
+  }
+
+  .schedule-overview-bracket-shell .schedule-flag-emoji.tournament-bracket-flag {
+    font-size: 12px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-score {
+    font-size: 8px;
+  }
+
+  .schedule-overview-bracket-shell .tournament-bracket-placement {
+    max-width: 260px;
   }
 }
 
