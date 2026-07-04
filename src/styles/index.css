@@ -262,6 +262,22 @@ button {
   padding-bottom: 0;
 }
 
+.schedule-overview-bracket-section {
+  max-width: none;
+}
+
+.schedule-overview-bracket-shell {
+  width: 100%;
+}
+
+.schedule-overview-bracket-shell .tournament-bracket-scroll {
+  overflow-x: visible;
+}
+
+.schedule-overview-bracket-shell .tournament-bracket-board {
+  min-width: 0;
+}
+
 .tournament-sheet-tabs {
   display: flex;
   width: 100%;
