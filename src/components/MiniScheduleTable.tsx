@@ -50,7 +50,7 @@ export function MiniScheduleTable({
       >
         <div
           ref={contentRef}
-          className="mini-overview-scale origin-top-left"
+          className="mini-overview-scale mx-auto origin-top-left"
           style={{
             width: `${BASE_TABLE_WIDTH}px`,
             transform: `scale(${scale})`,

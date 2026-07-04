@@ -75,7 +75,7 @@ const getCompactTeamName = (teamName: string) => {
   const placeholder = /^(\d+)번\s*(승자|패자)$/.exec(teamName);
 
   if (placeholder) {
-    return `${placeholder[1]}${placeholder[2] === '승자' ? '승' : '패'}`;
+    return '';
   }
 
   return teamName;
@@ -134,6 +134,8 @@ const OverviewMatchNode = ({
   const isNext = match?.id === nextMatchId;
   const isLive = match ? isLiveMatch(match, currentTime) : false;
   const scoreLabel = match ? getOverviewScoreLabel(match, currentTime) : undefined;
+  const homeName = match ? getCompactTeamName(match.home) : '';
+  const awayName = match ? getCompactTeamName(match.away) : '';
   const openMatchDetail = match && canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
   const className = [
     'tournament-overview-box',
@@ -177,24 +179,32 @@ const OverviewMatchNode = ({
         </span>
         <span className="tournament-overview-teams">
           <span className="tournament-overview-team">
-            <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-overview-flag" />
-            <span
-              className={['tournament-overview-team-name', getWinnerClassName(match, 'home')]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {getCompactTeamName(match.home)}
-            </span>
+            {homeName ? (
+              <>
+                <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-overview-flag" />
+                <span
+                  className={['tournament-overview-team-name', getWinnerClassName(match, 'home')]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  {homeName}
+                </span>
+              </>
+            ) : null}
           </span>
           <span className="tournament-overview-team">
-            <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-overview-flag" />
-            <span
-              className={['tournament-overview-team-name', getWinnerClassName(match, 'away')]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {getCompactTeamName(match.away)}
-            </span>
+            {awayName ? (
+              <>
+                <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-overview-flag" />
+                <span
+                  className={['tournament-overview-team-name', getWinnerClassName(match, 'away')]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  {awayName}
+                </span>
+              </>
+            ) : null}
           </span>
         </span>
         <span className="tournament-overview-score">{scoreLabel}</span>

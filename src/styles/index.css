@@ -265,7 +265,8 @@ button {
 .schedule-overview-bracket-section {
   width: 100%;
   max-width: 974px;
-  padding: 0 4px;
+  margin-top: 40px;
+  padding: 0;
 }
 
 .schedule-overview-bracket-section .schedule-section-title {
@@ -1274,6 +1275,7 @@ button.tournament-overview-box:focus-visible {
   }
 
   .schedule-overview-bracket-section {
+    margin-top: 22px;
     padding: 0;
   }
 
