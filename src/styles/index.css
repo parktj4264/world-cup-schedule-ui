@@ -458,70 +458,73 @@ button.tournament-overview-box:focus-visible {
 }
 
 .workbook-tabs {
-  margin-top: 8px;
-  margin-bottom: 12px;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .workbook-tab-strip {
-  display: flex;
-  width: 100%;
+  display: inline-flex;
   align-items: flex-end;
-  gap: 3px;
-  overflow-x: auto;
-  border-bottom: 2px solid #111827;
-  background: #eef2f7;
-  padding: 6px 7px 0;
-  -webkit-overflow-scrolling: touch;
+  gap: 0;
+  border-bottom: 1px solid #8a8a8a;
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
 }
 
 .workbook-tab {
   position: relative;
-  min-width: 78px;
-  min-height: 32px;
+  min-width: 62px;
+  min-height: 27px;
   flex: 0 0 auto;
-  border: 1px solid #4b5563;
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
-  padding: 7px 13px 8px;
+  margin: 0 0 -1px -1px;
+  border: 1px solid #8a8a8a;
+  border-radius: 0;
+  padding: 5px 10px 6px;
   color: #111827;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
-  box-shadow: inset 0 -1px 0 rgba(17, 24, 39, 0.18);
+  box-shadow: none;
+}
+
+.workbook-tab:first-child {
+  margin-left: 0;
 }
 
 .workbook-tab:hover {
-  filter: brightness(0.98);
+  background: #f6f6f6;
+  filter: none;
 }
 
 .workbook-tab-overview {
-  background: #e0f2fe;
-  border-color: #2563eb;
+  border-top: 2px solid #6f93b8;
+  background: #eef5fb;
 }
 
 .workbook-tab-knockout {
-  background: #eaf7df;
-  border-color: #3f7f52;
+  border-top: 2px solid #7b9f72;
+  background: #eef6ea;
 }
 
 .workbook-tab-overview.workbook-tab-active {
   background: #ffffff;
-  color: #1d4ed8;
-  box-shadow: 0 -2px 0 #2563eb, inset 0 2px 0 #bfdbfe;
+  color: #24527a;
+  box-shadow: none;
 }
 
 .workbook-tab-knockout.workbook-tab-active {
   background: #ffffff;
-  color: #14532d;
-  box-shadow: 0 -2px 0 #3f7f52, inset 0 2px 0 #bbf7d0;
+  color: #2f5b2a;
+  box-shadow: none;
 }
 
 .workbook-tab-active {
   z-index: 1;
-  margin-bottom: -2px;
-  min-height: 36px;
-  border-width: 2px;
+  min-height: 29px;
   border-bottom-color: #ffffff;
 }
 
@@ -991,24 +994,23 @@ button.tournament-overview-box:focus-visible {
 
 @media (max-width: 640px) {
   .workbook-tabs {
-    margin-top: 6px;
-    margin-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 8px;
   }
 
   .workbook-tab-strip {
-    gap: 2px;
-    padding: 5px 5px 0;
+    padding: 0;
   }
 
   .workbook-tab {
-    min-width: 64px;
-    min-height: 29px;
-    padding: 6px 9px 7px;
+    min-width: 54px;
+    min-height: 25px;
+    padding: 5px 8px 6px;
     font-size: 11px;
   }
 
   .workbook-tab-active {
-    min-height: 33px;
+    min-height: 27px;
   }
 
   .tournament-sheet-page {
