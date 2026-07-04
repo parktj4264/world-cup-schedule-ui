@@ -2,12 +2,17 @@ import type { Match, ScheduleSection } from '../data/schedule';
 import { canOpenMatchDetail, getDisplayScoreState } from '../utils/matchDisplay';
 import { isLiveMatch } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
-import { getTournamentEntries, type TournamentEntry } from './TournamentBracket';
+import {
+  getTournamentEntries,
+  type TournamentEntry,
+  type TournamentStage,
+} from './TournamentBracket';
 
 type TournamentOverviewBracketProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
+  activeStages?: TournamentStage[];
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
@@ -117,6 +122,7 @@ const OverviewMatchNode = ({
   entry,
   currentTime,
   nextMatchId,
+  activeStages,
   selectedMatchId,
   onSelectMatch,
   onOpenMatchDetail,
@@ -125,6 +131,7 @@ const OverviewMatchNode = ({
   entry?: TournamentEntry;
   currentTime: Date;
   nextMatchId?: string;
+  activeStages?: TournamentStage[];
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
@@ -133,6 +140,7 @@ const OverviewMatchNode = ({
   const isSelected = match?.id === selectedMatchId;
   const isNext = match?.id === nextMatchId;
   const isLive = match ? isLiveMatch(match, currentTime) : false;
+  const isActiveStage = Boolean(match?.stage && activeStages?.includes(match.stage as TournamentStage));
   const scoreLabel = match ? getOverviewScoreLabel(match, currentTime) : undefined;
   const homeName = match ? getCompactTeamName(match.home) : '';
   const awayName = match ? getCompactTeamName(match.away) : '';
@@ -140,6 +148,7 @@ const OverviewMatchNode = ({
   const className = [
     'tournament-overview-box',
     `tournament-overview-box-${node.round}`,
+    isActiveStage ? 'tournament-overview-box-active-stage' : '',
     isSelected ? 'tournament-overview-box-selected' : '',
     isNext ? 'tournament-overview-box-next' : '',
     isLive ? 'tournament-overview-box-live' : '',
@@ -217,6 +226,7 @@ export function TournamentOverviewBracket({
   sections,
   currentTime,
   nextMatchId,
+  activeStages,
   selectedMatchId,
   onSelectMatch,
   onOpenMatchDetail,
@@ -256,6 +266,7 @@ export function TournamentOverviewBracket({
             entry={entriesByNumber.get(node.matchNumber)}
             currentTime={currentTime}
             nextMatchId={nextMatchId}
+            activeStages={activeStages}
             selectedMatchId={selectedMatchId}
             onSelectMatch={onSelectMatch}
             onOpenMatchDetail={onOpenMatchDetail}

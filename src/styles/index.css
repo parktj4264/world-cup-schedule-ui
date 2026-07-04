@@ -364,6 +364,11 @@ button.tournament-overview-box:focus-visible {
   color: #737373;
 }
 
+.tournament-overview-box-active-stage {
+  background: #fff8a8;
+  box-shadow: inset 0 0 0 2px #0f766e, 0 1px 0 #d4d4d4;
+}
+
 .tournament-overview-box-selected {
   background: #ecfeff;
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
@@ -1322,6 +1327,7 @@ button.tournament-overview-box:focus-visible {
   }
 
   .tournament-overview-box-selected,
+  .tournament-overview-box-active-stage,
   .tournament-overview-box-next,
   .tournament-overview-box-live {
     box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);

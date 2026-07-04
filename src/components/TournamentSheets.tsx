@@ -7,8 +7,8 @@ import {
 } from '../utils/matchDisplay';
 import { isLiveMatch } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
+import { TournamentOverviewBracket } from './TournamentOverviewBracket';
 import {
-  TournamentBracket,
   getTournamentEntries,
   type TournamentEntry,
   type TournamentStage,
@@ -299,7 +299,6 @@ export function TournamentSheets({
     { length: activeTab.matchesPerRow },
     (_, index) => index,
   );
-  const activeBracketLabel = activeTab.id === 'round-of-32' ? undefined : activeTab.label;
   const issuedAt = formatSheetIssuedAt(currentTime);
 
   return (
@@ -401,12 +400,11 @@ export function TournamentSheets({
             <span aria-hidden="true">□</span>
             월드컵 16강 이후 토너먼트표
           </h3>
-          <TournamentBracket
+          <TournamentOverviewBracket
             sections={sections}
             currentTime={currentTime}
             nextMatchId={nextMatchId}
-            selectedCountry={selectedCountry}
-            activeBracketLabel={activeBracketLabel}
+            activeStages={activeTab.id === 'round-of-32' ? undefined : activeTab.stages}
             selectedMatchId={selectedTournamentMatchId}
             onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
             onOpenMatchDetail={onOpenMatchDetail}
