@@ -14,15 +14,16 @@ import {
   type TournamentStage,
 } from './TournamentBracket';
 
+export type SheetTabId = 'round-of-32' | 'round-of-16' | 'quarter-final' | 'semi-final' | 'finals';
+
 type TournamentSheetsProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
   selectedCountry?: string;
+  activeTabId?: SheetTabId;
   onOpenMatchDetail?: (match: Match) => void;
 };
-
-type SheetTabId = 'round-of-32' | 'round-of-16' | 'quarter-final' | 'semi-final' | 'finals';
 
 type SheetTab = {
   id: SheetTabId;
@@ -32,7 +33,7 @@ type SheetTab = {
   stages: TournamentStage[];
 };
 
-const SHEET_TABS: SheetTab[] = [
+export const TOURNAMENT_SHEET_TABS: SheetTab[] = [
   {
     id: 'round-of-32',
     label: '32강',
@@ -263,12 +264,13 @@ export function TournamentSheets({
   currentTime,
   nextMatchId,
   selectedCountry = '',
+  activeTabId = 'round-of-32',
   onOpenMatchDetail,
 }: TournamentSheetsProps) {
-  const [activeTabId, setActiveTabId] = useState<SheetTabId>('round-of-32');
   const [selectedTournamentMatchId, setSelectedTournamentMatchId] = useState<string | null>(null);
   const tournamentEntries = useMemo(() => getTournamentEntries(sections), [sections]);
-  const activeTab = SHEET_TABS.find((tab) => tab.id === activeTabId) ?? SHEET_TABS[0];
+  const activeTab =
+    TOURNAMENT_SHEET_TABS.find((tab) => tab.id === activeTabId) ?? TOURNAMENT_SHEET_TABS[0];
   const activeEntries = tournamentEntries.filter((entry) =>
     activeTab.stages.includes(entry.match.stage as TournamentStage),
   );
@@ -280,27 +282,6 @@ export function TournamentSheets({
 
   return (
     <section className="tournament-sheets mx-auto w-full max-w-[1040px] pb-6">
-      <div className="tournament-sheet-tabs" role="tablist" aria-label="토너먼트 라운드 시트">
-        {SHEET_TABS.map((tab) => {
-          const isActive = tab.id === activeTab.id;
-
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              className={['tournament-sheet-tab', isActive ? 'tournament-sheet-tab-active' : '']
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setActiveTabId(tab.id)}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
       <div className="tournament-sheet-page">
         <section className="tournament-sheet-block" aria-labelledby="tournament-sheet-heading">
           <h3 id="tournament-sheet-heading" className="tournament-sheet-heading">

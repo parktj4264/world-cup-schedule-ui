@@ -3,9 +3,10 @@ import { FilterBar } from '../components/FilterBar';
 import { LiveUpdateToast } from '../components/LiveUpdateToast';
 import { MiniScheduleTable } from '../components/MiniScheduleTable';
 import { MatchDetailModal } from '../components/MatchDetailModal';
-import { ScheduleControls, type ScheduleViewMode } from '../components/ScheduleControls';
+import { ScheduleControls } from '../components/ScheduleControls';
 import { StatusBar } from '../components/StatusBar';
 import { TournamentSheets } from '../components/TournamentSheets';
+import { WorkbookTabs, type WorkbookSheetId } from '../components/WorkbookTabs';
 import { scheduleSections, type Match, type ScheduleSection } from '../data/schedule';
 import { fetchBrowserLiveSchedule } from '../utils/browserLiveProvider';
 import {
@@ -136,7 +137,7 @@ const getCountryOptions = (sections: ScheduleSection[]) =>
 export function SchedulePage() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [viewMode, setViewMode] = useState<ScheduleViewMode>('mini');
+  const [activeSheetId, setActiveSheetId] = useState<WorkbookSheetId>('all');
   const [liveSchedule, setLiveSchedule] = useState<LiveSchedule>();
   const [pageLiveUpdatedAt, setPageLiveUpdatedAt] = useState<string | null>(null);
   const [liveScheduleError, setLiveScheduleError] = useState(false);
@@ -476,10 +477,8 @@ export function SchedulePage() {
           onRefreshLiveSchedule={handleRefreshLiveSchedule}
         />
         <ScheduleControls
-          viewMode={viewMode}
           onCopyShareLink={handleCopyShareLink}
           onShowKorea={handleShowKorea}
-          onViewModeChange={setViewMode}
         />
         <FilterBar
           selectedCountry={selectedCountry}
@@ -487,7 +486,8 @@ export function SchedulePage() {
           onCountryChange={setSelectedCountry}
           onClearCountry={() => setSelectedCountry('')}
         />
-        {viewMode === 'mini' ? (
+        <WorkbookTabs activeSheetId={activeSheetId} onSheetChange={setActiveSheetId} />
+        {activeSheetId === 'all' ? (
           <MiniScheduleTable
             sections={visibleSections}
             currentTime={currentTime}
@@ -497,12 +497,13 @@ export function SchedulePage() {
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
         ) : null}
-        {viewMode === 'tournament-sheets' ? (
+        {activeSheetId !== 'all' ? (
           <TournamentSheets
             sections={visibleSections}
             currentTime={currentTime}
             nextMatchId={nextMatch?.id}
             selectedCountry={selectedCountry}
+            activeTabId={activeSheetId}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />
         ) : null}

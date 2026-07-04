@@ -457,34 +457,72 @@ button.tournament-overview-box:focus-visible {
   text-underline-offset: 2px;
 }
 
-.tournament-sheet-tabs {
-  display: flex;
-  width: 100%;
-  max-width: 980px;
-  margin: 8px auto 10px;
-  flex-wrap: wrap;
-  gap: 4px;
+.workbook-tabs {
+  margin-top: 8px;
+  margin-bottom: 12px;
 }
 
-.tournament-sheet-tab {
-  min-width: 62px;
-  border: 1px solid #111111;
-  background: #ffffff;
-  padding: 5px 10px;
+.workbook-tab-strip {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  gap: 3px;
+  overflow-x: auto;
+  border-bottom: 2px solid #111827;
+  background: #eef2f7;
+  padding: 6px 7px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.workbook-tab {
+  position: relative;
+  min-width: 78px;
+  min-height: 32px;
+  flex: 0 0 auto;
+  border: 1px solid #4b5563;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  padding: 7px 13px 8px;
   color: #111827;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
+  box-shadow: inset 0 -1px 0 rgba(17, 24, 39, 0.18);
 }
 
-.tournament-sheet-tab:hover {
-  background: #f3f4f6;
+.workbook-tab:hover {
+  filter: brightness(0.98);
 }
 
-.tournament-sheet-tab-active {
-  background: #111827;
-  color: #ffffff;
+.workbook-tab-overview {
+  background: #e0f2fe;
+  border-color: #2563eb;
+}
+
+.workbook-tab-knockout {
+  background: #eaf7df;
+  border-color: #3f7f52;
+}
+
+.workbook-tab-overview.workbook-tab-active {
+  background: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 -2px 0 #2563eb, inset 0 2px 0 #bfdbfe;
+}
+
+.workbook-tab-knockout.workbook-tab-active {
+  background: #ffffff;
+  color: #14532d;
+  box-shadow: 0 -2px 0 #3f7f52, inset 0 2px 0 #bbf7d0;
+}
+
+.workbook-tab-active {
+  z-index: 1;
+  margin-bottom: -2px;
+  min-height: 36px;
+  border-width: 2px;
+  border-bottom-color: #ffffff;
 }
 
 .tournament-sheet-page {
@@ -623,7 +661,7 @@ button.tournament-overview-box:focus-visible {
 
 .tournament-sheet-match-button:focus-visible,
 .tournament-bracket-box-button:focus-visible,
-.tournament-sheet-tab:focus-visible {
+.workbook-tab:focus-visible {
   outline: 2px solid #0284c7;
   outline-offset: -2px;
 }
@@ -952,16 +990,25 @@ button.tournament-overview-box:focus-visible {
 }
 
 @media (max-width: 640px) {
-  .tournament-sheet-tabs {
-    margin: 6px auto 8px;
-    gap: 3px;
+  .workbook-tabs {
+    margin-top: 6px;
+    margin-bottom: 10px;
   }
 
-  .tournament-sheet-tab {
-    min-width: 0;
-    flex: 1 1 calc(20% - 3px);
-    padding: 5px 2px;
+  .workbook-tab-strip {
+    gap: 2px;
+    padding: 5px 5px 0;
+  }
+
+  .workbook-tab {
+    min-width: 64px;
+    min-height: 29px;
+    padding: 6px 9px 7px;
     font-size: 11px;
+  }
+
+  .workbook-tab-active {
+    min-height: 33px;
   }
 
   .tournament-sheet-page {
@@ -1355,7 +1402,7 @@ button.tournament-overview-box:focus-visible {
   .filter-bar,
   .schedule-controls,
   .live-update-toast,
-  .tournament-sheet-tabs {
+  .workbook-tabs {
     display: none !important;
   }
 
