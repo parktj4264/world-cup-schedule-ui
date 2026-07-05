@@ -460,9 +460,8 @@ button.tournament-overview-box:focus-visible {
 }
 
 .tournament-overview-team-winner {
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 2px;
+  color: #1d4ed8;
+  text-decoration: none;
 }
 
 .workbook-tabs {
@@ -784,10 +783,8 @@ button.tournament-overview-box:focus-visible {
 }
 
 .tournament-sheet-winner {
-  color: #000000;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
+  color: #1d4ed8;
+  text-decoration: none;
 }
 
 .tournament-sheet-korea-match {
