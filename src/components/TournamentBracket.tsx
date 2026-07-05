@@ -145,12 +145,12 @@ export const getTournamentEntries = (sections: ScheduleSection[]) =>
 const isKoreaMatch = (match: Match) =>
   match.isKorea || match.home === '대한민국' || match.away === '대한민국';
 
-const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
+const getWinnerScoreClassName = (match: Match, side: 'home' | 'away') => {
   const isWinner =
     (side === 'home' && match.winner === 'home') ||
     (side === 'away' && match.winner === 'away');
 
-  return isWinner ? 'tournament-sheet-winner' : '';
+  return isWinner ? 'tournament-bracket-score-winner' : '';
 };
 
 const getMatchHighlightClassName = (
@@ -195,7 +195,7 @@ const getScoreParts = (match: Match, currentTime: Date) => {
   };
 };
 
-const getCompactScoreLabel = (match: Match, currentTime: Date) => {
+const getCompactScoreParts = (match: Match, currentTime: Date) => {
   const scoreParts = getScoreParts(match, currentTime);
 
   if (!scoreParts) {
@@ -205,7 +205,7 @@ const getCompactScoreLabel = (match: Match, currentTime: Date) => {
   const home = `${scoreParts.home}${scoreParts.homePenalty ? `(${scoreParts.homePenalty})` : ''}`;
   const away = `${scoreParts.awayPenalty ? `(${scoreParts.awayPenalty})` : ''}${scoreParts.away}`;
 
-  return `${home} : ${away}`;
+  return { home, away };
 };
 
 const BracketMatchBox = ({
@@ -235,7 +235,7 @@ const BracketMatchBox = ({
   }
 
   const { match } = entry;
-  const scoreLabel = getCompactScoreLabel(match, currentTime);
+  const scoreParts = getCompactScoreParts(match, currentTime);
   const highlightClassName = getMatchHighlightClassName(match, nextMatchId, currentTime);
   const isSelected = match.id === selectedMatchId;
   const openMatchDetail = canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
@@ -265,25 +265,21 @@ const BracketMatchBox = ({
       <div className="tournament-bracket-teams">
         <span className="tournament-bracket-team">
           <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-bracket-flag" />
-          <span className={['tournament-bracket-team-name', getWinnerClassName(match, 'home')]
-            .filter(Boolean)
-            .join(' ')}
-          >
-            {match.home}
-          </span>
+          <span className="tournament-bracket-team-name">{match.home}</span>
         </span>
         <span className="tournament-bracket-versus">vs</span>
         <span className="tournament-bracket-team">
           <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-bracket-flag" />
-          <span className={['tournament-bracket-team-name', getWinnerClassName(match, 'away')]
-            .filter(Boolean)
-            .join(' ')}
-          >
-            {match.away}
-          </span>
+          <span className="tournament-bracket-team-name">{match.away}</span>
         </span>
       </div>
-      {scoreLabel ? <div className="tournament-bracket-score">{scoreLabel}</div> : null}
+      {scoreParts ? (
+        <div className="tournament-bracket-score">
+          <span className={getWinnerScoreClassName(match, 'home')}>{scoreParts.home}</span>
+          <span className="tournament-bracket-score-divider">:</span>
+          <span className={getWinnerScoreClassName(match, 'away')}>{scoreParts.away}</span>
+        </div>
+      ) : null}
     </button>
   );
 };

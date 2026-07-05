@@ -86,15 +86,18 @@ const getCompactTeamName = (teamName: string) => {
   return teamName;
 };
 
-const getOverviewScoreLabel = (match: Match, currentTime: Date) => {
+const getOverviewScoreParts = (match: Match, currentTime: Date) => {
   const displayScoreState = getDisplayScoreState(match, currentTime);
 
   if (!displayScoreState) {
-    return 'vs';
+    return undefined;
   }
 
   if (displayScoreState.kind === 'pending') {
-    return '-:-';
+    return {
+      home: '-',
+      away: '-',
+    };
   }
 
   const homePenalty =
@@ -106,15 +109,18 @@ const getOverviewScoreLabel = (match: Match, currentTime: Date) => {
       ? `(${displayScoreState.awayPenaltyScore})`
       : '';
 
-  return `${displayScoreState.homeScore}${homePenalty}:${displayScoreState.awayScore}${awayPenalty}`;
+  return {
+    home: `${displayScoreState.homeScore}${homePenalty}`,
+    away: `${displayScoreState.awayScore}${awayPenalty}`,
+  };
 };
 
-const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
+const getWinnerScoreClassName = (match: Match, side: 'home' | 'away') => {
   const isWinner =
     (side === 'home' && match.winner === 'home') ||
     (side === 'away' && match.winner === 'away');
 
-  return isWinner ? 'tournament-overview-team-winner' : '';
+  return isWinner ? 'tournament-overview-score-winner' : '';
 };
 
 const OverviewMatchNode = ({
@@ -141,7 +147,7 @@ const OverviewMatchNode = ({
   const isNext = match?.id === nextMatchId;
   const isLive = match ? isLiveMatch(match, currentTime) : false;
   const isActiveStage = Boolean(match?.stage && activeStages?.includes(match.stage as TournamentStage));
-  const scoreLabel = match ? getOverviewScoreLabel(match, currentTime) : undefined;
+  const scoreParts = match ? getOverviewScoreParts(match, currentTime) : undefined;
   const homeName = match ? getCompactTeamName(match.home) : '';
   const awayName = match ? getCompactTeamName(match.away) : '';
   const openMatchDetail = match && canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
@@ -191,13 +197,7 @@ const OverviewMatchNode = ({
             {homeName ? (
               <>
                 <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-overview-flag" />
-                <span
-                  className={['tournament-overview-team-name', getWinnerClassName(match, 'home')]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {homeName}
-                </span>
+                <span className="tournament-overview-team-name">{homeName}</span>
               </>
             ) : null}
           </span>
@@ -205,18 +205,22 @@ const OverviewMatchNode = ({
             {awayName ? (
               <>
                 <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-overview-flag" />
-                <span
-                  className={['tournament-overview-team-name', getWinnerClassName(match, 'away')]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {awayName}
-                </span>
+                <span className="tournament-overview-team-name">{awayName}</span>
               </>
             ) : null}
           </span>
         </span>
-        <span className="tournament-overview-score">{scoreLabel}</span>
+        <span className="tournament-overview-score">
+          {scoreParts ? (
+            <>
+              <span className={getWinnerScoreClassName(match, 'home')}>{scoreParts.home}</span>
+              <span className="tournament-overview-score-divider">:</span>
+              <span className={getWinnerScoreClassName(match, 'away')}>{scoreParts.away}</span>
+            </>
+          ) : (
+            'vs'
+          )}
+        </span>
       </button>
     </div>
   );

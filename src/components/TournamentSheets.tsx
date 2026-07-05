@@ -195,7 +195,7 @@ const SheetMatch = ({
         {matchNumber ? <span className="tournament-sheet-match-number">{matchNumber}번</span> : null}
       </div>
       <div className="tournament-sheet-versus-row">
-        <div className={['tournament-sheet-team', getWinnerClassName(match, 'home')].filter(Boolean).join(' ')}>
+        <div className="tournament-sheet-team">
           <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-sheet-flag" />
           <span>{match.home}</span>
         </div>
@@ -214,7 +214,7 @@ const SheetMatch = ({
             </span>
           ) : null}
         </div>
-        <div className={['tournament-sheet-team', getWinnerClassName(match, 'away')].filter(Boolean).join(' ')}>
+        <div className="tournament-sheet-team">
           <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-sheet-flag" />
           <span>{match.away}</span>
         </div>

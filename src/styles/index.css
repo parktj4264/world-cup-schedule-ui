@@ -455,13 +455,20 @@ button.tournament-overview-box:focus-visible {
 }
 
 .tournament-overview-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   color: #111111;
   font-size: 10px;
 }
 
-.tournament-overview-team-winner {
+.tournament-overview-score-winner {
   color: #1d4ed8;
-  text-decoration: none;
+}
+
+.tournament-overview-score-divider {
+  color: #111111;
 }
 
 .workbook-tabs {
@@ -787,6 +794,10 @@ button.tournament-overview-box:focus-visible {
   text-decoration: none;
 }
 
+.tournament-sheet-score .tournament-sheet-winner .tournament-sheet-penalty {
+  color: inherit;
+}
+
 .tournament-sheet-korea-match {
   background: #fff8a8;
 }
@@ -969,10 +980,22 @@ button.tournament-overview-box:focus-visible {
 }
 
 .tournament-bracket-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   margin-top: 2px;
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
+}
+
+.tournament-bracket-score-winner {
+  color: #1d4ed8;
+}
+
+.tournament-bracket-score-divider {
+  color: #111111;
 }
 
 .tournament-bracket-placement {
