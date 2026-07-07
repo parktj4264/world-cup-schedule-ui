@@ -457,7 +457,6 @@ export function SchedulePage() {
           <TournamentSheets
             sections={visibleSections}
             currentTime={currentTime}
-            nextMatchId={nextMatch?.id}
             activeTabId={activeSheetId}
             onOpenMatchDetail={(match) => setSelectedMatchId(match.id)}
           />

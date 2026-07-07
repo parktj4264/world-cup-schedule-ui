@@ -12,6 +12,7 @@ type TournamentOverviewBracketProps = {
   sections: ScheduleSection[];
   currentTime: Date;
   nextMatchId?: string;
+  showMatchStatusHighlights?: boolean;
   activeStages?: TournamentStage[];
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
@@ -128,6 +129,7 @@ const OverviewMatchNode = ({
   entry,
   currentTime,
   nextMatchId,
+  showMatchStatusHighlights,
   activeStages,
   selectedMatchId,
   onSelectMatch,
@@ -137,6 +139,7 @@ const OverviewMatchNode = ({
   entry?: TournamentEntry;
   currentTime: Date;
   nextMatchId?: string;
+  showMatchStatusHighlights: boolean;
   activeStages?: TournamentStage[];
   selectedMatchId?: string | null;
   onSelectMatch?: (match: Match) => void;
@@ -144,8 +147,8 @@ const OverviewMatchNode = ({
 }) => {
   const match = entry?.match;
   const isSelected = match?.id === selectedMatchId;
-  const isNext = match?.id === nextMatchId;
-  const isLive = match ? isLiveMatch(match, currentTime) : false;
+  const isNext = showMatchStatusHighlights && match?.id === nextMatchId;
+  const isLive = Boolean(showMatchStatusHighlights && match && isLiveMatch(match, currentTime));
   const isActiveStage = Boolean(match?.stage && activeStages?.includes(match.stage as TournamentStage));
   const scoreParts = match ? getOverviewScoreParts(match, currentTime) : undefined;
   const homeName = match ? getCompactTeamName(match.home) : '';
@@ -230,6 +233,7 @@ export function TournamentOverviewBracket({
   sections,
   currentTime,
   nextMatchId,
+  showMatchStatusHighlights = true,
   activeStages,
   selectedMatchId,
   onSelectMatch,
@@ -270,6 +274,7 @@ export function TournamentOverviewBracket({
             entry={entriesByNumber.get(node.matchNumber)}
             currentTime={currentTime}
             nextMatchId={nextMatchId}
+            showMatchStatusHighlights={showMatchStatusHighlights}
             activeStages={activeStages}
             selectedMatchId={selectedMatchId}
             onSelectMatch={onSelectMatch}

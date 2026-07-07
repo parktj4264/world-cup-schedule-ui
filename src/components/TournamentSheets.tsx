@@ -5,7 +5,6 @@ import {
   getDisplayScoreState,
   getPenaltyShootoutLabel,
 } from '../utils/matchDisplay';
-import { isLiveMatch } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
 import { TournamentOverviewBracket } from './TournamentOverviewBracket';
 import {
@@ -19,7 +18,6 @@ export type SheetTabId = 'round-of-32' | 'round-of-16' | 'quarter-final' | 'semi
 type TournamentSheetsProps = {
   sections: ScheduleSection[];
   currentTime: Date;
-  nextMatchId?: string;
   activeTabId?: SheetTabId;
   onOpenMatchDetail?: (match: Match) => void;
 };
@@ -126,14 +124,8 @@ const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
   return isWinner ? 'tournament-sheet-winner' : '';
 };
 
-const getMatchHighlightClassName = (
-  match: Match,
-  nextMatchId: string | undefined,
-  currentTime: Date,
-) => [
+const getMatchHighlightClassName = (match: Match) => [
   isKoreaMatch(match) ? 'tournament-sheet-korea-match' : '',
-  match.id === nextMatchId ? 'tournament-sheet-next-match' : '',
-  isLiveMatch(match, currentTime) ? 'tournament-sheet-live-match' : '',
 ]
   .filter(Boolean)
   .join(' ');
@@ -171,14 +163,12 @@ const getScoreParts = (match: Match, currentTime: Date) => {
 const SheetMatch = ({
   entry,
   currentTime,
-  nextMatchId,
   selectedMatchId,
   onSelectMatch,
   onOpenMatchDetail,
 }: {
   entry: TournamentEntry;
   currentTime: Date;
-  nextMatchId?: string;
   selectedMatchId?: string | null;
   onSelectMatch: (match: Match) => void;
   onOpenMatchDetail?: (match: Match) => void;
@@ -186,7 +176,7 @@ const SheetMatch = ({
   const { match, matchNumber } = entry;
   const scoreParts = getScoreParts(match, currentTime);
   const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
-  const highlightClassName = getMatchHighlightClassName(match, nextMatchId, currentTime);
+  const highlightClassName = getMatchHighlightClassName(match);
   const isSelected = match.id === selectedMatchId;
   const matchContent = (
     <>
@@ -248,7 +238,6 @@ const SheetMatch = ({
 export function TournamentSheets({
   sections,
   currentTime,
-  nextMatchId,
   activeTabId = 'round-of-32',
   onOpenMatchDetail,
 }: TournamentSheetsProps) {
@@ -310,7 +299,6 @@ export function TournamentSheets({
                             <SheetMatch
                               entry={row.matches[index]}
                               currentTime={currentTime}
-                              nextMatchId={nextMatchId}
                               selectedMatchId={selectedTournamentMatchId}
                               onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
                               onOpenMatchDetail={onOpenMatchDetail}
@@ -340,7 +328,7 @@ export function TournamentSheets({
           <TournamentOverviewBracket
             sections={sections}
             currentTime={currentTime}
-            nextMatchId={nextMatchId}
+            showMatchStatusHighlights={false}
             activeStages={activeTab.id === 'round-of-32' ? undefined : activeTab.stages}
             selectedMatchId={selectedTournamentMatchId}
             onSelectMatch={(match) => setSelectedTournamentMatchId(match.id)}
