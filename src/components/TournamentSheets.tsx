@@ -224,6 +224,7 @@ const SheetMatch = ({
         'tournament-sheet-match',
         'tournament-sheet-match-button',
         highlightClassName,
+        liveBadgeLabel ? 'tournament-sheet-live-match' : '',
         isSelected ? 'tournament-sheet-match-selected' : '',
       ]
         .filter(Boolean)
