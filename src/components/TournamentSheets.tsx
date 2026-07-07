@@ -3,6 +3,7 @@ import type { Match, ScheduleSection } from '../data/schedule';
 import {
   canOpenMatchDetail,
   getDisplayScoreState,
+  getLiveBadgeLabel,
   getPenaltyShootoutLabel,
 } from '../utils/matchDisplay';
 import { FlagIcon } from './FlagIcon';
@@ -176,6 +177,7 @@ const SheetMatch = ({
   const { match, matchNumber } = entry;
   const scoreParts = getScoreParts(match, currentTime);
   const penaltyShootoutLabel = getPenaltyShootoutLabel(match);
+  const liveBadgeLabel = getLiveBadgeLabel(match, currentTime);
   const highlightClassName = getMatchHighlightClassName(match);
   const isSelected = match.id === selectedMatchId;
   const matchContent = (
@@ -183,6 +185,7 @@ const SheetMatch = ({
       <div className="tournament-sheet-time-row">
         <span>{match.timeLabel}</span>
         {matchNumber ? <span className="tournament-sheet-match-number">{matchNumber}번</span> : null}
+        {liveBadgeLabel ? <span className="tournament-sheet-live-badge">{liveBadgeLabel}</span> : null}
       </div>
       <div className="tournament-sheet-versus-row">
         <div className="tournament-sheet-team">

@@ -418,6 +418,26 @@ button.tournament-overview-box:focus-visible {
   font-size: 14px;
 }
 
+.tournament-overview-live-badge,
+.tournament-sheet-live-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #991b1b;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tournament-overview-live-badge {
+  margin-left: 3px;
+  padding: 1px 3px;
+  font-size: 8px;
+}
+
 .tournament-overview-teams {
   display: grid;
   width: 100%;
@@ -698,6 +718,11 @@ button.tournament-overview-box:focus-visible {
   color: #525252;
   font-size: 11px;
   font-weight: 900;
+}
+
+.tournament-sheet-live-badge {
+  padding: 2px 4px;
+  font-size: 9px;
 }
 
 .tournament-sheet-table-three-matches .tournament-sheet-time-row {
@@ -1137,8 +1162,18 @@ button.tournament-overview-box:focus-visible {
     font-size: 8px;
   }
 
+  .tournament-sheet-live-badge {
+    padding: 1px 2px;
+    font-size: 7px;
+  }
+
   .tournament-sheet-table-three-matches .tournament-sheet-match-number {
     font-size: 7px;
+  }
+
+  .tournament-sheet-table-three-matches .tournament-sheet-live-badge {
+    padding: 1px;
+    font-size: 5px;
   }
 
   .tournament-sheet-versus-row {
@@ -1380,6 +1415,13 @@ button.tournament-overview-box:focus-visible {
   .tournament-overview-time {
     font-size: 8px;
     line-height: 1.1;
+  }
+
+  .tournament-overview-live-badge {
+    margin-left: 1px;
+    padding: 1px;
+    border-width: 0;
+    font-size: 4px;
   }
 
   .tournament-overview-meta {

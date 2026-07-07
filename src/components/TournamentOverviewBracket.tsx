@@ -1,5 +1,5 @@
 import type { Match, ScheduleSection } from '../data/schedule';
-import { canOpenMatchDetail, getDisplayScoreState } from '../utils/matchDisplay';
+import { canOpenMatchDetail, getDisplayScoreState, getLiveBadgeLabel } from '../utils/matchDisplay';
 import { isLiveMatch } from '../utils/timeUtils';
 import { FlagIcon } from './FlagIcon';
 import {
@@ -151,6 +151,7 @@ const OverviewMatchNode = ({
   const isLive = Boolean(showMatchStatusHighlights && match && isLiveMatch(match, currentTime));
   const isActiveStage = Boolean(match?.stage && activeStages?.includes(match.stage as TournamentStage));
   const scoreParts = match ? getOverviewScoreParts(match, currentTime) : undefined;
+  const liveBadgeLabel = match ? getLiveBadgeLabel(match, currentTime) : undefined;
   const homeName = match ? getCompactTeamName(match.home) : '';
   const awayName = match ? getCompactTeamName(match.away) : '';
   const openMatchDetail = match && canOpenMatchDetail(match, currentTime) ? onOpenMatchDetail : undefined;
@@ -193,7 +194,10 @@ const OverviewMatchNode = ({
       >
         <span className="tournament-overview-meta">
           <span className="tournament-overview-date">{formatOverviewDate(entry)}</span>
-          <span className="tournament-overview-time">{match.timeLabel}</span>
+          <span className="tournament-overview-time">
+            {match.timeLabel}
+            {liveBadgeLabel ? <span className="tournament-overview-live-badge">{liveBadgeLabel}</span> : null}
+          </span>
         </span>
         <span className="tournament-overview-teams">
           <span className="tournament-overview-team">
