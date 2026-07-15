@@ -98,6 +98,115 @@ const shouldReplaceTeams = (match: Match, update: LiveMatchUpdate) =>
   isResolvedTeamName(update.home) &&
   isResolvedTeamName(update.away);
 
+const getMatchNumber = (match: Match) => {
+  const idMatch = /^match-(\d+)$/.exec(match.id);
+
+  if (idMatch) {
+    return Number(idMatch[1]);
+  }
+
+  return typeof match.apiFootballFixtureId === 'number'
+    ? match.apiFootballFixtureId
+    : undefined;
+};
+
+const getReferencedTeam = (
+  placeholder: string,
+  matchesByNumber: Map<number, Match>,
+) => {
+  const reference = /^(\d+)번\s*(승자|패자)$/.exec(placeholder.trim());
+
+  if (!reference) {
+    return undefined;
+  }
+
+  const sourceMatch = matchesByNumber.get(Number(reference[1]));
+
+  if (!sourceMatch || (sourceMatch.winner !== 'home' && sourceMatch.winner !== 'away')) {
+    return undefined;
+  }
+
+  const referencedSide = reference[2] === '승자'
+    ? sourceMatch.winner
+    : sourceMatch.winner === 'home' ? 'away' : 'home';
+  const team = sourceMatch[referencedSide];
+
+  if (!isResolvedTeamName(team)) {
+    return undefined;
+  }
+
+  return {
+    team,
+    flag: referencedSide === 'home' ? sourceMatch.homeFlag : sourceMatch.awayFlag,
+  };
+};
+
+const propagateKnockoutTeams = (sections: ScheduleSection[]) => {
+  const matchesByNumber = new Map<number, Match>();
+
+  sections.forEach((section) => {
+    section.days.forEach((day) => {
+      day.cells.forEach((cell) => {
+        cell.matches.forEach((match) => {
+          const matchNumber = getMatchNumber(match);
+
+          if (typeof matchNumber === 'number') {
+            matchesByNumber.set(matchNumber, match);
+          }
+        });
+      });
+    });
+  });
+
+  for (let pass = 0; pass < matchesByNumber.size; pass += 1) {
+    let changed = false;
+
+    matchesByNumber.forEach((match, matchNumber) => {
+      const homeReference = getReferencedTeam(match.home, matchesByNumber);
+      const awayReference = getReferencedTeam(match.away, matchesByNumber);
+
+      if (!homeReference && !awayReference) {
+        return;
+      }
+
+      const home = homeReference?.team ?? match.home;
+      const away = awayReference?.team ?? match.away;
+      const resolvedMatch = {
+        ...match,
+        home,
+        away,
+        homeFlag: homeReference?.flag ?? match.homeFlag,
+        awayFlag: awayReference?.flag ?? match.awayFlag,
+        isKorea: match.isKorea || home === '대한민국' || away === '대한민국',
+      };
+
+      matchesByNumber.set(matchNumber, resolvedMatch);
+      changed = true;
+    });
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  return sections.map((section) => ({
+    ...section,
+    days: section.days.map((day) => ({
+      ...day,
+      cells: day.cells.map((cell) => ({
+        ...cell,
+        matches: cell.matches.map((match) => {
+          const matchNumber = getMatchNumber(match);
+
+          return typeof matchNumber === 'number'
+            ? (matchesByNumber.get(matchNumber) ?? match)
+            : match;
+        }),
+      })),
+    })),
+  }));
+};
+
 const mergeMatch = (
   match: Match,
   update: LiveMatchUpdate | undefined,
@@ -215,7 +324,7 @@ export const mergeLiveSchedule = (
     }
   });
 
-  return sections.map((section) => ({
+  const mergedSections = sections.map((section) => ({
     ...section,
     days: section.days.map((day) => ({
       ...day,
@@ -237,4 +346,6 @@ export const mergeLiveSchedule = (
       })),
     })),
   }));
+
+  return propagateKnockoutTeams(mergedSections);
 };
