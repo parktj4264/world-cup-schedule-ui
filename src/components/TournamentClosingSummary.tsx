@@ -5,9 +5,11 @@ import {
   TOURNAMENT_CREDIT_SOURCES,
 } from '../data/tournamentCredits';
 import { FlagIcon } from './FlagIcon';
+import { TournamentStatisticsDialog } from './TournamentStatisticsDialog';
 
 type TournamentClosingSummaryProps = {
   finalMatch: Match;
+  matches: Match[];
 };
 
 const CELEBRATION_STORAGE_KEY = 'world-cup-2026-closing-celebration-seen-v1';
@@ -78,14 +80,15 @@ const usePrefersReducedMotion = () => {
   return prefersReducedMotion;
 };
 
-export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummaryProps) {
-  const [isAwardsOpen, setAwardsOpen] = useState(false);
+export function TournamentClosingSummary({ finalMatch, matches }: TournamentClosingSummaryProps) {
+  const [openDialog, setOpenDialog] = useState<'awards' | 'statistics' | null>(null);
   const [isCelebrating, setCelebrating] = useState(false);
   const [celebrationRun, setCelebrationRun] = useState(0);
   const celebrationTimeoutRef = useRef<number | undefined>(undefined);
   const awardsTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const awardsDialogRef = useRef<HTMLElement | null>(null);
-  const awardsCloseRef = useRef<HTMLButtonElement | null>(null);
+  const statisticsTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const modalDialogRef = useRef<HTMLElement | null>(null);
+  const modalCloseRef = useRef<HTMLButtonElement | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const winnerSide = finalMatch.winner === 'home'
     ? 'home'
@@ -148,31 +151,35 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
   }, []);
 
   useEffect(() => {
-    if (!isAwardsOpen) {
+    if (!openDialog) {
       return undefined;
     }
 
     const previousOverflow = document.body.style.overflow;
+    const fallbackTrigger = openDialog === 'awards'
+      ? awardsTriggerRef.current
+      : statisticsTriggerRef.current;
     const previouslyFocused = document.activeElement instanceof HTMLElement
+      && document.activeElement !== document.body
       ? document.activeElement
-      : awardsTriggerRef.current;
-    const focusFrame = window.requestAnimationFrame(() => awardsCloseRef.current?.focus());
+      : fallbackTrigger;
+    const focusFrame = window.requestAnimationFrame(() => modalCloseRef.current?.focus());
 
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        setAwardsOpen(false);
+        setOpenDialog(null);
         return;
       }
 
-      if (event.key !== 'Tab' || !awardsDialogRef.current) {
+      if (event.key !== 'Tab' || !modalDialogRef.current) {
         return;
       }
 
       const focusableElements = Array.from(
-        awardsDialogRef.current.querySelectorAll<HTMLElement>(
+        modalDialogRef.current.querySelectorAll<HTMLElement>(
           'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
         ),
       );
@@ -200,7 +207,7 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
       document.removeEventListener('keydown', handleKeyDown);
       previouslyFocused?.focus();
     };
-  }, [isAwardsOpen]);
+  }, [openDialog]);
 
   if (!winnerSide) {
     return null;
@@ -242,9 +249,17 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
             ref={awardsTriggerRef}
             type="button"
             className="tournament-closing-button tournament-closing-button-primary"
-            onClick={() => setAwardsOpen(true)}
+            onClick={() => setOpenDialog('awards')}
           >
             수상자 보기
+          </button>
+          <button
+            ref={statisticsTriggerRef}
+            type="button"
+            className="tournament-closing-button tournament-closing-button-stats"
+            onClick={() => setOpenDialog('statistics')}
+          >
+            통계 보기
           </button>
           {!prefersReducedMotion ? (
             <button
@@ -258,18 +273,18 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
         </div>
       </section>
 
-      {isAwardsOpen ? (
+      {openDialog === 'awards' ? (
         <div
           className="tournament-awards-overlay"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
-              setAwardsOpen(false);
+              setOpenDialog(null);
             }
           }}
         >
           <section
-            ref={awardsDialogRef}
+            ref={modalDialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="tournament-awards-heading"
@@ -283,10 +298,10 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
                 </h2>
               </div>
               <button
-                ref={awardsCloseRef}
+                ref={modalCloseRef}
                 type="button"
                 className="tournament-awards-close"
-                onClick={() => setAwardsOpen(false)}
+                onClick={() => setOpenDialog(null)}
               >
                 닫기
               </button>
@@ -360,6 +375,15 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
             </footer>
           </section>
         </div>
+      ) : null}
+
+      {openDialog === 'statistics' ? (
+        <TournamentStatisticsDialog
+          matches={matches}
+          dialogRef={modalDialogRef}
+          closeRef={modalCloseRef}
+          onClose={() => setOpenDialog(null)}
+        />
       ) : null}
     </>
   );

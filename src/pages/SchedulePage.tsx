@@ -477,7 +477,10 @@ export function SchedulePage() {
           onRefreshLiveSchedule={handleRefreshLiveSchedule}
         />
         {!LIVE_UPDATES_ENABLED && completedFinalMatch ? (
-          <TournamentClosingSummary finalMatch={completedFinalMatch} />
+          <TournamentClosingSummary
+            finalMatch={completedFinalMatch}
+            matches={visibleMatches}
+          />
         ) : null}
         <ScheduleControls
           onCopyShareLink={handleCopyShareLink}
