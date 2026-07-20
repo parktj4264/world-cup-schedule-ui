@@ -273,7 +273,6 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
             role="dialog"
             aria-modal="true"
             aria-labelledby="tournament-awards-heading"
-            aria-describedby="tournament-awards-description"
             className="tournament-awards-dialog"
           >
             <header className="tournament-awards-header">
@@ -282,9 +281,6 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
                 <h2 id="tournament-awards-heading" className="tournament-awards-title">
                   대회 수상자
                 </h2>
-                <p id="tournament-awards-description" className="tournament-awards-description">
-                  2026 월드컵을 빛낸 네 명의 공식 개인상 수상자입니다.
-                </p>
               </div>
               <button
                 ref={awardsCloseRef}
@@ -299,24 +295,46 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
             <div className="tournament-awards-grid">
               {TOURNAMENT_AWARDS.map((award) => (
                 <article key={award.id} className="tournament-award-card">
-                  <div className="tournament-award-heading-row">
-                    <TrophyIcon className="tournament-award-icon" />
-                    <div>
-                      <div className="tournament-award-label">{award.label}</div>
-                      <div className="tournament-award-english-label">{award.englishLabel}</div>
-                    </div>
-                  </div>
-                  <div className="tournament-award-recipient">{award.recipient}</div>
-                  <div className="tournament-award-english-recipient">{award.englishRecipient}</div>
-                  <div className="tournament-award-team">
-                    <FlagIcon
-                      teamName={award.team}
-                      fallback={award.teamFlag}
-                      className="tournament-award-flag"
+                  <a
+                    className="tournament-award-photo-link"
+                    href={award.photoSourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${award.recipient} 사진 원본과 라이선스 보기`}
+                  >
+                    <img
+                      className="tournament-award-photo"
+                      src={award.photoUrl}
+                      alt={award.photoAlt}
+                      loading="lazy"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
                     />
-                    <span>{award.team}</span>
+                  </a>
+                  <div className="tournament-award-content">
+                    <div className="tournament-award-heading-row">
+                      <TrophyIcon className="tournament-award-icon" />
+                      <div>
+                        <div className="tournament-award-label">{award.label}</div>
+                        <div className="tournament-award-english-label">
+                          {award.englishLabel}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="tournament-award-recipient">{award.recipient}</div>
+                    <div className="tournament-award-english-recipient">
+                      {award.englishRecipient}
+                    </div>
+                    <div className="tournament-award-team">
+                      <FlagIcon
+                        teamName={award.team}
+                        fallback={award.teamFlag}
+                        className="tournament-award-flag"
+                      />
+                      <span>{award.team}</span>
+                    </div>
+                    <div className="tournament-award-detail">{award.detail}</div>
                   </div>
-                  <div className="tournament-award-detail">{award.detail}</div>
                 </article>
               ))}
             </div>
@@ -326,6 +344,17 @@ export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummar
               {TOURNAMENT_CREDIT_SOURCES.map((source) => (
                 <a key={source.href} href={source.href} target="_blank" rel="noreferrer">
                   {source.label}
+                </a>
+              ))}
+              <span className="tournament-awards-photo-credit-label">사진</span>
+              {TOURNAMENT_AWARDS.map((award) => (
+                <a
+                  key={award.photoSourceUrl}
+                  href={award.photoSourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {award.englishRecipient} · {award.photoCredit} · {award.photoLicense}
                 </a>
               ))}
             </footer>

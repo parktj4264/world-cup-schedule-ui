@@ -7,6 +7,11 @@ export type TournamentAward = {
   team: string;
   teamFlag: string;
   detail: string;
+  photoUrl: string;
+  photoAlt: string;
+  photoSourceUrl: string;
+  photoCredit: string;
+  photoLicense: string;
 };
 
 export type TournamentCreditSource = {
@@ -24,6 +29,13 @@ export const TOURNAMENT_AWARDS: TournamentAward[] = [
     team: '스페인',
     teamFlag: '🇪🇸',
     detail: '대회 최우수 선수',
+    photoUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Rodri_France_v_Spain_7.24.26-260.jpg/330px-Rodri_France_v_Spain_7.24.26-260.jpg',
+    photoAlt: '2026 월드컵 프랑스전에서 경기 중인 로드리',
+    photoSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Rodri_France_v_Spain_7.24.26-260.jpg',
+    photoCredit: 'Bryan Berlin',
+    photoLicense: 'CC BY-SA 4.0',
   },
   {
     id: 'golden-boot',
@@ -34,6 +46,13 @@ export const TOURNAMENT_AWARDS: TournamentAward[] = [
     team: '프랑스',
     teamFlag: '🇫🇷',
     detail: '10골 · 대회 득점왕',
+    photoUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg/330px-Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg',
+    photoAlt: '2026 월드컵 세네갈전에서 경기 중인 킬리안 음바페',
+    photoSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg',
+    photoCredit: 'Bryan Berlin',
+    photoLicense: 'CC BY-SA 4.0',
   },
   {
     id: 'golden-glove',
@@ -44,6 +63,13 @@ export const TOURNAMENT_AWARDS: TournamentAward[] = [
     team: '스페인',
     teamFlag: '🇪🇸',
     detail: '대회 최우수 골키퍼',
+    photoUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Unai_Simon_France_v_Spain_7.24.26-118_%28cropped%29.jpg/330px-Unai_Simon_France_v_Spain_7.24.26-118_%28cropped%29.jpg',
+    photoAlt: '2026 월드컵 프랑스전에서 골키퍼 유니폼을 입은 우나이 시몬',
+    photoSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Unai_Simon_France_v_Spain_7.24.26-118_(cropped).jpg',
+    photoCredit: 'Bryan Berlin',
+    photoLicense: 'CC BY-SA 4.0',
   },
   {
     id: 'young-player',
@@ -54,6 +80,13 @@ export const TOURNAMENT_AWARDS: TournamentAward[] = [
     team: '스페인',
     teamFlag: '🇪🇸',
     detail: '대회 최우수 영플레이어',
+    photoUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Pau_Cubarsi_France_v_Spain_7.24.26-155.jpg/330px-Pau_Cubarsi_France_v_Spain_7.24.26-155.jpg',
+    photoAlt: '2026 월드컵 프랑스전에서 경기 중인 파우 쿠바르시',
+    photoSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Pau_Cubarsi_France_v_Spain_7.24.26-155.jpg',
+    photoCredit: 'Bryan Berlin',
+    photoLicense: 'CC BY-SA 4.0',
   },
 ];
 

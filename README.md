@@ -15,7 +15,7 @@
 - 토너먼트 대진과 승자 자동 전파
 - 경기별 득점자, 승부차기 등 상세 정보 모달
 - 우승팀 요약과 최초 1회 종료 기념 효과
-- 골든볼·골든부트·골든글러브·영플레이어 수상자 크레딧
+- 골든볼·골든부트·골든글러브·영플레이어 수상자 사진과 크레딧
 - 모바일과 데스크톱에 대응하는 포스터형 UI
 - 공유 링크, PWA 아이콘, Open Graph 미리보기 지원
 
@@ -72,6 +72,7 @@ VITE_LIVE_UPDATES_ENABLED=true
 
 - 경기 데이터: [worldcup26.ir](https://worldcup26.ir/), 선택적 [API-FOOTBALL](https://www.api-football.com/), 폴백 일정 [openfootball/worldcup.json](https://github.com/openfootball/worldcup.json)
 - 개인상 결과: [FIFPRO](https://www.fifpro.org/en/articles/2026/07/players-recognised-with-individual-awards-at-the-2026-world-cup), [AP](https://apnews.com/article/fccc26aa12d9226e63d06b601b770617)
+- 수상자 사진: Wikimedia Commons / Bryan Berlin / CC BY-SA 4.0 — [Rodri](https://commons.wikimedia.org/wiki/File:Rodri_France_v_Spain_7.24.26-260.jpg), [Kylian Mbappé](https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg), [Unai Simón](https://commons.wikimedia.org/wiki/File:Unai_Simon_France_v_Spain_7.24.26-118_(cropped).jpg), [Pau Cubarsí](https://commons.wikimedia.org/wiki/File:Pau_Cubarsi_France_v_Spain_7.24.26-155.jpg)
 - 국기 SVG: [lipis/flag-icons](https://github.com/lipis/flag-icons), MIT License
 
 이 프로젝트는 비공식 팬 프로젝트이며 FIFA 또는 대회 주최 기관과 관련이 없습니다.
