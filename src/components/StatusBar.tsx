@@ -3,6 +3,10 @@ import { getDisplayScoreState } from '../utils/matchDisplay';
 import { formatKstDateTime, formatTimeUntilMatch } from '../utils/timeUtils';
 
 type StatusBarProps = {
+  archiveMode?: boolean;
+  archiveLoaded?: boolean;
+  totalMatchCount?: number;
+  completedMatchCount?: number;
   currentTime: Date;
   nextMatch?: Match;
   liveMatches: Match[];
@@ -153,6 +157,10 @@ const BrowserLiveStatus = ({
 };
 
 export function StatusBar({
+  archiveMode = false,
+  archiveLoaded = false,
+  totalMatchCount = 0,
+  completedMatchCount = 0,
   currentTime,
   nextMatch,
   liveMatches,
@@ -163,6 +171,29 @@ export function StatusBar({
   browserLiveChecking = false,
   onRefreshLiveSchedule,
 }: StatusBarProps) {
+  if (archiveMode) {
+    const archivedAt = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
+    const resultSummary = archiveLoaded
+      ? completedMatchCount === totalMatchCount
+        ? `${totalMatchCount}경기 최종 기록`
+        : `${completedMatchCount}/${totalMatchCount}경기 반영`
+      : '최종 결과 불러오는 중';
+
+    return (
+      <div className="status-bar mx-auto mt-3 w-full max-w-[980px] border-y border-neutral-800 py-2 text-[13px] font-bold text-neutral-800">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="border border-[#2f5365] bg-[#2f5365] px-2 py-0.5 text-[11px] font-black text-white">
+            대회 종료
+          </span>
+          <span>{resultSummary}</span>
+          {archivedAt ? (
+            <span className="text-[12px] text-neutral-600">최종 업데이트: {archivedAt}</span>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   const timeUntilNextMatch = formatTimeUntilMatch(nextMatch, currentTime);
   const liveScheduleUpdatedTime = formatLiveScheduleUpdatedAt(liveScheduleUpdatedAt);
   const browserLiveUpdatedTime = formatLiveScheduleUpdatedAt(browserLiveUpdatedAt);

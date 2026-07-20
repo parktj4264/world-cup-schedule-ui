@@ -16,6 +16,7 @@ import {
 import { flattenMatches, getKstDateKey, getLiveMatches, getMatchStartTime, getNextMatch } from '../utils/timeUtils';
 
 const LIVE_SCHEDULE_URL = `${import.meta.env.BASE_URL}data/live-schedule.json`;
+const LIVE_UPDATES_ENABLED = import.meta.env.VITE_LIVE_UPDATES_ENABLED === 'true';
 const SHARE_TOAST_DURATION_MS = 2200;
 const PAGE_JSON_REFRESH_MS = 5 * 60 * 1000;
 const BROWSER_LIVE_ACTIVE_REFRESH_MS = 3 * 60 * 1000;
@@ -125,7 +126,7 @@ export function SchedulePage() {
   const [liveScheduleError, setLiveScheduleError] = useState(false);
   const [browserLiveUpdatedAt, setBrowserLiveUpdatedAt] = useState<string | null>(null);
   const [browserLiveError, setBrowserLiveError] = useState(false);
-  const [browserLiveChecking, setBrowserLiveChecking] = useState(true);
+  const [browserLiveChecking, setBrowserLiveChecking] = useState(LIVE_UPDATES_ENABLED);
   const [manualLiveRefreshCount, setManualLiveRefreshCount] = useState(0);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState('');
@@ -171,7 +172,11 @@ export function SchedulePage() {
         const parsed = parseLiveSchedule(await response.json());
 
         if (parsed) {
-          if (!hasCompletedInitialBrowserCheckRef.current && !liveScheduleRef.current) {
+          if (
+            LIVE_UPDATES_ENABLED &&
+            !hasCompletedInitialBrowserCheckRef.current &&
+            !liveScheduleRef.current
+          ) {
             setLiveScheduleError(false);
             console.log(
               '[world-cup-schedule] page live schedule held until browser check',
@@ -217,16 +222,26 @@ export function SchedulePage() {
 
     pageLiveReloadRef.current = loadLiveSchedule;
     loadLiveSchedule();
-    const intervalId = window.setInterval(loadLiveSchedule, PAGE_JSON_REFRESH_MS);
+    const intervalId = LIVE_UPDATES_ENABLED
+      ? window.setInterval(loadLiveSchedule, PAGE_JSON_REFRESH_MS)
+      : undefined;
 
     return () => {
       pageLiveReloadRef.current = undefined;
       controller.abort();
-      window.clearInterval(intervalId);
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
     };
   }, []);
 
   useEffect(() => {
+    if (!LIVE_UPDATES_ENABLED) {
+      hasCompletedInitialBrowserCheckRef.current = true;
+      setBrowserLiveChecking(false);
+      return undefined;
+    }
+
     let timeoutId: number | undefined;
     let stopped = false;
     let inFlight = false;
@@ -361,11 +376,16 @@ export function SchedulePage() {
   );
   const nextMatch = useMemo(() => getNextMatch(visibleSections, currentTime), [currentTime, visibleSections]);
   const liveMatches = useMemo(() => getLiveMatches(visibleSections, currentTime), [currentTime, visibleSections]);
+  const visibleMatches = useMemo(() => flattenMatches(visibleSections), [visibleSections]);
+  const completedMatchCount = useMemo(
+    () => visibleMatches.filter((match) => match.status === 'finished').length,
+    [visibleMatches],
+  );
   const selectedMatch = useMemo(
     () => selectedMatchId
-      ? flattenMatches(visibleSections).find((match) => match.id === selectedMatchId)
+      ? visibleMatches.find((match) => match.id === selectedMatchId)
       : undefined,
-    [selectedMatchId, visibleSections],
+    [selectedMatchId, visibleMatches],
   );
 
   const showShareMessage = useCallback((message: string) => {
@@ -411,12 +431,14 @@ export function SchedulePage() {
           {shareMessage}
         </div>
       ) : null}
-      <LiveUpdateToast
-        isChecking={browserLiveChecking}
-        hasError={browserLiveError}
-        updatedAt={browserLiveUpdatedAt}
-        refreshToken={manualLiveRefreshCount}
-      />
+      {LIVE_UPDATES_ENABLED ? (
+        <LiveUpdateToast
+          isChecking={browserLiveChecking}
+          hasError={browserLiveError}
+          updatedAt={browserLiveUpdatedAt}
+          refreshToken={manualLiveRefreshCount}
+        />
+      ) : null}
       <div className="mx-auto w-full max-w-[1040px]">
         <header className="mx-auto w-full max-w-[980px]">
           <div className="h-[5px] bg-[#2f5365]" />
@@ -430,6 +452,10 @@ export function SchedulePage() {
         </header>
 
         <StatusBar
+          archiveMode={!LIVE_UPDATES_ENABLED}
+          archiveLoaded={Boolean(liveSchedule)}
+          totalMatchCount={visibleMatches.length}
+          completedMatchCount={completedMatchCount}
           currentTime={currentTime}
           nextMatch={nextMatch}
           liveMatches={liveMatches}

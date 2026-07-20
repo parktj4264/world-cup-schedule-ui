@@ -27,10 +27,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Fetch live schedule
-        run: npm run fetch:live
+        run: npm ci
 
       - name: Build
         run: npm run build

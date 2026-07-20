@@ -1,13 +1,7 @@
 name: Update live schedule
 
 on:
-  schedule:
-    # 2026 World Cup match-heavy hours in KST, expressed in UTC.
-    # KST 00:00-14:59 during June/July: poll every 15 minutes.
-    - cron: '7,22,37,52 15-23 * 6,7 *'
-    - cron: '7,22,37,52 0-5 * 6,7 *'
-    # KST 15:00-23:59 during June/July: keep a lighter hourly heartbeat.
-    - cron: '17 6-14 * 6,7 *'
+  # The tournament is complete. Keep this workflow available for manual reuse.
   workflow_dispatch:
 
 permissions:
@@ -34,7 +28,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Fetch live schedule
         run: npm run fetch:live
