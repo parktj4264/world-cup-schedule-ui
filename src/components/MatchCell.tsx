@@ -5,6 +5,7 @@ import {
   getDisplayScoreState,
   getLiveBadgeLabel,
   getPenaltyShootoutLabel,
+  isFinalChampionSide,
 } from '../utils/matchDisplay';
 import { isLiveMatch, isPastMatch } from '../utils/timeUtils';
 
@@ -84,6 +85,9 @@ export function MatchCell({
   const hasSelectedMatch = cell.matches.some((match) => match.id === selectedMatchId);
   const hasNextMatch = cell.matches.some((match) => match.id === nextMatchId);
   const hasLiveMatch = cell.matches.some((match) => isLiveMatch(match, currentTime));
+  const hasFinalChampion = cell.matches.some(
+    (match) => isFinalChampionSide(match, 'home') || isFinalChampionSide(match, 'away'),
+  );
 
   const cellClassName = [
     'schedule-match-cell relative border border-neutral-700 text-center align-middle',
@@ -94,6 +98,7 @@ export function MatchCell({
         : 'bg-white',
     hasNextMatch ? 'schedule-match-cell-next ring-2 ring-inset ring-sky-600' : '',
     hasLiveMatch ? 'ring-2 ring-inset ring-red-600' : '',
+    hasFinalChampion ? 'schedule-champion-match-cell' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -107,6 +112,9 @@ export function MatchCell({
       <div className="flex flex-col items-center gap-[3px]">
         {groupMatches(cell.matches).map((matchGroup, groupIndex) => {
           const isGroupPast = matchGroup.matches.every((match) => isPastMatch(match, currentTime));
+          const hasChampionMatch = matchGroup.matches.some(
+            (match) => isFinalChampionSide(match, 'home') || isFinalChampionSide(match, 'away'),
+          );
           const liveBadgeLabel = matchGroup.matches
             .map((match) => getLiveBadgeLabel(match, currentTime))
             .find(Boolean);
@@ -116,7 +124,7 @@ export function MatchCell({
               key={matchGroup.key}
               className={[
                 'leading-tight',
-                isGroupPast ? 'opacity-45' : '',
+                isGroupPast && !hasChampionMatch ? 'opacity-45' : '',
                 groupIndex > 0 ? 'border-t border-neutral-300 pt-1' : '',
               ]
                 .filter(Boolean)
@@ -155,7 +163,9 @@ export function MatchCell({
                   const matchContent = (
                     <>
                       <FlagIcon teamName={match.home} fallback={match.homeFlag} className="mr-1" />
-                      {match.home}
+                      <span className={isFinalChampionSide(match, 'home') ? 'final-champion-team' : ''}>
+                        {match.home}
+                      </span>
                       {displayScoreState ? (
                         <span className={getScoreClassName(match, 'home', isScorePending)}>{homeScoreLabel}</span>
                       ) : null}
@@ -179,7 +189,9 @@ export function MatchCell({
                       {displayScoreState ? (
                         <span className={getScoreClassName(match, 'away', isScorePending)}>{awayScoreLabel}</span>
                       ) : null}
-                      {match.away}
+                      <span className={isFinalChampionSide(match, 'away') ? 'final-champion-team' : ''}>
+                        {match.away}
+                      </span>
                       <FlagIcon teamName={match.away} fallback={match.awayFlag} className="ml-1" />
                     </>
                   );

@@ -1,0 +1,337 @@
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import type { Match } from '../data/schedule';
+import {
+  TOURNAMENT_AWARDS,
+  TOURNAMENT_CREDIT_SOURCES,
+} from '../data/tournamentCredits';
+import { FlagIcon } from './FlagIcon';
+
+type TournamentClosingSummaryProps = {
+  finalMatch: Match;
+};
+
+const CELEBRATION_STORAGE_KEY = 'world-cup-2026-closing-celebration-seen-v1';
+const CELEBRATION_DURATION_MS = 2_100;
+let hasSeenCelebrationInMemory = false;
+
+const CELEBRATION_PARTICLES = Array.from({ length: 24 }, (_, index) => ({
+  left: `${5 + ((index * 37) % 91)}%`,
+  delay: `${(index % 8) * 45}ms`,
+  duration: `${1_300 + (index % 5) * 120}ms`,
+  drift: `${((index % 7) - 3) * 18}px`,
+  turn: `${180 + (index % 6) * 72}deg`,
+}));
+
+const TrophyIcon = ({ className = '' }: { className?: string }) => (
+  <svg
+    aria-hidden="true"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="square"
+    strokeLinejoin="miter"
+    strokeWidth="1.7"
+    viewBox="0 0 32 32"
+  >
+    <path d="M10 4h12v5c0 6-2.4 9-6 9s-6-3-6-9V4Z" />
+    <path d="M10 7H5v2c0 4 2.1 6 6.2 6M22 7h5v2c0 4-2.1 6-6.2 6M16 18v5M11 28h10M13 23h6v5" />
+  </svg>
+);
+
+const CelebrationOverlay = ({ runId }: { runId: number }) => (
+  <div key={runId} className="champion-celebration" aria-hidden="true">
+    {CELEBRATION_PARTICLES.map((particle, index) => (
+      <span
+        key={index}
+        className="champion-celebration-particle"
+        style={
+          {
+            '--particle-left': particle.left,
+            '--particle-delay': particle.delay,
+            '--particle-duration': particle.duration,
+            '--particle-drift': particle.drift,
+            '--particle-turn': particle.turn,
+          } as CSSProperties
+        }
+      />
+    ))}
+  </div>
+);
+
+const usePrefersReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return prefersReducedMotion;
+};
+
+export function TournamentClosingSummary({ finalMatch }: TournamentClosingSummaryProps) {
+  const [isAwardsOpen, setAwardsOpen] = useState(false);
+  const [isCelebrating, setCelebrating] = useState(false);
+  const [celebrationRun, setCelebrationRun] = useState(0);
+  const celebrationTimeoutRef = useRef<number | undefined>(undefined);
+  const awardsTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const awardsDialogRef = useRef<HTMLElement | null>(null);
+  const awardsCloseRef = useRef<HTMLButtonElement | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const winnerSide = finalMatch.winner === 'home'
+    ? 'home'
+    : finalMatch.winner === 'away'
+      ? 'away'
+      : undefined;
+
+  const startCelebration = useCallback(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
+
+    if (celebrationTimeoutRef.current) {
+      window.clearTimeout(celebrationTimeoutRef.current);
+    }
+
+    setCelebrationRun((run) => run + 1);
+    setCelebrating(true);
+    celebrationTimeoutRef.current = window.setTimeout(() => {
+      setCelebrating(false);
+    }, CELEBRATION_DURATION_MS);
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      if (celebrationTimeoutRef.current) {
+        window.clearTimeout(celebrationTimeoutRef.current);
+      }
+      setCelebrating(false);
+      return;
+    }
+
+    let hasSeenCelebration = hasSeenCelebrationInMemory;
+
+    try {
+      hasSeenCelebration = window.localStorage.getItem(CELEBRATION_STORAGE_KEY) === '1';
+    } catch {
+      // Fall back to the in-memory marker when storage is unavailable.
+    }
+
+    if (hasSeenCelebration) {
+      return;
+    }
+
+    hasSeenCelebrationInMemory = true;
+
+    try {
+      window.localStorage.setItem(CELEBRATION_STORAGE_KEY, '1');
+    } catch {
+      // The in-memory marker still prevents repeated playback in this page session.
+    }
+
+    startCelebration();
+  }, [finalMatch.id, prefersReducedMotion, startCelebration]);
+
+  useEffect(() => () => {
+    if (celebrationTimeoutRef.current) {
+      window.clearTimeout(celebrationTimeoutRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAwardsOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : awardsTriggerRef.current;
+    const focusFrame = window.requestAnimationFrame(() => awardsCloseRef.current?.focus());
+
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setAwardsOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab' || !awardsDialogRef.current) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        awardsDialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      const first = focusableElements[0];
+      const last = focusableElements.at(-1);
+
+      if (!first || !last) {
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [isAwardsOpen]);
+
+  if (!winnerSide) {
+    return null;
+  }
+
+  const champion = winnerSide === 'home' ? finalMatch.home : finalMatch.away;
+  const championFlag = winnerSide === 'home' ? finalMatch.homeFlag : finalMatch.awayFlag;
+  const scoreLabel = typeof finalMatch.homeScore === 'number' && typeof finalMatch.awayScore === 'number'
+    ? `${finalMatch.home} ${finalMatch.homeScore}–${finalMatch.awayScore} ${finalMatch.away}`
+    : `${finalMatch.home}–${finalMatch.away}`;
+
+  return (
+    <>
+      {isCelebrating ? <CelebrationOverlay runId={celebrationRun} /> : null}
+      <section
+        className={[
+          'tournament-closing-summary',
+          isCelebrating ? 'tournament-closing-summary-celebrating' : '',
+        ].filter(Boolean).join(' ')}
+        aria-labelledby="tournament-champion-heading"
+      >
+        <div className="tournament-closing-trophy">
+          <TrophyIcon className="tournament-closing-trophy-icon" />
+        </div>
+        <div className="tournament-closing-copy">
+          <div className="tournament-closing-eyebrow">2026 WORLD CHAMPIONS</div>
+          <h2 id="tournament-champion-heading" className="tournament-closing-title">
+            <FlagIcon
+              teamName={champion}
+              fallback={championFlag}
+              className="tournament-closing-flag"
+            />
+            <span>{champion} 우승</span>
+          </h2>
+          <div className="tournament-closing-score">결승 · {scoreLabel}</div>
+        </div>
+        <div className="tournament-closing-actions">
+          <button
+            ref={awardsTriggerRef}
+            type="button"
+            className="tournament-closing-button tournament-closing-button-primary"
+            onClick={() => setAwardsOpen(true)}
+          >
+            수상자 보기
+          </button>
+          {!prefersReducedMotion ? (
+            <button
+              type="button"
+              className="tournament-closing-button"
+              onClick={startCelebration}
+            >
+              축하 다시보기
+            </button>
+          ) : null}
+        </div>
+      </section>
+
+      {isAwardsOpen ? (
+        <div
+          className="tournament-awards-overlay"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setAwardsOpen(false);
+            }
+          }}
+        >
+          <section
+            ref={awardsDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tournament-awards-heading"
+            aria-describedby="tournament-awards-description"
+            className="tournament-awards-dialog"
+          >
+            <header className="tournament-awards-header">
+              <div>
+                <div className="tournament-awards-eyebrow">2026 TOURNAMENT HONOURS</div>
+                <h2 id="tournament-awards-heading" className="tournament-awards-title">
+                  대회 수상자
+                </h2>
+                <p id="tournament-awards-description" className="tournament-awards-description">
+                  2026 월드컵을 빛낸 네 명의 공식 개인상 수상자입니다.
+                </p>
+              </div>
+              <button
+                ref={awardsCloseRef}
+                type="button"
+                className="tournament-awards-close"
+                onClick={() => setAwardsOpen(false)}
+              >
+                닫기
+              </button>
+            </header>
+
+            <div className="tournament-awards-grid">
+              {TOURNAMENT_AWARDS.map((award) => (
+                <article key={award.id} className="tournament-award-card">
+                  <div className="tournament-award-heading-row">
+                    <TrophyIcon className="tournament-award-icon" />
+                    <div>
+                      <div className="tournament-award-label">{award.label}</div>
+                      <div className="tournament-award-english-label">{award.englishLabel}</div>
+                    </div>
+                  </div>
+                  <div className="tournament-award-recipient">{award.recipient}</div>
+                  <div className="tournament-award-english-recipient">{award.englishRecipient}</div>
+                  <div className="tournament-award-team">
+                    <FlagIcon
+                      teamName={award.team}
+                      fallback={award.teamFlag}
+                      className="tournament-award-flag"
+                    />
+                    <span>{award.team}</span>
+                  </div>
+                  <div className="tournament-award-detail">{award.detail}</div>
+                </article>
+              ))}
+            </div>
+
+            <footer className="tournament-awards-sources">
+              <span>수상 정보 출처</span>
+              {TOURNAMENT_CREDIT_SOURCES.map((source) => (
+                <a key={source.href} href={source.href} target="_blank" rel="noreferrer">
+                  {source.label}
+                </a>
+              ))}
+            </footer>
+          </section>
+        </div>
+      ) : null}
+    </>
+  );
+}

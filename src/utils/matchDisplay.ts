@@ -105,3 +105,8 @@ export const canOpenMatchDetail = (match: Match, currentTime?: Date) =>
   (currentTime ? isLiveMatch(match, currentTime) : match.status === 'live') ||
   match.status === 'finished' ||
   hasScore(match);
+
+export const isFinalChampionSide = (match: Match, side: 'home' | 'away') =>
+  match.stage === 'final' &&
+  match.status === 'finished' &&
+  match.winner === side;

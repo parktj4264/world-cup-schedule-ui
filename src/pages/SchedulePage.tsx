@@ -5,6 +5,7 @@ import { MatchDetailModal } from '../components/MatchDetailModal';
 import { ScheduleControls } from '../components/ScheduleControls';
 import { StatusBar } from '../components/StatusBar';
 import { TournamentSheets } from '../components/TournamentSheets';
+import { TournamentClosingSummary } from '../components/TournamentClosingSummary';
 import { WorkbookTabs, type WorkbookSheetId } from '../components/WorkbookTabs';
 import { scheduleSections, type ScheduleSection } from '../data/schedule';
 import { fetchBrowserLiveSchedule } from '../utils/browserLiveProvider';
@@ -381,6 +382,15 @@ export function SchedulePage() {
     () => visibleMatches.filter((match) => match.status === 'finished').length,
     [visibleMatches],
   );
+  const completedFinalMatch = useMemo(
+    () => visibleMatches.find(
+      (match) =>
+        match.stage === 'final' &&
+        match.status === 'finished' &&
+        (match.winner === 'home' || match.winner === 'away'),
+    ),
+    [visibleMatches],
+  );
   const selectedMatch = useMemo(
     () => selectedMatchId
       ? visibleMatches.find((match) => match.id === selectedMatchId)
@@ -466,6 +476,9 @@ export function SchedulePage() {
           browserLiveChecking={browserLiveChecking}
           onRefreshLiveSchedule={handleRefreshLiveSchedule}
         />
+        {!LIVE_UPDATES_ENABLED && completedFinalMatch ? (
+          <TournamentClosingSummary finalMatch={completedFinalMatch} />
+        ) : null}
         <ScheduleControls
           onCopyShareLink={handleCopyShareLink}
         />

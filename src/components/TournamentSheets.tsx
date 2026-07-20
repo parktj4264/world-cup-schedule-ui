@@ -5,6 +5,7 @@ import {
   getDisplayScoreState,
   getLiveBadgeLabel,
   getPenaltyShootoutLabel,
+  isFinalChampionSide,
 } from '../utils/matchDisplay';
 import { FlagIcon } from './FlagIcon';
 import { TournamentOverviewBracket } from './TournamentOverviewBracket';
@@ -122,11 +123,17 @@ const getWinnerClassName = (match: Match, side: 'home' | 'away') => {
     (side === 'home' && match.winner === 'home') ||
     (side === 'away' && match.winner === 'away');
 
-  return isWinner ? 'tournament-sheet-winner' : '';
+  return [
+    isWinner ? 'tournament-sheet-winner' : '',
+    isFinalChampionSide(match, side) ? 'tournament-sheet-champion' : '',
+  ].filter(Boolean).join(' ');
 };
 
 const getMatchHighlightClassName = (match: Match) => [
   isKoreaMatch(match) ? 'tournament-sheet-korea-match' : '',
+  isFinalChampionSide(match, 'home') || isFinalChampionSide(match, 'away')
+    ? 'tournament-sheet-champion-match'
+    : '',
 ]
   .filter(Boolean)
   .join(' ');
@@ -190,7 +197,9 @@ const SheetMatch = ({
       <div className="tournament-sheet-versus-row">
         <div className="tournament-sheet-team">
           <FlagIcon teamName={match.home} fallback={match.homeFlag} className="tournament-sheet-flag" />
-          <span>{match.home}</span>
+          <span className={isFinalChampionSide(match, 'home') ? 'tournament-sheet-champion' : ''}>
+            {match.home}
+          </span>
         </div>
         <div className="tournament-sheet-score" aria-label={penaltyShootoutLabel}>
           {scoreParts ? (
@@ -209,7 +218,9 @@ const SheetMatch = ({
         </div>
         <div className="tournament-sheet-team">
           <FlagIcon teamName={match.away} fallback={match.awayFlag} className="tournament-sheet-flag" />
-          <span>{match.away}</span>
+          <span className={isFinalChampionSide(match, 'away') ? 'tournament-sheet-champion' : ''}>
+            {match.away}
+          </span>
         </div>
       </div>
     </>
