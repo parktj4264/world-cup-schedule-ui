@@ -256,7 +256,7 @@ export function TournamentClosingSummary({ finalMatch, matches }: TournamentClos
           <button
             ref={statisticsTriggerRef}
             type="button"
-            className="tournament-closing-button tournament-closing-button-stats"
+            className="tournament-closing-button tournament-closing-button-primary"
             onClick={() => setOpenDialog('statistics')}
           >
             통계 보기
